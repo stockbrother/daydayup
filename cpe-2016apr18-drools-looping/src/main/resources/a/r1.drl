@@ -1,0 +1,39 @@
+//
+/**here
+**/
+#
+import a.MyObject;
+import a.MyOp;
+import a.MySessionWrapper;
+
+global MySessionWrapper sessionWrapper;
+global MyOp op;
+
+rule "Rule1"
+salience 100000
+ when
+  	$o: MyObject(
+  		hasStateChanged == false,
+  		justInsterted == false,
+  		aboutToBeRetracted == false,
+  		this.getVar.get("NeedNavigationUpdate") == null
+  		)
+ then
+    op.newAlarmFindOrCreateGroup($o);
+end
+
+rule "Rule2"
+salience 50000
+ when
+  	$o: MyObject(hasStateChanged == true)
+ then
+    op.alarmUpdatedManageLifecycle($o);
+end
+
+rule "Rule3"
+salience 50000
+ when
+  	$o: MyObject(aboutToBeRetracted == true)
+ then
+    op.op3($o);
+end
