@@ -1,0 +1,24 @@
+package ddu.test;
+import ooo.connector.BootstrapSocketConnector;
+
+public class FirstUnoContact {
+
+	public static void main(String[] args) {
+		try {
+			// get the remote office component context
+			//com.sun.star.uno.XComponentContext xContext = com.sun.star.comp.helper.Bootstrap.bootstrap();
+			String oooExeFolder = "C:/Program Files (x86)/OpenOffice 4/program";
+			com.sun.star.uno.XComponentContext xContext = BootstrapSocketConnector.bootstrap(oooExeFolder);
+			System.out.println("Connected to a running office ...");
+
+			com.sun.star.lang.XMultiComponentFactory xMCF = xContext.getServiceManager();
+
+			String available = (xMCF != null ? "available" : "not available");
+			System.out.println("remote ServiceManager is " + available);
+		} catch (java.lang.Exception e) {
+			e.printStackTrace();
+		} finally {
+			System.exit(0);
+		}
+	}
+}
