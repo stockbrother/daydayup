@@ -17,7 +17,7 @@ module daydayup { module openstock {
   { 
       /** hello
        */
-      void hello( [in] string sName ) 
+      string hello( [in] string sName ) 
           raises (com::sun::star::connection::NoConnectException, 
                   com::sun::star::connection::ConnectionSetupException, 
                   com::sun::star::lang::IllegalArgumentException); 

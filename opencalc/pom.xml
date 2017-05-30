@@ -90,8 +90,8 @@
 							<workingDirectory>${basedir}</workingDirectory>
 							<arguments>
 								<argument>-BUCR</argument>
-								<argument>-Otarget/openoffice/classes</argument>
-								<argument>-Tdaydayup.openstock.OpenStock</argument>
+								<argument>-O./target/openoffice/classes</argument>
+								<argument>-Tdaydayup.openstock.OpenStock;daydayup.openstock.XOpenStock</argument>
 								<argument>-nD</argument>
 								<argument>${ooo.home}/program/types.rdb</argument>
 								<argument>target/open-stock.rdb</argument>
