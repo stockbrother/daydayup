@@ -1,0 +1,28 @@
+#ifndef __com_sun_star_bridge_XUnoUrlResolver_idl__ 
+#define __com_sun_star_bridge_XUnoUrlResolver_idl__ 
+ 
+#include <com/sun/star/uno/XInterface.idl> 
+#include <com/sun/star/lang/IllegalArgumentException.idl> 
+#include <com/sun/star/connection/ConnectionSetupException.idl> 
+#include <com/sun/star/connection/NoConnectException.idl> 
+ 
+ 
+module daydayup { module openstock {
+ 
+  
+  service OpenStock: com::sun::star::uno::XInterface;
+  
+
+  published interface XOpenStock: com::sun::star::uno::XInterface
+  { 
+      /** hello
+       */
+      void hello( [in] string sName ) 
+          raises (com::sun::star::connection::NoConnectException, 
+                  com::sun::star::connection::ConnectionSetupException, 
+                  com::sun::star::lang::IllegalArgumentException); 
+  }; 
+ 
+}; }; 
+ 
+#endif

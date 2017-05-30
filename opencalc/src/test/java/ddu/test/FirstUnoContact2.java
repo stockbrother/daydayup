@@ -60,7 +60,7 @@ public class FirstUnoContact2 {
 				@Override
 				public void notifyTermination(EventObject eo) {
 					System.out.println("notifyTermination:" + eo.getClass() + "," + eo.Source);
-					reInit();
+					System.exit(0);
 				}
 
 				@Override
@@ -97,12 +97,16 @@ public class FirstUnoContact2 {
 
 			@Override
 			public void disposing(EventObject eo) {
+				if (eo instanceof com.sun.star.document.EventObject) {
+					System.out.println(":com.sun.star.document.EventObject" + eo.getClass() + "," + eo.Source);
+				}
 				System.out.println("modified:" + eo.getClass() + "," + eo.Source);
 			}
 
 			@Override
 			public void notifyEvent(com.sun.star.document.EventObject eo) {
-				System.out.println("modified:" + eo.getClass() + "," + eo.Source);
+
+				System.out.println("Document event:" + eo.getClass() + "," + eo.Source + "," + eo.EventName);
 			}
 		});
 	}

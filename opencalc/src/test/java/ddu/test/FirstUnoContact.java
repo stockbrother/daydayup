@@ -31,13 +31,16 @@ public class FirstUnoContact {
 			
 			XComponentLoader xComponentLoader = (XComponentLoader) UnoRuntime.queryInterface(XComponentLoader.class,
 					desktop);
-			XComponent xComponent = xComponentLoader.loadComponentFromURL("private:factory/scalc", "_blank", 0, null);
+			//XComponent xComponent = xComponentLoader.loadComponentFromURL("private:factory/scalc", "_blank", 0, null);
+			XComponent xComponent = xComponentLoader.loadComponentFromURL("file:///D:/git/daydayup/stocks/Address_Book_Spreadsheet.ods", "_blank", 0, null);
+			
 			XSpreadsheetDocument xSpreadsheetDocument = (XSpreadsheetDocument) UnoRuntime
 					.queryInterface(XSpreadsheetDocument.class, xComponent);
 
 			// Cast to interface XModifyBroadcaster to attach listener
 			final XModifyBroadcaster messageHost = (XModifyBroadcaster) UnoRuntime
 					.queryInterface(XModifyBroadcaster.class, xSpreadsheetDocument);
+			
 			messageHost.addModifyListener(new XModifyListener() {
 				public void modified(EventObject eo) {
 

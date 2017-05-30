@@ -7,13 +7,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Open Stock</name>
-	<description></description>	
+	<description></description>
 	<properties>
+		<ooo.home>C:/Program Files (x86)/OpenOffice 4</ooo.home>
 		<log4j.version>2.5</log4j.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 	<repositories>
-		
+
 	</repositories>
 	<build>
 
@@ -29,13 +30,75 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>				
+				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
 				<configuration>
+					<includes>
+						<include>target/openoffice/classes</include>
+					</includes>
 					<source>1.7</source>
 					<target>1.7</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<id>idlc</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${ooo.home}/sdk/bin/idlc</executable>
+							<workingDirectory>${basedir}</workingDirectory>
+							<arguments>
+								<argument>-C</argument>
+								<argument>-Otarget</argument>
+								<argument>-I${ooo.home}/sdk/idl</argument>
+								<argument>src/openoffice/open-stock.idl</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>regmerge</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${ooo.home}/program/regmerge</executable>
+							<workingDirectory>${basedir}</workingDirectory>
+							<arguments>
+								<argument>target/open-stock.rdb</argument>
+								<argument>/UCR</argument>
+								<argument>target/open-stock.urd</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>javamaker</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${ooo.home}/sdk/bin/javamaker</executable>
+							<workingDirectory>${basedir}</workingDirectory>
+							<arguments>
+								<argument>-BUCR</argument>
+								<argument>-Otarget/openoffice/classes</argument>
+								<argument>-Tdaydayup.openstock.OpenStock</argument>
+								<argument>-nD</argument>
+								<argument>${ooo.home}/program/types.rdb</argument>
+								<argument>target/open-stock.rdb</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 
