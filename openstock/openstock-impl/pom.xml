@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.daydayup</groupId>
+	<groupId>daydayup.openstock</groupId>
 	<artifactId>openstock-impl</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -14,10 +14,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<properties>
-		<ooo.home>C:/Program Files (x86)/OpenOffice 4</ooo.home>
-		<log4j.version>2.5</log4j.version>
-		<junit.version>4.12</junit.version>
+	<properties>		
 		<RegistrationClassName>daydayup.openstock.OpenStockImpl</RegistrationClassName>
 	</properties>
 	<repositories>
@@ -25,6 +22,32 @@
 	</repositories>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>daydayup.openstock</groupId>
+									<artifactId>openstock-idl</artifactId>
+									<version>${openstock.version}</version>
+									<type>jar</type>
+									<includes>META-INF/openoffice/*</includes>									
+									<outputDirectory>target/openoffice</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>

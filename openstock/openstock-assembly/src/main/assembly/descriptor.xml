@@ -1,0 +1,36 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+	<id>openstock-assembly</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>${basedir}/src/main/oxt</directory>
+			<includes>
+				<include>**/*.*</include>
+			</includes>
+			<outputDirectory>/</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+	<dependencySets>
+
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<scope>runtime</scope>
+			<excludes>
+				<exclude>org.openoffice:juh</exclude>
+				<exclude>org.openoffice:jurt</exclude>
+				<exclude>org.openoffice:ridl</exclude>
+				<exclude>org.openoffice:unoil</exclude>
+			</excludes>
+		</dependencySet>
+	</dependencySets>
+
+</assembly>

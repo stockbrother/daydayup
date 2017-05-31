@@ -13,11 +13,11 @@
 		<artifactId>parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<properties>		
+	<properties>
 	</properties>
 	<build>
-		
-		<plugins>			
+
+		<plugins>
 			<plugin>
 				<artifactId>exec-maven-plugin</artifactId>
 				<groupId>org.codehaus.mojo</groupId>
@@ -80,14 +80,42 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<!-- Copy resources to classes/META-INF/openoffice -->
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/classes/META-INF/openoffice</outputDirectory>
+							<resources>
+								<resource>
+									<directory>target/openoffice</directory>
+									<includes>
+										<include>openstock.rdb</include>
+										<include>openstock.urd</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 
 
 	</build>
 
 	<dependencies>
-		
+
 	</dependencies>
 
 </project>

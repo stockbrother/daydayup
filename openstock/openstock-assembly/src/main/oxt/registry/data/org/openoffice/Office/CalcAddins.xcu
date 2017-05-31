@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" oor:name="CalcAddIns"
+	oor:package="org.openoffice.Office">
+	<node oor:name="AddInInfo">
+		<node oor:name="daydayup.openstock.CalcAddIn" oor:op="replace">
+			<node oor:name="AddInFunctions">
+				<node oor:name="getMyFirstValue" oor:op="replace">
+					<prop oor:name="DisplayName">
+						<value xml:lang="en">getMyFirstValue</value>
+					</prop>
+					<prop oor:name="Description">
+						<value />
+					</prop>
+					<prop oor:name="Category">
+						<value>Add-In</value>
+					</prop>
+					<prop oor:name="CompatibilityName">
+						<value />
+					</prop>
+					<node oor:name="Parameters">
+						<node oor:name="xOptions" oor:op="replace">
+							<prop oor:name="DisplayName">
+								<value xml:lang="en">xOptions</value>
+							</prop>
+							<prop oor:name="Description">
+								<value />
+							</prop>
+						</node>
+					</node>
+				</node>
+				<node oor:name="getMySecondValue" oor:op="replace">
+					<prop oor:name="DisplayName">
+						<value xml:lang="en">getMySecondValue</value>
+					</prop>
+					<prop oor:name="Description">
+						<value />
+					</prop>
+					<prop oor:name="Category">
+						<value>Add-In</value>
+					</prop>
+					<prop oor:name="CompatibilityName">
+						<value />
+					</prop>
+					<node oor:name="Parameters">
+						<node oor:name="xOptions" oor:op="replace">
+							<prop oor:name="DisplayName">
+								<value xml:lang="en">xOptions</value>
+							</prop>
+							<prop oor:name="Description">
+								<value />
+							</prop>
+						</node>
+						<node oor:name="intDummy" oor:op="replace">
+							<prop oor:name="DisplayName">
+								<value xml:lang="en">intDummy</value>
+							</prop>
+							<prop oor:name="Description">
+								<value />
+							</prop>
+						</node>
+					</node>
+				</node>
+				<node oor:name="hello" oor:op="replace">
+					<prop oor:name="DisplayName">
+						<value xml:lang="en">Hello</value>
+					</prop>
+					<prop oor:name="Description">
+						<value />
+					</prop>
+					<prop oor:name="Category">
+						<value>Add-In</value>
+					</prop>
+					<prop oor:name="CompatibilityName">
+						<value />
+					</prop>
+					<node oor:name="Parameters">
+						<node oor:name="xOptions" oor:op="replace">
+							<prop oor:name="DisplayName">
+								<value xml:lang="en">xOptions</value>
+							</prop>
+							<prop oor:name="Description">
+								<value />
+							</prop>
+						</node>
+						<node oor:name="sName" oor:op="replace">
+							<prop oor:name="DisplayName">
+								<value xml:lang="en">xName</value>
+							</prop>
+							<prop oor:name="Description">
+								<value />
+							</prop>
+						</node>
+					</node>
+				</node>
+			</node>
+		</node>
+	</node>
+</oor:component-data>

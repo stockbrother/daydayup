@@ -1,5 +1,6 @@
 package daydayup.openstock;
 
+import com.sun.star.beans.XPropertySet;
 import com.sun.star.comp.loader.FactoryHelper;
 import com.sun.star.connection.ConnectionSetupException;
 import com.sun.star.connection.NoConnectException;
@@ -70,8 +71,20 @@ public class OpenStockImpl extends com.sun.star.lib.uno.helper.WeakBase
 	}
 
 	@Override
-	public String hello(String arg0) throws NoConnectException, ConnectionSetupException, IllegalArgumentException {
+	public String hello(XPropertySet arg0, String xName)
+			throws NoConnectException, ConnectionSetupException, IllegalArgumentException {
 		return "Hello " + arg0;
+	}
+
+	@Override
+	public int getMyFirstValue(XPropertySet arg0) {
+		return (int) 1;
+	}
+
+	@Override
+	public int getMySecondValue(XPropertySet arg0, int arg1) {
+		// TODO Auto-generated method stub
+		return 2 + arg1;
 	}
 
 }

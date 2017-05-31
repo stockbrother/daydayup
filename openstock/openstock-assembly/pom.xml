@@ -5,9 +5,9 @@
 	<groupId>org.daydayup</groupId>
 	<artifactId>openstock-assembly</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>zip</packaging>
-	<name>Open Stock IMPL</name>
+	<name>Open Stock Assembly</name>
 	<description></description>
+	<packaging>jar</packaging>
 	<parent>
 		<groupId>daydayup.openstock</groupId>
 		<artifactId>parent</artifactId>
@@ -15,16 +15,30 @@
 	</parent>
 
 	<properties>
-		<ooo.home>C:/Program Files (x86)/OpenOffice 4</ooo.home>
-		<log4j.version>2.5</log4j.version>
-		<junit.version>4.12</junit.version>
-		<RegistrationClassName>daydayup.openstock.OpenStockImpl</RegistrationClassName>
 	</properties>
-	<repositories>
-
-	</repositories>
 	<build>
-		<plugins>			
+		
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<finalName>openstock.oxt</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>src/main/assembly/descriptor.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -34,13 +48,13 @@
 			<artifactId>openstock-idl</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>daydayup.openstock</groupId>
 			<artifactId>openstock-impl</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 	</dependencies>
 
 </project>
