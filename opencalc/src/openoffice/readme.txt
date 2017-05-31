@@ -1,1 +1,0 @@
-regcomp -register -r open-stock.rdb -br services.rdb -br types.rdb -l com.sun.star.loader.Java -c "file:///c:/Program Files (x86)/OpenOffice 4/program/classes/openstock.jar" 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.daydayup</groupId>
+	<artifactId>openstock-assembly</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>zip</packaging>
+	<name>Open Stock IMPL</name>
+	<description></description>
+	<parent>
+		<groupId>daydayup.openstock</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<ooo.home>C:/Program Files (x86)/OpenOffice 4</ooo.home>
+		<log4j.version>2.5</log4j.version>
+		<junit.version>4.12</junit.version>
+		<RegistrationClassName>daydayup.openstock.OpenStockImpl</RegistrationClassName>
+	</properties>
+	<repositories>
+
+	</repositories>
+	<build>
+		<plugins>			
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>daydayup.openstock</groupId>
+			<artifactId>openstock-idl</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>daydayup.openstock</groupId>
+			<artifactId>openstock-impl</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+	</dependencies>
+
+</project>
+
+
+
+
+
+
+
+

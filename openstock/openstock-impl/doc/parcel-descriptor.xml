@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<parcel language="Java" xmlns:parcel="scripting.dtd">
+	<script language="Java">
+		<locale lang="en">
+			<displayname value="OpenStock" />
+			<description>
+				Prints "Open Stock".
+			</description>
+		</locale>
+		<functionname value="daydayup.macro.OpenStock.helloWorld" />
+		<logicalname value="daydayup.macro.OpenStock.helloWorld" />
+		<languagedepprops>
+			<prop name="classpath" value="openstock-0.0.1-SNAPSHOT.jar" />
+		</languagedepprops>
+	</script>
+</parcel>
