@@ -7,16 +7,14 @@ import com.sun.star.uno.XComponentContext;
 
 public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.frame.XDispatchProvider,
 		com.sun.star.frame.XDispatch, com.sun.star.lang.XInitialization, XServiceInfo {
-	private final XComponentContext m_xContext;
-	private com.sun.star.frame.XFrame m_xFrame;
+	private final XComponentContext xContext;
+	private com.sun.star.frame.XFrame xFrame;
 
 	public static final String SERVICE_NAME = "com.sun.star.frame.ProtocolHandler";
 	private static final String PROTOCOL = "daydayup.openstock.command:";
-	
-	
-	
+
 	public ProtocolHandlerImpl(XComponentContext context) {
-		m_xContext = context;
+		xContext = context;
 	};
 
 	@Override
@@ -68,10 +66,12 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 		if (aURL.Protocol.compareTo(PROTOCOL) == 0) {
 			if (aURL.Path.compareTo("ShowAboutCommand") == 0) {
 				// add your own code here
+				MessageBoxUtil.showMessageBox(this.xContext, this.xFrame, "A Message", "aURL:" + aURL.Complete);
 				return;
 			}
 			if (aURL.Path.compareTo("MySecondCommand") == 0) {
 				// add your own code here
+				MessageBoxUtil.showMessageBox(this.xContext, this.xFrame, "A Message", "aURL:" + aURL.Complete);
 				return;
 			}
 		}
@@ -90,10 +90,9 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	// com.sun.star.lang.XInitialization:
 	@Override
 	public void initialize(Object[] object) throws com.sun.star.uno.Exception {
-		if (object.length > 0) {
-			m_xFrame = (com.sun.star.frame.XFrame) UnoRuntime.queryInterface(com.sun.star.frame.XFrame.class,
-					object[0]);			
-		}
+
+		xFrame = (com.sun.star.frame.XFrame) UnoRuntime.queryInterface(com.sun.star.frame.XFrame.class, object[0]);
+
 	}
 
 }
