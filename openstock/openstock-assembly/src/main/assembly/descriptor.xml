@@ -16,7 +16,12 @@
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 	</fileSets>
-
+	<files>
+		<file>
+			<source>target/unpacked/META-INF/openoffice/openstock.rdb</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+	</files>
 	<dependencySets>
 
 		<dependencySet>
