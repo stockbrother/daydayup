@@ -21,6 +21,10 @@
 			<source>target/unpacked/META-INF/openoffice/openstock.rdb</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
+		<file>
+			<source>target/openstock-impl-${project.version}.jar</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
 	</files>
 	<dependencySets>
 

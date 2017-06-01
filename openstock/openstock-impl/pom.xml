@@ -14,7 +14,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<properties>		
+	<properties>
 		<RegistrationClassName>daydayup.openstock.ServiceRegistraction</RegistrationClassName>
 	</properties>
 	<repositories>
@@ -38,10 +38,10 @@
 								<artifactItem>
 									<groupId>daydayup.openstock</groupId>
 									<artifactId>openstock-idl</artifactId>
-									<version>${openstock.version}</version>
+									<version>${project.version}</version>
 									<type>jar</type>
-									<includes>META-INF/openoffice/*</includes>									
-									<outputDirectory>target/openoffice</outputDirectory>
+									<includes>META-INF/openoffice/openstock.rdb</includes>
+									<outputDirectory>target/unpacked</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -61,6 +61,26 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<finalName>openstock.oxt</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptors>
+						<descriptor>src/main/assembly/descriptor.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
