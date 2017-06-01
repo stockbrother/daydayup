@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" oor:name="Addons"
+	oor:package="org.openoffice.Office">
+	<node oor:name="AddonUI">
+		<node oor:name="OfficeMenuBar">
+			<node oor:name="daydayup.openstock.CommandService" oor:op="replace">
+				<prop oor:name="Title" oor:type="xs:string">
+					<value />
+					<value xml:lang="en">OStock</value>
+				</prop>
+				<prop oor:name="Target" oor:type="xs:string">
+					<value>_self</value>
+				</prop>
+				<prop oor:name="ImageIdentifier" oor:type="xs:string">
+					<value />
+				</prop>
+				<node oor:name="Submenu">
+					<node oor:name="m1" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value>daydayup.openstock.command:ShowAboutCommand</value>
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Context" oor:type="xs:string">
+							<value>com.sun.star.sheet.SpreadsheetDocument</value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">About</value>
+						</prop>
+					</node>
+					<node oor:name="m2" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">Menu1</value>
+						</prop>
+						<node oor:name="Submenu">
+							<node oor:name="m3" oor:op="replace">
+								<prop oor:name="URL" oor:type="xs:string">
+									<value>daydayup.openstock.command:MySecondCommand</value>
+								</prop>
+								<prop oor:name="ImageIdentifier" oor:type="xs:string">
+									<value />
+								</prop>
+								<prop oor:name="Target" oor:type="xs:string">
+									<value>_self</value>
+								</prop>
+								<prop oor:name="Context" oor:type="xs:string">
+									<value><![CDATA[com.sun.star.chart.ChartDocument,com.sun.star.formula.FormulaProperties,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.GlobalDocument]]></value>
+								</prop>
+								<prop oor:name="Title" oor:type="xs:string">
+									<value />
+									<value xml:lang="en">My Second Command</value>
+								</prop>
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</node>
+		<node oor:name="OfficeToolBar">
+			<node oor:name="daydayup.openstock.command" oor:op="replace">
+				<prop oor:name="Title" oor:type="xs:string" oor:localized="true">
+					<value xml:lang="en">Dummy</value>
+				</prop>
+				<node oor:name="ToolBarItems">
+					<node oor:name="m1" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value>daydayup.openstock.command:ShowAboutCommand</value>
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Context" oor:type="xs:string">
+							<value>com.sun.star.sheet.SpreadsheetDocument</value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">About</value>
+						</prop>
+					</node>
+					<node oor:name="m2" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value>daydayup.openstock.command:MySecondCommand</value>
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Context" oor:type="xs:string">
+							<value><![CDATA[com.sun.star.chart.ChartDocument,com.sun.star.formula.FormulaProperties,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.GlobalDocument]]></value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">My Second Command</value>
+						</prop>
+					</node>
+				</node>
+			</node>
+		</node>
+		<node oor:name="Images">
+			<node oor:name="daydayup.openstock.command.ShowAboutCommand.images"
+				oor:op="replace">
+				<prop oor:name="URL" oor:type="xs:string">
+					<value>daydayup.openstock.command:ShowAboutCommand</value>
+				</prop>
+				<node oor:name="UserDefinedImages">
+					<prop oor:name="ImageSmallURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageSmallHCURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigHCURL">
+						<value />
+					</prop>
+				</node>
+			</node>
+			<node oor:name="daydayup.openstock.command.MySecondCommand.images"
+				oor:op="replace">
+				<prop oor:name="URL" oor:type="xs:string">
+					<value>daydayup.openstock.command:MySecondCommand</value>
+				</prop>
+				<node oor:name="UserDefinedImages">
+					<prop oor:name="ImageSmallURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageSmallHCURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigHCURL">
+						<value />
+					</prop>
+				</node>
+			</node>
+		</node>
+	</node>
+</oor:component-data>

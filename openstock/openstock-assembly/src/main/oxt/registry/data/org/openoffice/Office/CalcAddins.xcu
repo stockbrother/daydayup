@@ -3,11 +3,11 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" oor:name="CalcAddIns"
 	oor:package="org.openoffice.Office">
 	<node oor:name="AddInInfo">
-		<node oor:name="daydayup.openstock.OpenStock" oor:op="replace">
+		<node oor:name="daydayup.openstock.FunctionService" oor:op="replace">
 			<node oor:name="AddInFunctions">
-				<node oor:name="getMyFirstValue" oor:op="replace">
+				<node oor:name="osFirst" oor:op="replace">
 					<prop oor:name="DisplayName">
-						<value xml:lang="en">getMyFirstValue</value>
+						<value xml:lang="en">osfirst</value>
 					</prop>
 					<prop oor:name="Description">
 						<value />
@@ -29,9 +29,9 @@
 						</node>
 					</node>
 				</node>
-				<node oor:name="getMySecondValue" oor:op="replace">
+				<node oor:name="osSecond" oor:op="replace">
 					<prop oor:name="DisplayName">
-						<value xml:lang="en">getMySecondValue</value>
+						<value xml:lang="en">ossecond</value>
 					</prop>
 					<prop oor:name="Description">
 						<value />

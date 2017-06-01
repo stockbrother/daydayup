@@ -5,14 +5,14 @@
 
 module daydayup { module openstock {
 
-  published interface XOpenStock
+  published interface XFunctions
   {       
-      long getMyFirstValue([in] com::sun::star::beans::XPropertySet xOptions);
+      long osFirst([in] com::sun::star::beans::XPropertySet xOptions);
 
-      long getMySecondValue([in] com::sun::star::beans::XPropertySet xOptions, [in] long intDummy);             
+      long osSecond([in] com::sun::star::beans::XPropertySet xOptions, [in] long intDummy);             
   }; 
-
-  service OpenStock: XOpenStock;
+ 
+  service FunctionService: XFunctions;
  
 }; }; 
  

@@ -1,6 +1,6 @@
 package ddu.test;
 
-import daydayup.openstock.OpenStockImpl;
+import daydayup.openstock.ServiceRegistraction;
 
 public class Tmp {
 	public static void main(String[] args) throws Exception {
@@ -28,8 +28,8 @@ public class Tmp {
 	public static void test() throws Exception {
 		com.sun.star.comp.servicemanager.ServiceManager sm = new com.sun.star.comp.servicemanager.ServiceManager();
 		//sm.insert(OpenStockImpl.__getServiceFactory(OpenStockImpl.class.getName(), sm, null));
-		Object serObj = sm.createInstance(OpenStockImpl.__serviceName);
-		System.out.println(serObj);//
+		//Object serObj = sm.createInstance(OpenStockImpl.__serviceName);
+		//System.out.println(serObj);//
 	}
 	
 }

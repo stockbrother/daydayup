@@ -14,6 +14,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<properties>
+		<javamaker.t>daydayup.openstock.XFunctions;daydayup.openstock.FunctionService</javamaker.t>
 	</properties>
 	<build>
 
@@ -71,7 +72,7 @@
 							<arguments>
 								<argument>-BUCR</argument>
 								<argument>-O./target/classes</argument>
-								<argument>-Tdaydayup.openstock.OpenStock;daydayup.openstock.XOpenStock</argument>
+								<argument>-T${javamaker.t}</argument>
 								<argument>-nD</argument>
 								<argument>${ooo.home}/program/types.rdb</argument>
 								<argument>target/openoffice/openstock.rdb</argument>
@@ -93,7 +94,7 @@
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
-						<configuration>							
+						<configuration>
 							<resources>
 								<resource>
 									<directory>target/openoffice</directory>
@@ -115,7 +116,7 @@
 				<configuration>
 					<archive>
 						<index>true</index>
-						<manifestEntries>							
+						<manifestEntries>
 							<UNO-Type-Path><![CDATA[<>]]></UNO-Type-Path>
 						</manifestEntries>
 					</archive>

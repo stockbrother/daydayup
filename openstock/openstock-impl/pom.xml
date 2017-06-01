@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>		
-		<RegistrationClassName>daydayup.openstock.OpenStockImpl</RegistrationClassName>
+		<RegistrationClassName>daydayup.openstock.ServiceRegistraction</RegistrationClassName>
 	</properties>
 	<repositories>
 
@@ -58,9 +58,6 @@
 						<manifestEntries>
 							<RegistrationClassName>${RegistrationClassName}</RegistrationClassName>
 							<UNO-Type-Path>openstock-idl-0.0.1-SNAPSHOT.jar</UNO-Type-Path>
-							<RegistrationClasses>${RegistrationClassName}</RegistrationClasses>
-							<Class-Path></Class-Path>
-							<Name>daydayup/openstock/OpenStockImpl.class</Name>
 						</manifestEntries>
 					</archive>
 				</configuration>
