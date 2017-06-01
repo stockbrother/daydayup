@@ -1,5 +1,8 @@
 package daydayup.openstock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.lib.uno.helper.WeakBase;
 import com.sun.star.uno.UnoRuntime;
@@ -12,6 +15,7 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 
 	public static final String SERVICE_NAME = "com.sun.star.frame.ProtocolHandler";
 	private static final String PROTOCOL = "daydayup.openstock.command:";
+	private static final Logger LOG = LoggerFactory.getLogger(ProtocolHandlerImpl.class);
 
 	public ProtocolHandlerImpl(XComponentContext context) {
 		xContext = context;
@@ -38,6 +42,9 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	@Override
 	public com.sun.star.frame.XDispatch queryDispatch(com.sun.star.util.URL aURL, String sTargetFrameName,
 			int iSearchFlags) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("queryDispatch({},{},{})", aURL, sTargetFrameName, iSearchFlags);
+		}
 		if (aURL.Protocol.compareTo(PROTOCOL) == 0) {
 			if (aURL.Path.compareTo("ShowAboutCommand") == 0)
 				return this;
@@ -50,6 +57,9 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	// com.sun.star.frame.XDispatchProvider:
 	@Override
 	public com.sun.star.frame.XDispatch[] queryDispatches(com.sun.star.frame.DispatchDescriptor[] seqDescriptors) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("queryDispatches({})", (Object) seqDescriptors);
+		}
 		int nCount = seqDescriptors.length;
 		com.sun.star.frame.XDispatch[] seqDispatcher = new com.sun.star.frame.XDispatch[seqDescriptors.length];
 
@@ -63,6 +73,9 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	// com.sun.star.frame.XDispatch:
 	@Override
 	public void dispatch(com.sun.star.util.URL aURL, com.sun.star.beans.PropertyValue[] aArguments) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("dispatch({},{})", aURL, (Object) aArguments);
+		}
 		if (aURL.Protocol.compareTo(PROTOCOL) == 0) {
 			if (aURL.Path.compareTo("ShowAboutCommand") == 0) {
 				// add your own code here
@@ -90,7 +103,9 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	// com.sun.star.lang.XInitialization:
 	@Override
 	public void initialize(Object[] object) throws com.sun.star.uno.Exception {
-
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("initialize({})", (Object) object);
+		}
 		xFrame = (com.sun.star.frame.XFrame) UnoRuntime.queryInterface(com.sun.star.frame.XFrame.class, object[0]);
 
 	}

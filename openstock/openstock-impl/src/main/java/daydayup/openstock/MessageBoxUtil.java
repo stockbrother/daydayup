@@ -1,5 +1,8 @@
 package daydayup.openstock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.MessageBoxType;
 import com.sun.star.awt.Rectangle;
 import com.sun.star.awt.WindowAttribute;
@@ -16,7 +19,9 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 public class MessageBoxUtil {
-
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MessageBoxUtil.class);
+	
 	public static void showMessageBox(XComponentContext context, XFrame xFrame, String title, String text) {
 		WindowDescriptor wd = new WindowDescriptor();
 		wd.Type = WindowClass.MODALTOP;

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] [%-5p] [%t] %C{10} (%F:%L) - %m%n" />
+		</Console>
+		<!-- ${sys:openstock.data.dir} -->
+		<RollingFile name="FILE"
+			fileName="c:/openstock/log/openstock-oxt.log" filePattern="yyyyMMddHHmmssSSS">
+			<PatternLayout
+				pattern="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] [%-5p] [%t] %C{10} (%F:%L) - %m%n" />
+			<CronTriggeringPolicy />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="daydayup.openstock" level="trace" />		
+		<Root level="info">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="FILE" />
+		</Root>
+	</Loggers>
+</Configuration>
