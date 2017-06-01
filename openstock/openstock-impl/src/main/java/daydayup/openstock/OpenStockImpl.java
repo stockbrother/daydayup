@@ -6,7 +6,9 @@ import com.sun.star.connection.ConnectionSetupException;
 import com.sun.star.connection.NoConnectException;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.lang.XSingleComponentFactory;
 import com.sun.star.lang.XSingleServiceFactory;
+import com.sun.star.lib.uno.helper.Factory;
 import com.sun.star.registry.XRegistryKey;
 import com.sun.star.uno.XComponentContext;
 
@@ -24,7 +26,10 @@ public class OpenStockImpl extends com.sun.star.lib.uno.helper.WeakBase
 		implements com.sun.star.lang.XServiceInfo, XOpenStock {
 	public static final String __serviceName = "daydayup.openstock.OpenStock";
 
+	private final XComponentContext xContext;
+
 	// EntryPoint of the component.
+	/**
 	public static XSingleServiceFactory __getServiceFactory(String implName, XMultiServiceFactory multiFactory,
 			com.sun.star.registry.XRegistryKey regKey) {
 
@@ -37,20 +42,30 @@ public class OpenStockImpl extends com.sun.star.lib.uno.helper.WeakBase
 
 		return xSingleServiceFactory;
 	}
+*/
+	// ??
+	public static XSingleComponentFactory __getComponentFactory(String sImplementationName) {
+		XSingleComponentFactory xFactory = null;
+
+		if (sImplementationName.equals(OpenStockImpl.class.getName())) {
+			xFactory = Factory.createComponentFactory(OpenStockImpl.class, new String[] { __serviceName });
+		}
+		return xFactory;
+	}
 
 	// EntryPoint of Registry
 	// Use tools such as regcomp to register a component. This tool takes the
 	// path to the jar file containing the component as an argument.
 	public static boolean __writeRegistryServiceInfo(XRegistryKey regKey) {
 
-		return FactoryHelper.writeRegistryServiceInfo(OpenStockImpl.class.getName(), __serviceName, regKey);
+		return Factory.writeRegistryServiceInfo(OpenStockImpl.class.getName(), new String[] { __serviceName }, regKey);
 	}
 
 	// see:
 	// https://wiki.openoffice.org/wiki/Documentation/DevGuide/WritingUNO/Create_Instance_with_Arguments
 
-	public OpenStockImpl(XComponentContext xCompContext, XRegistryKey xRegKey, Object[] args) {
-
+	public OpenStockImpl(XComponentContext xCompContext) {
+		this.xContext = xCompContext;
 	}
 
 	@Override
@@ -68,12 +83,6 @@ public class OpenStockImpl extends com.sun.star.lib.uno.helper.WeakBase
 	@Override
 	public boolean supportsService(String serviceName) {
 		return serviceName.equals(__serviceName);
-	}
-
-	@Override
-	public String hello(XPropertySet arg0, String xName)
-			throws NoConnectException, ConnectionSetupException, IllegalArgumentException {
-		return "Hello " + arg0;
 	}
 
 	@Override

@@ -1,30 +1,18 @@
-#ifndef __com_sun_star_bridge_XUnoUrlResolver_idl__ 
-#define __com_sun_star_bridge_XUnoUrlResolver_idl__ 
+#ifndef __daydayup_openstock_OpenStock_idl__ 
+#define __daydayup_openstock_OpenStock_idl__ 
  
-#include <com/sun/star/uno/XInterface.idl> 
-#include <com/sun/star/lang/IllegalArgumentException.idl> 
-#include <com/sun/star/connection/ConnectionSetupException.idl> 
-#include <com/sun/star/connection/NoConnectException.idl> 
 #include <com/sun/star/beans/XPropertySet.idl>
- 
-module daydayup { module openstock {
- 
-  
-  service OpenStock: com::sun::star::uno::XInterface;
-  
 
-  published interface XOpenStock: com::sun::star::uno::XInterface
-  { 
-      /** hello
-       */
-      string hello([in] com::sun::star::beans::XPropertySet xOptions, [in] string sName ) 
-          raises (com::sun::star::connection::NoConnectException, 
-                  com::sun::star::connection::ConnectionSetupException, 
-                  com::sun::star::lang::IllegalArgumentException);
+module daydayup { module openstock {
+
+  published interface XOpenStock
+  {       
       long getMyFirstValue([in] com::sun::star::beans::XPropertySet xOptions);
 
       long getMySecondValue([in] com::sun::star::beans::XPropertySet xOptions, [in] long intDummy);             
   }; 
+
+  service OpenStock: XOpenStock;
  
 }; }; 
  

@@ -27,7 +27,7 @@ public class Tmp {
 
 	public static void test() throws Exception {
 		com.sun.star.comp.servicemanager.ServiceManager sm = new com.sun.star.comp.servicemanager.ServiceManager();
-		sm.insert(OpenStockImpl.__getServiceFactory(OpenStockImpl.class.getName(), sm, null));
+		//sm.insert(OpenStockImpl.__getServiceFactory(OpenStockImpl.class.getName(), sm, null));
 		Object serObj = sm.createInstance(OpenStockImpl.__serviceName);
 		System.out.println(serObj);//
 	}

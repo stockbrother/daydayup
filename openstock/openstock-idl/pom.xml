@@ -89,12 +89,11 @@
 					<execution>
 						<id>copy-resources</id>
 						<!-- here the phase you need -->
-						<phase>validate</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
-						<configuration>
-							<outputDirectory>target/classes/META-INF/openoffice</outputDirectory>
+						<configuration>							
 							<resources>
 								<resource>
 									<directory>target/openoffice</directory>
@@ -104,11 +103,24 @@
 									</includes>
 								</resource>
 							</resources>
+							<outputDirectory>target/classes/META-INF/openoffice</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<index>true</index>
+						<manifestEntries>							
+							<UNO-Type-Path><![CDATA[<>]]></UNO-Type-Path>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 
 
