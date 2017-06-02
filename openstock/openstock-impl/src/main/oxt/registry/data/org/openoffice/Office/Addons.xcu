@@ -69,6 +69,113 @@
 							</node>
 						</node>
 					</node>
+					<node oor:name="m5" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">cninfo.com.cn</value>
+						</prop>
+						<node oor:name="Submenu">
+							<node oor:name="m5-1" oor:op="replace">
+								<prop oor:name="URL" oor:type="xs:string">
+									<value>daydayup.openstock.command:CorpInfoRefreshCommand</value>
+								</prop>
+								<prop oor:name="ImageIdentifier" oor:type="xs:string">
+									<value />
+								</prop>
+								<prop oor:name="Target" oor:type="xs:string">
+									<value>_self</value>
+								</prop>
+								<prop oor:name="Context" oor:type="xs:string">
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
+								</prop>
+								<prop oor:name="Title" oor:type="xs:string">
+									<value />
+									<value xml:lang="en">Corp-Info-Refresh</value>
+								</prop>
+							</node>
+							
+						</node>
+					</node>
+					<node oor:name="m6" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">163.com</value>
+						</prop>
+						<node oor:name="Submenu">
+							<node oor:name="m6-1" oor:op="replace">
+								<prop oor:name="URL" oor:type="xs:string">
+									<value>daydayup.openstock.command:NeteaseDataDownloadCommand</value>
+								</prop>
+								<prop oor:name="ImageIdentifier" oor:type="xs:string">
+									<value />
+								</prop>
+								<prop oor:name="Target" oor:type="xs:string">
+									<value>_self</value>
+								</prop>
+								<prop oor:name="Context" oor:type="xs:string">
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
+								</prop>
+								<prop oor:name="Title" oor:type="xs:string">
+									<value />
+									<value xml:lang="en">Netease-Data-Download</value>
+								</prop>
+							</node>
+							<node oor:name="m6-2" oor:op="replace">
+								<prop oor:name="URL" oor:type="xs:string">
+									<value>daydayup.openstock.command:NeteaseDataPreprocCommand</value>
+								</prop>
+								<prop oor:name="ImageIdentifier" oor:type="xs:string">
+									<value />
+								</prop>
+								<prop oor:name="Target" oor:type="xs:string">
+									<value>_self</value>
+								</prop>
+								<prop oor:name="Context" oor:type="xs:string">
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
+								</prop>
+								<prop oor:name="Title" oor:type="xs:string">
+									<value />
+									<value xml:lang="en">Netease-Data-Preproc</value>
+								</prop>
+							</node>
+							<node oor:name="m6-3" oor:op="replace">
+								<prop oor:name="URL" oor:type="xs:string">
+									<value>daydayup.openstock.command:NeteaseDataLoad2DbCommand</value>
+								</prop>
+								<prop oor:name="ImageIdentifier" oor:type="xs:string">
+									<value />
+								</prop>
+								<prop oor:name="Target" oor:type="xs:string">
+									<value>_self</value>
+								</prop>
+								<prop oor:name="Context" oor:type="xs:string">
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
+								</prop>
+								<prop oor:name="Title" oor:type="xs:string">
+									<value />
+									<value xml:lang="en">Netease-Data-Load2Db</value>
+								</prop>
+							</node>
+						</node>
+					</node>
 				</node>
 			</node>
 		</node>

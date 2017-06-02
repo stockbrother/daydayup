@@ -8,6 +8,11 @@ import com.sun.star.lib.uno.helper.WeakBase;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
+import daydayup.openstock.cninfo.CorpInfoRefreshCommand;
+import daydayup.openstock.netease.NeteaseDataDownloadCommand;
+import daydayup.openstock.netease.NeteaseDataLoad2DbCommand;
+import daydayup.openstock.netease.NeteaseDataPreprocCommand;
+
 public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.frame.XDispatchProvider,
 		com.sun.star.frame.XDispatch, com.sun.star.lang.XInitialization, XServiceInfo {
 	private final XComponentContext xContext;
@@ -46,10 +51,25 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			LOG.trace("queryDispatch({},{},{})", aURL, sTargetFrameName, iSearchFlags);
 		}
 		if (aURL.Protocol.compareTo(PROTOCOL) == 0) {
-			if (aURL.Path.compareTo("ShowAboutCommand") == 0)
+			if (aURL.Path.compareTo("ShowAboutCommand") == 0) {
 				return this;
-			if (aURL.Path.compareTo("MySecondCommand") == 0)
+			}
+			if (aURL.Path.compareTo("MySecondCommand") == 0) {
 				return this;
+			}
+			if (aURL.Path.compareTo("CorpInfoRefreshCommand") == 0) {
+				return this;
+			}
+			if (aURL.Path.compareTo("NeteaseDataDownloadCommand") == 0) {
+				return this;
+			}
+
+			if (aURL.Path.compareTo("NeteaseDataPreprocCommand") == 0) {
+				return this;
+			}
+			if (aURL.Path.compareTo("NeteaseDataLoad2DbCommand") == 0) {
+				return this;
+			}
 		}
 		return null;
 	}
@@ -85,6 +105,24 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			if (aURL.Path.compareTo("MySecondCommand") == 0) {
 				// add your own code here
 				MessageBoxUtil.showMessageBox(this.xContext, this.xFrame, "A Message", "aURL:" + aURL.Complete);
+				return;
+			}
+			if (aURL.Path.compareTo("CorpInfoRefreshCommand") == 0) {
+				new CorpInfoRefreshCommand().execute();
+				return;
+			}
+			if (aURL.Path.compareTo("NeteaseDataDownloadCommand") == 0) {
+				new NeteaseDataDownloadCommand().execute();
+				return;
+			}
+
+			if (aURL.Path.compareTo("NeteaseDataPreprocCommand") == 0) {
+				new NeteaseDataPreprocCommand().execute();
+				return;
+			}
+			if (aURL.Path.compareTo("NeteaseDataLoad2DbCommand") == 0) {
+				new NeteaseDataLoad2DbCommand().execute();
+				;
 				return;
 			}
 		}
