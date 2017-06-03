@@ -73,6 +73,8 @@ public class NeteaseCollector {
 
 	private String[] types;
 
+	private boolean interrupted;
+
 	public NeteaseCollector(File dir) {
 		this.dir163 = dir;
 	}
@@ -120,6 +122,10 @@ public class NeteaseCollector {
 
 				if (running) {
 					this.collectFor(code);
+				}
+				if (this.interrupted) {
+					LOG.warn("interrupted");//
+					break;
 				}
 			}
 
@@ -237,6 +243,10 @@ public class NeteaseCollector {
 		} finally {
 			response.close();
 		}
+	}
+	
+	public void interrupt(){
+		this.interrupted = true;
 	}
 
 	public NeteaseCollector pauseInterval(long pauseInterval) {
