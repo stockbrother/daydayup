@@ -87,9 +87,15 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			if (aURL.Path.compareTo("NeteaseDataLoad2DbCommand") == 0) {
 				return this;
 			}
-			if (aURL.Path.compareTo("InterruptAllTaskCommand") == 0) {
+			if (aURL.Path.compareTo("NeteaseWashed2SheetCommand") == 0) {
 				return this;
 			}
+			if (aURL.Path.compareTo("InterruptAllTaskCommand") == 0) {
+				return this;
+			}if (aURL.Path.compareTo("CorpsApply2MemoryCommand") == 0) {
+				return this;
+			}
+			
 		}
 		return null;
 	}
@@ -147,10 +153,21 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 				return;
 			}
 			if (aURL.Path.compareTo("InterruptAllTaskCommand") == 0) {
-				this.execute(new InterruptAllTask(this.commandExecutor));
+				this.commandExecutor.interruptAll();
+				return;
+			}
+			if (aURL.Path.compareTo("CorpsApply2MemoryCommand") == 0) {
+				this.execute(new CorpsApply2MemoryCommand());
 				;
 				return;
 			}
+			if (aURL.Path.compareTo("NeteaseWashed2SheetCommand") == 0) {
+				this.execute(new NeteaseWashed2SheetCommand());
+				;
+				return;
+			}
+			
+			
 		}
 	}
 

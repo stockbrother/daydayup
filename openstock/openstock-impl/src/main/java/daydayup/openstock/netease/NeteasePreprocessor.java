@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import daydayup.openstock.executor.Interruptable;
 
 /**
  * Convert original file format to the target format acceptable.
@@ -23,27 +24,35 @@ import au.com.bytecode.opencsv.CSVWriter;
  * @author wu
  *
  */
-public class NeteasePreprocessor {
+public class NeteasePreprocessor implements Interruptable {
 	private static final Logger LOG = LoggerFactory.getLogger(NeteasePreprocessor.class);
 
 	private File sourceDir;
 	private File targetDir;
 
-
 	List<String> types = new ArrayList<>();
+
+	private boolean interrupted;
 
 	public NeteasePreprocessor(File sourceDir, File targetDir) {
 		this.sourceDir = sourceDir;
 		this.targetDir = targetDir;
 	}
-	
-	public NeteasePreprocessor xjllb(){
+
+	public NeteasePreprocessor types(String... types) {
+		for (String type : types) {
+			this.types.add(type);
+		}
+		return this;
+	}
+
+	public NeteasePreprocessor xjllb() {
 		this.types.add("xjllb");
 		return this;
 	}
 
 	public void execute() {
-		try {			
+		try {
 			this.process(this.sourceDir);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -51,11 +60,17 @@ public class NeteasePreprocessor {
 	}
 
 	private void process(File file) throws IOException {
-
+		if (this.interrupted) {
+			LOG.warn("interrupted.");
+			return;
+		}
 		if (file.isFile()) {
 			String name = file.getName();
 			if (!name.endsWith(".csv")) {
 				// ignore
+				if (LOG.isInfoEnabled()) {
+					LOG.info("ignore file:" + file.getAbsolutePath());
+				}
 				return;
 			}
 			String type = null;
@@ -68,6 +83,9 @@ public class NeteasePreprocessor {
 
 			if (type == null) {
 				// ignore
+				if (LOG.isInfoEnabled()) {
+					LOG.info("ignore file:" + file.getAbsolutePath());
+				}
 				return;
 			}
 			String code = name.substring(type.length(), name.length() - ".csv".length());
@@ -107,7 +125,7 @@ public class NeteasePreprocessor {
 		if (!areaDir.exists()) {
 			areaDir.mkdirs();
 		}
-		LOG.info("output file" + output.getAbsolutePath());
+		LOG.info("generating output file:" + output.getAbsolutePath());
 		Charset cs = Charset.forName("GBK");
 		Reader fr = new InputStreamReader(new FileInputStream(file), cs);
 
@@ -147,6 +165,11 @@ public class NeteasePreprocessor {
 			w.writeNext(line);//
 		}
 		w.close();
+	}
+
+	@Override
+	public void interrupt() {
+		this.interrupted = true;
 	}
 
 }

@@ -5,10 +5,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import daydayup.openstock.CommandBase;
 import daydayup.openstock.CommandContext;
 
 public class TaskExecutor {
+
+	private static final Logger LOG = LoggerFactory.getLogger(TaskExecutor.class);
 
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
@@ -77,7 +82,12 @@ public class TaskExecutor {
 
 			@Override
 			public Object call() throws Exception {
-				task.run();
+				try {
+					task.run();
+				} catch (Exception e) {
+					LOG.error("", e);
+				}
+
 				return null;
 			}
 

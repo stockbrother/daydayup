@@ -11,19 +11,17 @@ import com.sun.star.container.XNamed;
 import com.sun.star.frame.XController;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XModel;
-import com.sun.star.lang.IndexOutOfBoundsException;
 import com.sun.star.lang.XComponent;
-import com.sun.star.sheet.XSheetCellCursor;
 import com.sun.star.sheet.XSheetCellRange;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
 import com.sun.star.sheet.XSpreadsheetView;
-import com.sun.star.table.XCell;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XInterface;
 
 import au.com.bytecode.opencsv.CSVReader;
 import daydayup.openstock.CorpNameService;
+import daydayup.openstock.util.DocUtil;
 
 public class CorpInfoLoader {
 
@@ -80,8 +78,8 @@ public class CorpInfoLoader {
 			String code = codes[i];
 			String name = cns.getName(codes[i]);
 
-			setText(xSheet, 0, i, code);
-			setText(xSheet, 1, i, name);
+			DocUtil.setText(xSheet, 0, i, code);
+			DocUtil.setText(xSheet, 1, i, name);
 
 		}
 		Object selected = xModel.getCurrentSelection();
@@ -89,19 +87,4 @@ public class CorpInfoLoader {
 
 	}
 
-	public static void setText(XSpreadsheet xSheet, int col, int row, String text) {
-		try {
-			XCell xCell = xSheet.getCellByPosition(col, row);
-			setText(xCell, text);
-		} catch (IndexOutOfBoundsException e) {
-			throw new RuntimeException(e);
-		}
-
-	}
-
-	public static void setText(XCell xCell, String text) {
-		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);
-		com.sun.star.text.XTextCursor xTextCursor = xCellText.createTextCursor();
-		xCellText.insertString(xTextCursor, text, false);
-	}
 }

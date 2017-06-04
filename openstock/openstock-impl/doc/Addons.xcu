@@ -7,10 +7,10 @@
 			<node oor:name="daydayup.openstock.CommandService" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
 					<value />
-					<value xml:lang="en"><![CDATA[OStock]]></value>
+					<value xml:lang="en">OStock</value>
 				</prop>
 				<prop oor:name="Target" oor:type="xs:string">
-					<value><![CDATA[_self]]></value>
+					<value>_self</value>
 				</prop>
 				<prop oor:name="ImageIdentifier" oor:type="xs:string">
 					<value />
@@ -18,20 +18,20 @@
 				<node oor:name="Submenu">
 					<node oor:name="m001" oor:op="replace">
 						<prop oor:name="URL" oor:type="xs:string">
-							<value><![CDATA[daydayup.openstock.command:ShowAboutCommand]]></value>
+							<value>daydayup.openstock.command:ShowAboutCommand</value>
 						</prop>
 						<prop oor:name="ImageIdentifier" oor:type="xs:string">
 							<value />
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
-							<value><![CDATA[_self]]></value>
+							<value>_self</value>
 						</prop>
 						<prop oor:name="Context" oor:type="xs:string">
-							<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
+							<value>com.sun.star.sheet.SpreadsheetDocument</value>
 						</prop>
 						<prop oor:name="Title" oor:type="xs:string">
 							<value />
-							<value xml:lang="en"><![CDATA[About]]></value>
+							<value xml:lang="en">About</value>
 						</prop>
 					</node>
 
@@ -43,29 +43,29 @@
 							<value />
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
-							<value><![CDATA[_self]]></value>
+							<value>_self</value>
 						</prop>
 						<prop oor:name="Title" oor:type="xs:string">
 							<value />
-							<value xml:lang="en"><![CDATA[Menu1]]></value>
+							<value xml:lang="en">Menu1</value>
 						</prop>
 						<node oor:name="Submenu">
 							<node oor:name="m002001" oor:op="replace">
 								<prop oor:name="URL" oor:type="xs:string">
-									<value><![CDATA[daydayup.openstock.command:MySecondCommand]]></value>
+									<value>daydayup.openstock.command:MySecondCommand</value>
 								</prop>
 								<prop oor:name="ImageIdentifier" oor:type="xs:string">
 									<value />
 								</prop>
 								<prop oor:name="Target" oor:type="xs:string">
-									<value><![CDATA[_self]]></value>
+									<value>_self</value>
 								</prop>
 								<prop oor:name="Context" oor:type="xs:string">
 									<value><![CDATA[com.sun.star.chart.ChartDocument,com.sun.star.formula.FormulaProperties,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.GlobalDocument]]></value>
 								</prop>
 								<prop oor:name="Title" oor:type="xs:string">
 									<value />
-									<value xml:lang="en"><![CDATA[My Second Command]]></value>
+									<value xml:lang="en">My Second Command</value>
 								</prop>
 							</node>
 						</node>
@@ -79,29 +79,30 @@
 							<value />
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
-							<value><![CDATA[_self]]></value>
+							<value>_self</value>
 						</prop>
 						<prop oor:name="Title" oor:type="xs:string">
 							<value />
-							<value xml:lang="en"><![CDATA[cninfo.com.cn]]></value>
+							<value xml:lang="en">cninfo.com.cn</value>
 						</prop>
 						<node oor:name="Submenu">
 							<node oor:name="m003001" oor:op="replace">
 								<prop oor:name="URL" oor:type="xs:string">
-									<value><![CDATA[daydayup.openstock.command:CorpInfoRefreshCommand]]></value>
+									<value>daydayup.openstock.command:CorpInfoRefreshCommand
+									</value>
 								</prop>
 								<prop oor:name="ImageIdentifier" oor:type="xs:string">
 									<value />
 								</prop>
 								<prop oor:name="Target" oor:type="xs:string">
-									<value><![CDATA[_self]]></value>
+									<value>_self</value>
 								</prop>
 								<prop oor:name="Context" oor:type="xs:string">
-									<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
 								</prop>
 								<prop oor:name="Title" oor:type="xs:string">
 									<value />
-									<value xml:lang="en"><![CDATA[Corp-Info-Refresh]]></value>
+									<value xml:lang="en">Corp-Info-Refresh</value>
 								</prop>
 							</node>
 
@@ -116,130 +117,197 @@
 							<value />
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
-							<value><![CDATA[_self]]></value>
+							<value>_self</value>
 						</prop>
 						<prop oor:name="Title" oor:type="xs:string">
 							<value />
-							<value xml:lang="en"><![CDATA[163.com]]></value>
+							<value xml:lang="en">163.com</value>
 						</prop>
 						<node oor:name="Submenu">
 							<node oor:name="m004001" oor:op="replace">
 								<prop oor:name="URL" oor:type="xs:string">
-									<value><![CDATA[daydayup.openstock.command:NeteaseDataDownloadCommand]]></value>
+									<value>daydayup.openstock.command:NeteaseDataDownloadCommand
+									</value>
 								</prop>
 								<prop oor:name="ImageIdentifier" oor:type="xs:string">
 									<value />
 								</prop>
 								<prop oor:name="Target" oor:type="xs:string">
-									<value><![CDATA[_self]]></value>
+									<value>_self</value>
 								</prop>
 								<prop oor:name="Context" oor:type="xs:string">
-									<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
 								</prop>
 								<prop oor:name="Title" oor:type="xs:string">
 									<value />
-									<value xml:lang="en"><![CDATA[Netease-Data-Download]]></value>
+									<value xml:lang="en">Netease-Data-Download</value>
 								</prop>
 							</node>
 							<node oor:name="m004002" oor:op="replace">
 								<prop oor:name="URL" oor:type="xs:string">
-									<value><![CDATA[daydayup.openstock.command:NeteaseDataPreprocCommand]]></value>
+									<value>daydayup.openstock.command:NeteaseDataPreprocCommand
+									</value>
 								</prop>
 								<prop oor:name="ImageIdentifier" oor:type="xs:string">
 									<value />
 								</prop>
 								<prop oor:name="Target" oor:type="xs:string">
-									<value><![CDATA[_self]]></value>
+									<value>_self</value>
 								</prop>
 								<prop oor:name="Context" oor:type="xs:string">
-									<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
 								</prop>
 								<prop oor:name="Title" oor:type="xs:string">
 									<value />
-									<value xml:lang="en"><![CDATA[Netease-Data-Preproc]]></value>
+									<value xml:lang="en">Netease-Data-Preproc</value>
 								</prop>
 							</node>
 							<node oor:name="m004003" oor:op="replace">
 								<prop oor:name="URL" oor:type="xs:string">
-									<value><![CDATA[daydayup.openstock.command:NeteaseDataLoad2DbCommand]]></value>
+									<value>daydayup.openstock.command:NeteaseDataLoad2DbCommand
+									</value>
 								</prop>
 								<prop oor:name="ImageIdentifier" oor:type="xs:string">
 									<value />
 								</prop>
 								<prop oor:name="Target" oor:type="xs:string">
-									<value><![CDATA[_self]]></value>
+									<value>_self</value>
 								</prop>
 								<prop oor:name="Context" oor:type="xs:string">
-									<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
+									<value>com.sun.star.sheet.SpreadsheetDocument</value>
 								</prop>
 								<prop oor:name="Title" oor:type="xs:string">
 									<value />
-									<value xml:lang="en"><![CDATA[Netease-Data-Load2Db]]></value>
-								</prop>
-							</node>
-							<node oor:name="m004004" oor:op="replace">
-								<prop oor:name="URL" oor:type="xs:string">
-									<value><![CDATA[daydayup.openstock.command:NeteaseWashed2SheetCommand]]></value>
-								</prop>
-								<prop oor:name="ImageIdentifier" oor:type="xs:string">
-									<value />
-								</prop>
-								<prop oor:name="Target" oor:type="xs:string">
-									<value><![CDATA[_self]]></value>
-								</prop>
-								<prop oor:name="Context" oor:type="xs:string">
-									<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
-								</prop>
-								<prop oor:name="Title" oor:type="xs:string">
-									<value />
-									<value xml:lang="en"><![CDATA[Netease-Washed2Sheet]]></value>
+									<value xml:lang="en">Netease-Data-Load2Db</value>
 								</prop>
 							</node>
 						</node>
 					</node>
 					<node oor:name="m005" oor:op="replace">
 						<prop oor:name="URL" oor:type="xs:string">
-							<value><![CDATA[daydayup.openstock.command:CorpsApply2MemoryCommand]]></value>
+							<value>daydayup.openstock.command:CorpsApply2MemoryCommand</value>
 						</prop>
 						<prop oor:name="ImageIdentifier" oor:type="xs:string">
 							<value />
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
-							<value><![CDATA[_self]]></value>
+							<value>_self</value>
 						</prop>
 						<prop oor:name="Context" oor:type="xs:string">
-							<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
+							<value>com.sun.star.sheet.SpreadsheetDocument</value>
 						</prop>
 						<prop oor:name="Title" oor:type="xs:string">
 							<value />
-							<value xml:lang="en"><![CDATA[CORPS-Apply2Memory]]></value>
+							<value xml:lang="en">CORPS-Apply2Memory</value>
 						</prop>
 					</node>
 					<node oor:name="m099" oor:op="replace">
 						<prop oor:name="URL" oor:type="xs:string">
-							<value><![CDATA[daydayup.openstock.command:InterruptAllTaskCommand]]></value>
+							<value>daydayup.openstock.command:InterruptAllTaskCommand</value>
 						</prop>
 						<prop oor:name="ImageIdentifier" oor:type="xs:string">
 							<value />
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
-							<value><![CDATA[_self]]></value>
+							<value>_self</value>
 						</prop>
 						<prop oor:name="Context" oor:type="xs:string">
-							<value><![CDATA[com.sun.star.sheet.SpreadsheetDocument]]></value>
+							<value>com.sun.star.sheet.SpreadsheetDocument</value>
 						</prop>
 						<prop oor:name="Title" oor:type="xs:string">
 							<value />
-							<value xml:lang="en"><![CDATA[Interrupt-All-Task]]></value>
+							<value xml:lang="en">Interrupt-All-Task</value>
 						</prop>
 					</node>
 				</node>
 			</node>
 		</node>
-		<node oor:name="OfficeToolBar">			
+		<node oor:name="OfficeToolBar">
+			<node oor:name="daydayup.openstock.command" oor:op="replace">
+				<prop oor:name="Title" oor:type="xs:string" oor:localized="true">
+					<value xml:lang="en">Dummy</value>
+				</prop>
+				<node oor:name="ToolBarItems">
+					<node oor:name="m1" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value>daydayup.openstock.command:ShowAboutCommand</value>
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Context" oor:type="xs:string">
+							<value>com.sun.star.sheet.SpreadsheetDocument</value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">About</value>
+						</prop>
+					</node>
+					<node oor:name="m2" oor:op="replace">
+						<prop oor:name="URL" oor:type="xs:string">
+							<value>daydayup.openstock.command:MySecondCommand</value>
+						</prop>
+						<prop oor:name="ImageIdentifier" oor:type="xs:string">
+							<value />
+						</prop>
+						<prop oor:name="Target" oor:type="xs:string">
+							<value>_self</value>
+						</prop>
+						<prop oor:name="Context" oor:type="xs:string">
+							<value><![CDATA[com.sun.star.chart.ChartDocument,com.sun.star.formula.FormulaProperties,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.GlobalDocument]]></value>
+						</prop>
+						<prop oor:name="Title" oor:type="xs:string">
+							<value />
+							<value xml:lang="en">My Second Command</value>
+						</prop>
+					</node>
+				</node>
+			</node>
 		</node>
 		<node oor:name="Images">
-			
+			<node oor:name="daydayup.openstock.command.ShowAboutCommand.images"
+				oor:op="replace">
+				<prop oor:name="URL" oor:type="xs:string">
+					<value>daydayup.openstock.command:ShowAboutCommand</value>
+				</prop>
+				<node oor:name="UserDefinedImages">
+					<prop oor:name="ImageSmallURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageSmallHCURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigHCURL">
+						<value />
+					</prop>
+				</node>
+			</node>
+			<node oor:name="daydayup.openstock.command.MySecondCommand.images"
+				oor:op="replace">
+				<prop oor:name="URL" oor:type="xs:string">
+					<value>daydayup.openstock.command:MySecondCommand</value>
+				</prop>
+				<node oor:name="UserDefinedImages">
+					<prop oor:name="ImageSmallURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageSmallHCURL">
+						<value />
+					</prop>
+					<prop oor:name="ImageBigHCURL">
+						<value />
+					</prop>
+				</node>
+			</node>
 		</node>
 	</node>
 </oor:component-data>
