@@ -14,6 +14,7 @@ import daydayup.openstock.executor.TaskExecutor;
 import daydayup.openstock.netease.NeteaseDataDownloadCommand;
 import daydayup.openstock.netease.NeteaseDataLoad2DbCommand;
 import daydayup.openstock.netease.NeteaseDataPreprocCommand;
+import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
 
 public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.frame.XDispatchProvider,
 		com.sun.star.frame.XDispatch, com.sun.star.lang.XInitialization, XServiceInfo {

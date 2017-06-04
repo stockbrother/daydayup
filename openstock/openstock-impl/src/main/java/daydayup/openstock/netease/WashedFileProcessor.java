@@ -1,8 +1,14 @@
 package daydayup.openstock.netease;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,13 +16,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.container.NoSuchElementException;
-import com.sun.star.lang.WrappedTargetException;
-import com.sun.star.sheet.XSpreadsheet;
-import com.sun.star.uno.UnoRuntime;
-
 import au.com.bytecode.opencsv.CSVReader;
-import daydayup.openstock.util.DocUtil;
 
 /**
  * <code>
@@ -30,18 +30,31 @@ import daydayup.openstock.util.DocUtil;
  * @param <T>
  * @param <I>
  */
-public abstract class AbstractWashedFileProcessor extends FileProcessor {
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractWashedFileProcessor.class);
+public class WashedFileProcessor {
+
+	private static final Logger LOG = LoggerFactory.getLogger(WashedFileProcessor.class);
+
 	String sheetName;
 
-	public AbstractWashedFileProcessor(String sheetName) {
+	public WashedFileProcessor(String sheetName) {
 		this.sheetName = sheetName;
 	}
 
-	@Override
-	public void process(Reader fr, WashedFileLoadContext xContext) {
+	public void process(File file, WashedFileLoadContext xContext) {
+		LOG.info("processor:" + this.getClass().getName() + " going to process file:" + file.getAbsolutePath());
 
-		XSpreadsheet xSheet = this.prepareSpreadsheet(xContext);
+		InputStream is;
+		try {
+			is = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		Charset cs = Charset.forName("UTF-8");
+		Reader reader = new InputStreamReader(is, cs);
+		this.process(reader, xContext);//
+	}
+
+	public void process(Reader fr, WashedFileLoadContext xContext) {
 
 		CSVReader reader = new CSVReader(fr);
 		try {
@@ -87,20 +100,24 @@ public abstract class AbstractWashedFileProcessor extends FileProcessor {
 					break;
 				}
 				// one row:
-				List<Object> rowData = new ArrayList<>();
-				rowData.add(corpId);
-				rowData.add(reportDate);
+				List<String> keyList = new ArrayList<>();
+				List<Object> valueList = new ArrayList<>();
+
+				keyList.add("公司代码");
+				valueList.add(corpId);
+
+				keyList.add("报表日期");
+				valueList.add(reportDate);
 
 				for (String key : itemKeyList) {
 					BigDecimal value = body.get(key, true).getAsBigDecimal(i + 1, false);
 					if (value != null) {
 						value = value.multiply(unit);
 					}
-
-					rowData.add(value);
+					keyList.add(key);
+					valueList.add(value);
 				}
-
-				writeRow(xContext.getAndIncrementNextRow(sheetName), rowData, xSheet);
+				xContext.getOrCreateTypeContext(sheetName).writeRow(keyList, valueList);
 			}
 
 		} catch (IOException e) {
@@ -109,25 +126,4 @@ public abstract class AbstractWashedFileProcessor extends FileProcessor {
 
 	}
 
-	public void writeRow(int row, List<Object> rowData, XSpreadsheet xSheet) {
-		for (int i = 0; i < rowData.size(); i++) {
-			Object obj = rowData.get(i);
-			String text = (obj == null ? "" : obj.toString());
-			DocUtil.setText(xSheet, i, row, text);
-		}
-
-	}
-
-	protected XSpreadsheet prepareSpreadsheet(WashedFileLoadContext xContext) {
-
-		try {
-			return (XSpreadsheet) UnoRuntime.queryInterface(XSpreadsheet.class,
-					xContext.xDoc.getSheets().getByName(this.sheetName));
-		} catch (NoSuchElementException e) {
-			throw new RuntimeException(e);
-		} catch (WrappedTargetException e) {
-			throw new RuntimeException(e);
-		}
-
-	}
 }

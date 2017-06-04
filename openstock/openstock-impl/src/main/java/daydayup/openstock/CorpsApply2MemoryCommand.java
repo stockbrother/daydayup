@@ -17,43 +17,16 @@ import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XInterface;
 
+import daydayup.openstock.util.DocUtil;
+
 public class CorpsApply2MemoryCommand extends CommandBase {
 	private static final Logger LOG = LoggerFactory.getLogger(CorpsApply2MemoryCommand.class);
 
 	@Override
-	public void execute(CommandContext cc) {
-		Object desktop = null;
-		try {
-			desktop = cc.getComponentContext().getServiceManager()
-					.createInstanceWithContext("com.sun.star.frame.Desktop", cc.getComponentContext());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
-		this.loadCorpInfoToMemory(GlobalVars.getInstance().getCorpNameService(), xDesktop);
-	}
+	public void execute(CommandContext cc) {		
 
-	public void loadCorpInfoToMemory(CorpNameService cns, XDesktop xDesktop) {
-
-		XComponent xComp = xDesktop.getCurrentComponent();
-
-		XInterface xDoc = UnoRuntime.queryInterface(XInterface.class, xComp);
-		XSpreadsheetDocument xDoc2 = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xDoc);
-
-		XModel xModel = UnoRuntime.queryInterface(XModel.class, xComp);
-		XController xControl = xModel.getCurrentController();
-		Object viewData = xControl.getViewData();
-
-		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
-				xModel.getCurrentController());
-
-		XSpreadsheet xSheet = xView.getActiveSheet();
-
-		XNamed xName = UnoRuntime.queryInterface(XNamed.class, xSheet);
-
-		if (!"CORPS".equals(xName.getName())) {
-			throw new RuntimeException("sheet name:" + "CORPS" + " expected,actually is:" + xName.getName());
-		}
+		CorpNameService cns = GlobalVars.getInstance().getCorpNameService();
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.componentContext, "CORPS");
 		// https://wiki.openoffice.org/wiki/Documentation/DevGuide/Spreadsheets/Example:_Editing_Spreadsheet_Cells
 		int i = 0;
 		while (true) {

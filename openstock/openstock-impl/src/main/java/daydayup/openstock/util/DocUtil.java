@@ -1,10 +1,12 @@
 package daydayup.openstock.util;
 
+import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNamed;
 import com.sun.star.frame.XController;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.IndexOutOfBoundsException;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
@@ -32,7 +34,7 @@ public class DocUtil {
 
 		return xDoc2;
 	}
-	
+
 	public static XSpreadsheet getActiveSheet(XComponentContext cc, String name) {
 
 		Object desktop = null;
@@ -61,7 +63,22 @@ public class DocUtil {
 		return xSheet;
 
 	}
-	
+
+	public static XSpreadsheet getSpreadsheetByName(XComponentContext cc, String name) {
+		return getSpreadsheetByName(getSpreadsheetDocument(cc), name);
+	}
+
+	public static XSpreadsheet getSpreadsheetByName(XSpreadsheetDocument xDoc, String name) {
+
+		try {
+			return (XSpreadsheet) UnoRuntime.queryInterface(XSpreadsheet.class, xDoc.getSheets().getByName(name));
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException(e);
+		} catch (WrappedTargetException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
 
 	public static void setText(XSpreadsheet xSheet, int col, int row, String text) {
 		try {
