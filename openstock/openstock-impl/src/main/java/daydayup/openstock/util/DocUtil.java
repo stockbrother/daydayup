@@ -72,16 +72,20 @@ public class DocUtil {
 
 	}
 
-	public static XSpreadsheet getSpreadsheetByName(XComponentContext cc, String name) {
-		return getSpreadsheetByName(getSpreadsheetDocument(cc), name);
+	public static XSpreadsheet getSpreadsheetByName(XComponentContext cc, String name, boolean force) {
+		return getSpreadsheetByName(getSpreadsheetDocument(cc), name, force);
 	}
 
-	public static XSpreadsheet getSpreadsheetByName(XSpreadsheetDocument xDoc, String name) {
+	public static XSpreadsheet getSpreadsheetByName(XSpreadsheetDocument xDoc, String name, boolean force) {
 
 		try {
 			return (XSpreadsheet) UnoRuntime.queryInterface(XSpreadsheet.class, xDoc.getSheets().getByName(name));
 		} catch (NoSuchElementException e) {
-			throw new RuntimeException(e);
+			if (force) {
+				throw new RuntimeException(e);
+			} else {
+				return null;
+			}
 		} catch (WrappedTargetException e) {
 			throw new RuntimeException(e);
 		}
@@ -138,5 +142,10 @@ public class DocUtil {
 		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);
 		com.sun.star.text.XTextCursor xTextCursor = xCellText.createTextCursor();
 		xCellText.insertString(xTextCursor, text, false);
+	}
+
+	public static XSpreadsheet createSheet(XSpreadsheetDocument xDoc, String type) {
+		xDoc.getSheets().insertNewByName(type, (short) 0);
+		return getSpreadsheetByName(xDoc, type, true);
 	}
 }

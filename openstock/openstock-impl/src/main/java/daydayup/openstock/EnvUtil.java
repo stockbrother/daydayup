@@ -11,6 +11,7 @@ public class EnvUtil {
 	static TimeZone timeZone = TimeZone.getTimeZone(ZoneId.ofOffset("UTC", ZoneOffset.UTC));
 	static TimeZone dataTimeZone = TimeZone.getTimeZone(ZoneOffset.ofHours(8));//
 	public static final String KEY_OPENSTOCK_DATA_DIR = "openstock.data.dir";
+
 	static {
 		System.setProperty(KEY_OPENSTOCK_DATA_DIR, "c:/openstock");
 	}
@@ -34,6 +35,10 @@ public class EnvUtil {
 	public static int getYear(Date xValue) {
 		//
 		return DateUtil.getYear(xValue, dataTimeZone);
+	}
+
+	public static File getDataBaseDir() {
+		return new File(getDataDir(), "db");
 	}
 
 	public static File getDataDir() {
@@ -78,6 +83,10 @@ public class EnvUtil {
 	public static String getHttpHost163() {
 		//
 		return "quotes.money.163.com";
+	}
+
+	public static String getDbName() {
+		return "openstock";
 	}
 
 }

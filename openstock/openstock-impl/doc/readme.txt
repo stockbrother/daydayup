@@ -5,3 +5,6 @@ jvm debug options:
 
 https://wiki.openoffice.org/wiki/Calc/API/Programming
 
+https://wiki.openoffice.org/wiki/Documentation/DevGuide/WritingUNO/Jobs/List_of_Supported_Events
+
+

@@ -7,6 +7,8 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import daydayup.jdbc.ConnectionProvider;
+
 public class H2ConnectionPoolWrapper implements ConnectionProvider {
 	private static final Logger LOG = LoggerFactory.getLogger(H2ConnectionPoolWrapper.class);
 

@@ -7,8 +7,8 @@ import java.util.Map;
 public class CorpNameService {
 	Map<String, String> nameMap = new HashMap<>();
 
-	public void addCorpName(String code, String name) {
-		nameMap.put(code, name);
+	public String addCorpName(String code, String name) {
+		return nameMap.put(code, name);
 	}
 
 	public String getName(String code) {

@@ -23,10 +23,14 @@ public class CorpsApply2MemoryCommand extends CommandBase {
 	private static final Logger LOG = LoggerFactory.getLogger(CorpsApply2MemoryCommand.class);
 
 	@Override
-	public void execute(CommandContext cc) {		
+	public void execute(CommandContext cc) {
 
 		CorpNameService cns = GlobalVars.getInstance().getCorpNameService();
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.componentContext, "CORPS");
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.componentContext, "CORPS", false);
+		if (xSheet == null) {
+			LOG.warn("cannot load corp info,no sheet with name{} found.", "CORPS");
+			return;
+		}
 		// https://wiki.openoffice.org/wiki/Documentation/DevGuide/Spreadsheets/Example:_Editing_Spreadsheet_Cells
 		int i = 0;
 		while (true) {
@@ -36,12 +40,19 @@ public class CorpsApply2MemoryCommand extends CommandBase {
 				break;
 			}
 			String name = getText(xSheet, 1, i);
-			cns.addCorpName(code, name);
+			String oldName = cns.addCorpName(code, name);
+
+			if (oldName != null) {
+				LOG.warn("corp name exist,code:{},name:{},oldName:", code, name, oldName);
+			}
+
 			if (LOG.isTraceEnabled()) {
 				LOG.trace("[{}]code:{},name:{}", i, code, name);
 			}
 			i++;
 		}
+		LOG.info("totally {} corp info loaded into memory.", i);
+		
 	}
 
 	public static String getText(XSpreadsheet xSheet, int col, int row) {

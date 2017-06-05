@@ -71,12 +71,13 @@ public class WashedFileLoadContext {
 		xDoc = DocUtil.getSpreadsheetDocument(cc);
 	}
 
-	
-
 	public DataTypeContext getOrCreateTypeContext(String type) {
 		DataTypeContext rt = nextRowMap.get(type);
 		if (rt == null) {
-			XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xDoc, type);
+			XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xDoc, type, false);
+			if (xSheet == null) {
+				DocUtil.createSheet(xDoc, type);
+			}
 			rt = new DataTypeContext(type, xSheet);
 			nextRowMap.put(type, rt);
 		}

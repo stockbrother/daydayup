@@ -9,8 +9,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JdbcDataAccessTemplate {
-	private static final Logger LOG = LoggerFactory.getLogger(JdbcDataAccessTemplate.class);
+import daydayup.openstock.RtException;
+
+public class JdbcAccessTemplate {
+	private static final Logger LOG = LoggerFactory.getLogger(JdbcAccessTemplate.class);
 
 	private static ParameterProvider EMPTY = new ParameterProvider() {
 
@@ -35,7 +37,43 @@ public class JdbcDataAccessTemplate {
 
 	};
 
-	public JdbcDataAccessTemplate() {
+	public static interface JdbcOperation<T> {
+
+		public T execute(Connection con, JdbcAccessTemplate t);
+
+	}
+
+	public JdbcAccessTemplate() {
+	}
+
+	public <T> T execute(ConnectionProvider pool, JdbcOperation<T> op, boolean transaction) {
+		try {
+			Connection con = pool.openConnection();
+			try {
+
+				if (transaction) {
+
+					boolean oldAuto = con.getAutoCommit();
+					con.setAutoCommit(false);
+					try {
+						return op.execute(con, this);
+					} catch (Exception e) {
+						con.rollback();
+						throw RtException.toRtException(e);
+					} finally {
+						con.commit();
+						con.setAutoCommit(oldAuto);
+					}
+
+				} else {
+					return op.execute(con, this);
+				}
+			} finally {
+				con.close();
+			}
+		} catch (SQLException e) {
+			throw RtException.toRtException(e);
+		}
 	}
 
 	public long executeUpdate(Connection con, String sql) {
@@ -60,7 +98,7 @@ public class JdbcDataAccessTemplate {
 
 			PreparedStatement ps = con.prepareStatement(sql);
 			int size = args.length;
-			for (int i = 0; i < size; i++) {				
+			for (int i = 0; i < size; i++) {
 				ps.setObject(i + 1, args[i]);
 			}
 			try {

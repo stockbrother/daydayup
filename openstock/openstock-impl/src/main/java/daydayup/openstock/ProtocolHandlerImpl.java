@@ -3,13 +3,14 @@ package daydayup.openstock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.document.XDocumentEventBroadcaster;
+import com.sun.star.document.XEventBroadcaster;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.lib.uno.helper.WeakBase;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 import daydayup.openstock.cninfo.CorpInfoRefreshCommand;
+import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.executor.TaskConflictException;
 import daydayup.openstock.executor.TaskExecutor;
 import daydayup.openstock.netease.NeteaseDataDownloadCommand;
@@ -34,6 +35,7 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	
 	private final XComponentContext xContext;
 	private com.sun.star.frame.XFrame xFrame;
+	private DataBaseService dbs;
 
 	public static final String SERVICE_NAME = "com.sun.star.frame.ProtocolHandler";
 	private static final String PROTOCOL = "daydayup.openstock.command:";
@@ -151,7 +153,6 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			}
 			if (aURL.Path.compareTo("NeteaseDataLoad2DbCommand") == 0) {
 				this.execute(new NeteaseDataLoad2DbCommand());
-				;
 				return;
 			}
 			if (aURL.Path.compareTo("InterruptAllTaskCommand") == 0) {
@@ -160,12 +161,10 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			}
 			if (aURL.Path.compareTo("CorpsApply2MemoryCommand") == 0) {
 				this.execute(new CorpsApply2MemoryCommand());
-				;
 				return;
 			}
 			if (aURL.Path.compareTo("NeteaseWashed2SheetCommand") == 0) {
 				this.execute(new NeteaseWashed2SheetCommand());
-				;
 				return;
 			}
 			
@@ -174,7 +173,7 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	}
 
 	public void execute(CommandBase command) {
-		CommandContext cc = new CommandContext(this.xFrame, this.xContext);
+		CommandContext cc = new CommandContext(this.xFrame, this.xContext, this.dbs);
 		try {
 			this.commandExecutor.execute(command, cc);
 		} catch (TaskConflictException e) {
@@ -203,10 +202,16 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			LOG.trace("initialize({})", (Object) object);
 		}
 		xFrame = (com.sun.star.frame.XFrame) UnoRuntime.queryInterface(com.sun.star.frame.XFrame.class, object[0]);
+		/*
 		Object officeDoc = this.xContext.getServiceManager().createInstanceWithContext("com.sun.star.document.OfficeDocument", this.xContext);		
 		XDocumentEventBroadcaster deb = UnoRuntime.queryInterface(XDocumentEventBroadcaster.class, officeDoc);
 		deb.addDocumentEventListener(new TheDocumentEventListener(this));		
+		*/
+		Object geb = this.xContext.getServiceManager().createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster",this.xContext);
+		XEventBroadcaster xeb = UnoRuntime.queryInterface(XEventBroadcaster.class, geb);
+		xeb.addEventListener(new TheGlobalEventListener(this));
 		
+		this.dbs = DataBaseService.getInstance(EnvUtil.getDataDir(), EnvUtil.getDbName());
 	}
 
 }

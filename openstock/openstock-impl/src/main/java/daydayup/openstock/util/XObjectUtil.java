@@ -11,7 +11,7 @@ import com.sun.star.sheet.XAreaLinks;
 import com.sun.star.uno.Any;
 
 public class XObjectUtil {
-	public static void format(XPropertySet arg0, StringBuffer sb) {
+	public static StringBuffer format(XPropertySet arg0, StringBuffer sb) {
 		Property[] pts = arg0.getPropertySetInfo().getProperties();
 
 		for (int i = 0; i < pts.length; i++) {
@@ -31,6 +31,7 @@ public class XObjectUtil {
 			sb.append("\n");
 
 		}
+		return sb;
 	}
 
 	public static void intend(StringBuffer sb, boolean brk, int intend) {
