@@ -3,6 +3,7 @@ package daydayup.openstock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.star.document.XDocumentEventBroadcaster;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.lib.uno.helper.WeakBase;
 import com.sun.star.uno.UnoRuntime;
@@ -172,7 +173,7 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 		}
 	}
 
-	private void execute(CommandBase command) {
+	public void execute(CommandBase command) {
 		CommandContext cc = new CommandContext(this.xFrame, this.xContext);
 		try {
 			this.commandExecutor.execute(command, cc);
@@ -202,6 +203,10 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			LOG.trace("initialize({})", (Object) object);
 		}
 		xFrame = (com.sun.star.frame.XFrame) UnoRuntime.queryInterface(com.sun.star.frame.XFrame.class, object[0]);
+		Object officeDoc = this.xContext.getServiceManager().createInstanceWithContext("com.sun.star.document.OfficeDocument", this.xContext);		
+		XDocumentEventBroadcaster deb = UnoRuntime.queryInterface(XDocumentEventBroadcaster.class, officeDoc);
+		deb.addDocumentEventListener(new TheDocumentEventListener(this));		
+		
 	}
 
 }
