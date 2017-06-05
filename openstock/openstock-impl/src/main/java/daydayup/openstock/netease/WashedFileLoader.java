@@ -14,7 +14,7 @@ public class WashedFileLoader {
 
 	private Map<String, WashedFileProcessor> processMap = new HashMap<>();
 
-	private int maxSize = 20;
+	private int maxSize = 1;
 
 	private int processed;
 
@@ -24,6 +24,7 @@ public class WashedFileLoader {
 
 		processMap.put("zcfzb", new WashedFileProcessor("ZCFZB"));
 		processMap.put("lrb", new WashedFileProcessor("LRB"));
+		processMap.put("xjllb", new WashedFileProcessor("XJLLB"));
 
 	}
 
@@ -60,6 +61,11 @@ public class WashedFileLoader {
 			return;
 		}
 		for (File f : dir.listFiles()) {
+			// is directory
+			if (this.interrupted) {
+				LOG.warn("interrupted.");
+				return;
+			}
 			this.load(f, xContext);
 		}
 

@@ -46,8 +46,7 @@ public class WashedFileLoadContext {
 					headerColumnMap.put(key, col);
 					DocUtil.setText(xSheet, col, 0, key);// write header.
 				}
-				String text = format(valueList.get(i));
-				DocUtil.setText(xSheet, col, row, text);
+				DocUtil.setValue(xSheet, col, row, valueList.get(i));
 			}
 
 		}
