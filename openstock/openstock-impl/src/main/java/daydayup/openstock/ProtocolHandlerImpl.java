@@ -20,28 +20,13 @@ import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
 
 public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.frame.XDispatchProvider,
 		com.sun.star.frame.XDispatch, com.sun.star.lang.XInitialization, XServiceInfo {
-	
-	private static class InterruptAllTask extends CommandBase{
-		TaskExecutor commandExecutor;
-		InterruptAllTask(TaskExecutor commandExecutor){
-			this.commandExecutor = commandExecutor;
-		}
-		@Override
-		public void execute(CommandContext cc) {
-			this.commandExecutor.interruptAll();
-		}
-		
-	}
-	
-	private final XComponentContext xContext;
+
+	public final XComponentContext xContext;
 	private com.sun.star.frame.XFrame xFrame;
-	private DataBaseService dbs;
 
 	public static final String SERVICE_NAME = "com.sun.star.frame.ProtocolHandler";
 	private static final String PROTOCOL = "daydayup.openstock.command:";
 	private static final Logger LOG = LoggerFactory.getLogger(ProtocolHandlerImpl.class);
-
-	private TaskExecutor commandExecutor = new TaskExecutor();
 
 	public ProtocolHandlerImpl(XComponentContext context) {
 		xContext = context;
@@ -96,10 +81,11 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			}
 			if (aURL.Path.compareTo("InterruptAllTaskCommand") == 0) {
 				return this;
-			}if (aURL.Path.compareTo("CorpsApply2MemoryCommand") == 0) {
+			}
+			if (aURL.Path.compareTo("CorpsApply2MemoryCommand") == 0) {
 				return this;
 			}
-			
+
 		}
 		return null;
 	}
@@ -138,51 +124,9 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 				MessageBoxUtil.showMessageBox(this.xContext, this.xFrame, "A Message", "aURL:" + aURL.Complete);
 				return;
 			}
-			if (aURL.Path.compareTo("CorpInfoRefreshCommand") == 0) {
-				this.execute(new CorpInfoRefreshCommand());
-				return;
-			}
-			if (aURL.Path.compareTo("NeteaseDataDownloadCommand") == 0) {
-				this.execute(new NeteaseDataDownloadCommand());
-				return;
-			}
-
-			if (aURL.Path.compareTo("NeteaseDataPreprocCommand") == 0) {
-				this.execute(new NeteaseDataPreprocCommand());
-				return;
-			}
-			if (aURL.Path.compareTo("NeteaseWashed2DbCommand") == 0) {
-				this.execute(new NeteaseWashed2DbCommand());
-				return;
-			}
-			if (aURL.Path.compareTo("InterruptAllTaskCommand") == 0) {
-				this.commandExecutor.interruptAll();
-				return;
-			}
-			if (aURL.Path.compareTo("CorpsApply2MemoryCommand") == 0) {
-				this.execute(new CorpsApply2MemoryCommand());
-				return;
-			}
-			if (aURL.Path.compareTo("NeteaseWashed2SheetCommand") == 0) {
-				this.execute(new NeteaseWashed2SheetCommand());
-				return;
-			}
-			
-			
+			String command = aURL.Path;
+			OpenStock.getInstance().execute(command, this.xContext);
 		}
-	}
-
-	public void execute(CommandBase command) {
-		CommandContext cc = new CommandContext(this.xFrame, this.xContext, this.dbs);
-		try {
-			this.commandExecutor.execute(command, cc);
-		} catch (TaskConflictException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			MessageBoxUtil.showMessageBox(this.xContext, this.xFrame, "Task Conflict Error",
-					"Detail:" + e.getMessage());
-		}
-
 	}
 
 	@Override
@@ -203,15 +147,19 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 		}
 		xFrame = (com.sun.star.frame.XFrame) UnoRuntime.queryInterface(com.sun.star.frame.XFrame.class, object[0]);
 		/*
-		Object officeDoc = this.xContext.getServiceManager().createInstanceWithContext("com.sun.star.document.OfficeDocument", this.xContext);		
-		XDocumentEventBroadcaster deb = UnoRuntime.queryInterface(XDocumentEventBroadcaster.class, officeDoc);
-		deb.addDocumentEventListener(new TheDocumentEventListener(this));		
-		*/
-		Object geb = this.xContext.getServiceManager().createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster",this.xContext);
+		 * Object officeDoc =
+		 * this.xContext.getServiceManager().createInstanceWithContext(
+		 * "com.sun.star.document.OfficeDocument", this.xContext);
+		 * XDocumentEventBroadcaster deb =
+		 * UnoRuntime.queryInterface(XDocumentEventBroadcaster.class,
+		 * officeDoc); deb.addDocumentEventListener(new
+		 * TheDocumentEventListener(this));
+		 */
+		Object geb = this.xContext.getServiceManager()
+				.createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster", this.xContext);
 		XEventBroadcaster xeb = UnoRuntime.queryInterface(XEventBroadcaster.class, geb);
 		xeb.addEventListener(new TheGlobalEventListener(this));
-		
-		this.dbs = DataBaseService.getInstance(EnvUtil.getDataDir(), EnvUtil.getDbName());
+
 	}
 
 }

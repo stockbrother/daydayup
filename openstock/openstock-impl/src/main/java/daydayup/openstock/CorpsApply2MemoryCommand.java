@@ -3,33 +3,24 @@ package daydayup.openstock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.container.XNamed;
-import com.sun.star.frame.XController;
-import com.sun.star.frame.XDesktop;
-import com.sun.star.frame.XModel;
 import com.sun.star.lang.IndexOutOfBoundsException;
-import com.sun.star.lang.XComponent;
 import com.sun.star.sheet.XSpreadsheet;
-import com.sun.star.sheet.XSpreadsheetDocument;
-import com.sun.star.sheet.XSpreadsheetView;
 import com.sun.star.table.XCell;
-import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XInterface;
 
 import daydayup.openstock.util.DocUtil;
 
-public class CorpsApply2MemoryCommand extends CommandBase {
+public class CorpsApply2MemoryCommand extends CommandBase<Void> {
 	private static final Logger LOG = LoggerFactory.getLogger(CorpsApply2MemoryCommand.class);
 
 	@Override
-	public void execute(CommandContext cc) {
+	public Void execute(CommandContext cc) {
 
 		CorpNameService cns = GlobalVars.getInstance().getCorpNameService();
 		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.componentContext, "CORPS", false);
 		if (xSheet == null) {
 			LOG.warn("cannot load corp info,no sheet with name{} found.", "CORPS");
-			return;
+			return null;
 		}
 		// https://wiki.openoffice.org/wiki/Documentation/DevGuide/Spreadsheets/Example:_Editing_Spreadsheet_Cells
 		int i = 0;
@@ -53,6 +44,7 @@ public class CorpsApply2MemoryCommand extends CommandBase {
 		}
 		LOG.info("totally {} corp info loaded into memory.", i);
 		
+		return null;
 	}
 
 	public static String getText(XSpreadsheet xSheet, int col, int row) {

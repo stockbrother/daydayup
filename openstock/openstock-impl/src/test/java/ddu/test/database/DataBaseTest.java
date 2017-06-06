@@ -31,21 +31,21 @@ public class DataBaseTest extends TestCase {
 
 		dbs.mergeReport(reportType, corpId, reportDate, aliasList, valueList);
 
-		List<Double> dL = dbs.getReport(reportType, corpId, reportDate, aliasList);
-		Assert.assertEquals(aliasList.size(), dL.size());
+		Double[] dL = dbs.getReport(reportType, corpId, reportDate, aliasList);
+		Assert.assertEquals(aliasList.size(), dL.length);
 		for (int i = 0; i < valueList.size(); i++) {
 			BigDecimal valueI = valueList.get(i);
 
 			double d1 = valueI.doubleValue();
-			double d2 = dL.get(i);
+			double d2 = dL[i];
 			Assert.assertEquals(d1, d2, 0.001D);
 
 		}
-		
-		//test more row
-		
+
+		// test more row
+
 		dbs.mergeReport(reportType, corpId, reportDate, aliasList, valueList);
-		
+
 	}
 
 }

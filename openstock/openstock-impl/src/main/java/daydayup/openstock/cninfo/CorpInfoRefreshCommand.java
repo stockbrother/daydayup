@@ -10,10 +10,10 @@ import daydayup.openstock.CommandBase;
 import daydayup.openstock.CommandContext;
 import daydayup.openstock.GlobalVars;
 
-public class CorpInfoRefreshCommand extends CommandBase {
+public class CorpInfoRefreshCommand extends CommandBase<Void> {
 
 	@Override
-	public void execute(CommandContext cc) {
+	public Void execute(CommandContext cc) {
 
 		File csvFile = new File("C:\\D\\data\\cninfo\\20170602111822.csv");
 
@@ -28,6 +28,7 @@ public class CorpInfoRefreshCommand extends CommandBase {
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
 		new CorpInfoLoader().loadCorpInfoToSheet(GlobalVars.getInstance().getCorpNameService(), xDesktop);
 
+		return null;
 	}
 
 }

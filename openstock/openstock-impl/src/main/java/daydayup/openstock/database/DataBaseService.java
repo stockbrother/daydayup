@@ -28,6 +28,7 @@ public class DataBaseService extends JdbcAccessTemplate {
 	private static Map<String, DataBaseService> MAP = new HashMap<>();
 
 	private static List<DBUpgrader> upgraderList = new ArrayList<DBUpgrader>();
+
 	static {
 		upgraderList.add(new DBUpgrader_001());
 	}
@@ -99,6 +100,48 @@ public class DataBaseService extends JdbcAccessTemplate {
 			}
 		}, true);
 
+	}
+
+	public <T> T queryReport(int reportType, String corpId, Date reportDate, List<String> aliasList,
+			ReportResultProcessor<T> rrp) {
+		List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
+		return this.execute(new JdbcOperation<T>() {
+
+			@Override
+			public T execute(Connection con, JdbcAccessTemplate t) {
+				StringBuffer sb = new StringBuffer();
+				sb.append("select ");
+				for (int i = 0; i < columnIndexList.size(); i++) {
+					Integer cIdx = columnIndexList.get(i);
+					sb.append(Tables.getReportColumn(cIdx));
+					if (i < columnIndexList.size() - 1) {
+						sb.append(",");
+					}
+				}
+
+				sb.append(" from ");
+				sb.append(Tables.getReportTable(reportType));
+				sb.append(" where 1=1");
+
+				List<Object> ps = new ArrayList<Object>();
+				if (corpId != null) {
+					sb.append(" and corpId=?");
+					ps.add(corpId);
+				}
+				if (reportDate != null) {
+					sb.append(" and reportDate=?");
+					ps.add(reportDate);
+				}
+				return t.executeQuery(con, sb.toString(), ps, new ResultSetProcessor<T>() {
+
+					@Override
+					public T process(ResultSet rs) throws SQLException {
+						return rrp.process(reportType, aliasList, rs);
+					}
+				});
+
+			}
+		}, false);
 	}
 
 	public boolean isReportExist(int reportType, String corpId, Date reportDate) {
@@ -245,47 +288,18 @@ public class DataBaseService extends JdbcAccessTemplate {
 		}
 	}
 
-	public List<Double> getReport(int reportType, String corpId, Date reportDate, List<String> aliasList) {
-		List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
-		List<Double> rt = null;
-		return this.execute(new JdbcOperation<List<Double>>() {
+	public Double[] getReport(int reportType, String corpId, Date reportDate, List<String> aliasList) {
 
-			@Override
-			public List<Double> execute(Connection con, JdbcAccessTemplate t) {
-				StringBuffer sb = new StringBuffer();
-				sb.append("select ");
-				for (int i = 0; i < columnIndexList.size(); i++) {
-					Integer cIdx = columnIndexList.get(i);
-					sb.append(Tables.getReportColumn(cIdx));
-					if (i < columnIndexList.size() - 1) {
-						sb.append(",");
-					}
-				}
+		List<Double[]> rt = this.queryReport(reportType, corpId, reportDate, aliasList,
+				new DoubleArrayListReportResultProcessor());
 
-				sb.append(" from ");
-				sb.append(Tables.getReportTable(reportType));
-				sb.append(" where corpId=? and reportDate=?");
-
-				List<Object> ps = new ArrayList<Object>();
-				ps.add(corpId);
-				ps.add(reportDate);
-				return t.executeQuery(con, sb.toString(), ps, new ResultSetProcessor<List<Double>>() {
-
-					@Override
-					public List<Double> process(ResultSet rs) throws SQLException {
-						if (!rs.next()) {
-							return null;
-						}
-						List<Double> rt = new ArrayList<Double>();
-						for (int i = 0; i < columnIndexList.size(); i++) {
-							rt.add(rs.getDouble(i + 1));
-						}
-						return rt;
-					}
-				});
-
-			}
-		}, false);
+		if (rt.isEmpty()) {
+			return null;
+		} else if (rt.size() == 1) {
+			return rt.get(0);
+		} else {
+			throw RtException.toRtException("");
+		}
 
 	}
 }

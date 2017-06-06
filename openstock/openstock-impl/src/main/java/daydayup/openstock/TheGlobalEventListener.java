@@ -32,8 +32,8 @@ public class TheGlobalEventListener implements XEventListener {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(XObjectUtil.format(xSourceProps, new StringBuffer()).toString());
 			}
-			ph.execute(new CorpsApply2MemoryCommand());
-			
+			OpenStock.getInstance().execute("CorpsApply2MemoryCommand", ph.xContext);
+
 		}
 	}
 

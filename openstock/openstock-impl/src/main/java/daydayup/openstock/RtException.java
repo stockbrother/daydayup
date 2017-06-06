@@ -21,14 +21,19 @@ public class RtException extends RuntimeException {
 	public RtException(Throwable cause) {
 		super(cause);
 	}
-	
+
 	public static RuntimeException toRtException(Exception t) {
-		
+
 		if (t instanceof RuntimeException) {
 			return (RuntimeException) t;
 		} else {
 			return new RtException(t);
 		}
+	}
+
+	public static RtException toRtException(String string) {
+		//
+		return new RtException(string);
 	}
 
 }

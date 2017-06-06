@@ -8,13 +8,14 @@ import daydayup.openstock.netease.WashedFileLoader.DocWashedFileLoadContext;
 import daydayup.openstock.netease.WashedFileLoader.WashedFileLoadContext;
 import daydayup.openstock.util.DocUtil;
 
-public class NeteaseWashed2SheetCommand extends CommandBase {
+public class NeteaseWashed2SheetCommand extends CommandBase<Void> {
 
 	@Override
-	public void execute(CommandContext cc) {
+	public Void execute(CommandContext cc) {
 		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
 		WashedFileLoadContext flc = new DocWashedFileLoadContext(cc.getComponentContext());
 		new WashedFileLoader(xDoc).load(NeteaseUtil.getDataWashedDir(), flc);;
+		return null;
 	}
 
 }

@@ -9,7 +9,9 @@ module daydayup { module openstock {
   {       
       long osFirst([in] com::sun::star::beans::XPropertySet xOptions);
 
-      long osSecond([in] com::sun::star::beans::XPropertySet xOptions, [in] long intDummy);             
+      long osSecond([in] com::sun::star::beans::XPropertySet xOptions, [in] long intDummy);   
+      
+      string osCommand([in] com::sun::star::beans::XPropertySet xOptions, [in] string command);
   }; 
  
   service FunctionService: XFunctions;

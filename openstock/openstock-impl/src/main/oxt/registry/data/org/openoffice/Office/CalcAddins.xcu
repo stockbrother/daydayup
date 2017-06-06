@@ -60,6 +60,38 @@
 							</prop>
 						</node>
 					</node>
+				</node>	
+				<node oor:name="osCommand" oor:op="replace">
+					<prop oor:name="DisplayName">
+						<value xml:lang="en">oscommand</value>
+					</prop>
+					<prop oor:name="Description">
+						<value />
+					</prop>
+					<prop oor:name="Category">
+						<value>Add-In</value>
+					</prop>
+					<prop oor:name="CompatibilityName">
+						<value />
+					</prop>
+					<node oor:name="Parameters">
+						<node oor:name="xOptions" oor:op="replace">
+							<prop oor:name="DisplayName">
+								<value xml:lang="en">xOptions</value>
+							</prop>
+							<prop oor:name="Description">
+								<value />
+							</prop>
+						</node>
+						<node oor:name="command" oor:op="replace">
+							<prop oor:name="DisplayName">
+								<value xml:lang="en">command</value>
+							</prop>
+							<prop oor:name="Description">
+								<value />
+							</prop>
+						</node>
+					</node>
 				</node>				
 			</node>
 		</node>

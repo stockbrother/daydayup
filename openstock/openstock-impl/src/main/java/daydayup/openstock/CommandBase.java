@@ -1,7 +1,7 @@
 package daydayup.openstock;
 
-public abstract class CommandBase {
+public abstract class CommandBase<T> {
 
-	public abstract void execute(CommandContext cc);
+	public abstract T execute(CommandContext cc);
 
 }

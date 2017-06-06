@@ -5,11 +5,11 @@ import daydayup.openstock.CommandContext;
 import daydayup.openstock.GlobalVars;
 import daydayup.openstock.executor.Interruptable;
 
-public class NeteaseDataDownloadCommand extends CommandBase implements Interruptable {
+public class NeteaseDataDownloadCommand extends CommandBase<Void> implements Interruptable {
 	NeteaseCollector c;
 
 	@Override
-	public void execute(CommandContext cc) {
+	public Void execute(CommandContext cc) {
 		String[] codeArray = GlobalVars.getInstance().getCorpNameService().getSortedCorpCodeArray();
 		c = new NeteaseCollector(NeteaseUtil.getDataDownloadDir())//
 				.types(new String[] { //
@@ -22,6 +22,7 @@ public class NeteaseDataDownloadCommand extends CommandBase implements Interrupt
 		;
 
 		c.execute();
+		return null;
 	}
 
 	@Override
