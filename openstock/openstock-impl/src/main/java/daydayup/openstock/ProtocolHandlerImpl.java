@@ -14,7 +14,7 @@ import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.executor.TaskConflictException;
 import daydayup.openstock.executor.TaskExecutor;
 import daydayup.openstock.netease.NeteaseDataDownloadCommand;
-import daydayup.openstock.netease.NeteaseDataLoad2DbCommand;
+import daydayup.openstock.netease.NeteaseWashed2DbCommand;
 import daydayup.openstock.netease.NeteaseDataPreprocCommand;
 import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
 
@@ -88,7 +88,7 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 			if (aURL.Path.compareTo("NeteaseDataPreprocCommand") == 0) {
 				return this;
 			}
-			if (aURL.Path.compareTo("NeteaseDataLoad2DbCommand") == 0) {
+			if (aURL.Path.compareTo("NeteaseWashed2DbCommand") == 0) {
 				return this;
 			}
 			if (aURL.Path.compareTo("NeteaseWashed2SheetCommand") == 0) {
@@ -151,8 +151,8 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 				this.execute(new NeteaseDataPreprocCommand());
 				return;
 			}
-			if (aURL.Path.compareTo("NeteaseDataLoad2DbCommand") == 0) {
-				this.execute(new NeteaseDataLoad2DbCommand());
+			if (aURL.Path.compareTo("NeteaseWashed2DbCommand") == 0) {
+				this.execute(new NeteaseWashed2DbCommand());
 				return;
 			}
 			if (aURL.Path.compareTo("InterruptAllTaskCommand") == 0) {

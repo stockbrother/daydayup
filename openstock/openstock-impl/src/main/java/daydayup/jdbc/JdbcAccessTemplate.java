@@ -46,36 +46,6 @@ public class JdbcAccessTemplate {
 	public JdbcAccessTemplate() {
 	}
 
-	public <T> T execute(ConnectionProvider pool, JdbcOperation<T> op, boolean transaction) {
-		try {
-			Connection con = pool.openConnection();
-			try {
-
-				if (transaction) {
-
-					boolean oldAuto = con.getAutoCommit();
-					con.setAutoCommit(false);
-					try {
-						return op.execute(con, this);
-					} catch (Exception e) {
-						con.rollback();
-						throw RtException.toRtException(e);
-					} finally {
-						con.commit();
-						con.setAutoCommit(oldAuto);
-					}
-
-				} else {
-					return op.execute(con, this);
-				}
-			} finally {
-				con.close();
-			}
-		} catch (SQLException e) {
-			throw RtException.toRtException(e);
-		}
-	}
-
 	public long executeUpdate(Connection con, String sql) {
 		Long rt = (Long) execute(con, sql, EMPTY, UPDATE);
 		return rt.longValue();
@@ -119,6 +89,10 @@ public class JdbcAccessTemplate {
 
 	public List<Object[]> executeQuery(Connection con, String sql, Object arg) {
 		return this.executeQuery(con, sql, new Object[] { arg });
+	}
+	
+	public <T> T executeQuery(Connection con, String sql, Object arg, ResultSetProcessor<T> rsp) {
+		return this.executeQuery(con, sql, new Object[] { arg },rsp);
 	}
 
 	public List<Object[]> executeQuery(Connection con, String sql, Object[] pp) {

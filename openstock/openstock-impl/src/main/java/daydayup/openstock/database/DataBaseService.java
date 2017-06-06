@@ -1,10 +1,12 @@
 package daydayup.openstock.database;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import daydayup.jdbc.ConnectionProvider;
 import daydayup.jdbc.JdbcAccessTemplate;
-import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.RtException;
 
-public class DataBaseService {
+public class DataBaseService extends JdbcAccessTemplate {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DataBaseService.class);
 
@@ -27,7 +28,7 @@ public class DataBaseService {
 	private static Map<String, DataBaseService> MAP = new HashMap<>();
 
 	private static List<DBUpgrader> upgraderList = new ArrayList<DBUpgrader>();
-	{
+	static {
 		upgraderList.add(new DBUpgrader_001());
 	}
 
@@ -35,8 +36,11 @@ public class DataBaseService {
 
 	private DataVersion dataVersion;
 
+	private AliasInfos aliasInfos = new AliasInfos();
+
 	private DataBaseService(ConnectionProvider pool) {
 		this.pool = pool;
+
 	}
 
 	public static DataBaseService getInstance(File dbHome, String dbName) {
@@ -55,12 +59,57 @@ public class DataBaseService {
 		return rt;
 	}
 
+	public void addOrUpdateReport(int reportType, String corpId, Date reportDate, List<String> aliasList,
+			List<BigDecimal> valueList) {
+
+		List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
+
+		this.execute(new JdbcOperation<Object>() {
+
+			@Override
+			public Object execute(Connection con, JdbcAccessTemplate t) {
+				StringBuffer sb = new StringBuffer();
+				sb.append("merge into ");
+				sb.append(Tables.getReportTable(reportType));
+				sb.append("(corpId,reportDate,");
+				for (int i = 0; i < columnIndexList.size(); i++) {
+					Integer cIdx = columnIndexList.get(i);
+					sb.append(Tables.getReportColumn(cIdx));
+					if (i < columnIndexList.size() - 1) {
+						sb.append(",");
+					}
+				}
+
+				sb.append(")key(corpId,reportDate)values(");
+				sb.append("?,?,");//
+				for (int i = 0; i < columnIndexList.size(); i++) {
+					sb.append("?");
+					if (i < columnIndexList.size() - 1) {
+						sb.append(",");
+					}
+				}
+				sb.append(")");
+				List<Object> ps = new ArrayList<Object>();
+				ps.add(corpId);
+				ps.add(reportDate);
+				ps.addAll(valueList);
+				t.executeUpdate(con, sb.toString(), ps);
+
+				return null;
+			}
+		}, true);
+
+	}
+
+	public boolean isReportExist(int reportType, String corpId, Date reportDate) {
+		return false;
+	}
+
 	private void initialize() {
 
 		String schema = "test";
 
-		JdbcAccessTemplate t = new JdbcAccessTemplate();
-		t.execute(this.pool, new JdbcOperation<Object>() {
+		this.execute(new JdbcOperation<Object>() {
 
 			@Override
 			public Object execute(Connection con, JdbcAccessTemplate t) {
@@ -101,10 +150,42 @@ public class DataBaseService {
 
 				upgrade(con, t);
 
+				aliasInfos.initialize(con, t);
 				return null;
 			}
 		}, true);
 
+	}
+
+	public <T> T execute(JdbcOperation<T> op, boolean transaction) {
+
+		try {
+			Connection con = pool.openConnection();
+			try {
+
+				if (transaction) {
+
+					boolean oldAuto = con.getAutoCommit();
+					con.setAutoCommit(false);
+					try {
+						return op.execute(con, this);
+					} catch (Exception e) {
+						con.rollback();
+						throw RtException.toRtException(e);
+					} finally {
+						con.commit();
+						con.setAutoCommit(oldAuto);
+					}
+
+				} else {
+					return op.execute(con, this);
+				}
+			} finally {
+				con.close();
+			}
+		} catch (SQLException e) {
+			throw RtException.toRtException(e);
+		}
 	}
 
 	private void upgrade(Connection con, JdbcAccessTemplate t) {
@@ -162,5 +243,49 @@ public class DataBaseService {
 		} else {
 			return true;
 		}
+	}
+
+	public List<Double> getReport(int reportType, String corpId, Date reportDate, List<String> aliasList) {
+		List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
+		List<Double> rt = null;
+		return this.execute(new JdbcOperation<List<Double>>() {
+
+			@Override
+			public List<Double> execute(Connection con, JdbcAccessTemplate t) {
+				StringBuffer sb = new StringBuffer();
+				sb.append("select ");
+				for (int i = 0; i < columnIndexList.size(); i++) {
+					Integer cIdx = columnIndexList.get(i);
+					sb.append(Tables.getReportColumn(cIdx));
+					if (i < columnIndexList.size() - 1) {
+						sb.append(",");
+					}
+				}
+
+				sb.append(" from ");
+				sb.append(Tables.getReportTable(reportType));
+				sb.append(" where corpId=? and reportDate=?");
+
+				List<Object> ps = new ArrayList<Object>();
+				ps.add(corpId);
+				ps.add(reportDate);
+				return t.executeQuery(con, sb.toString(), ps, new ResultSetProcessor<List<Double>>() {
+
+					@Override
+					public List<Double> process(ResultSet rs) throws SQLException {
+						if (!rs.next()) {
+							return null;
+						}
+						List<Double> rt = new ArrayList<Double>();
+						for (int i = 0; i < columnIndexList.size(); i++) {
+							rt.add(rs.getDouble(i + 1));
+						}
+						return rt;
+					}
+				});
+
+			}
+		}, false);
+
 	}
 }

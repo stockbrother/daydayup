@@ -161,7 +161,7 @@
 							</node>
 							<node oor:name="m004003" oor:op="replace">
 								<prop oor:name="URL" oor:type="xs:string">
-									<value><![CDATA[daydayup.openstock.command:NeteaseDataLoad2DbCommand]]></value>
+									<value><![CDATA[daydayup.openstock.command:NeteaseWashed2DbCommand]]></value>
 								</prop>
 								<prop oor:name="ImageIdentifier" oor:type="xs:string">
 									<value />
@@ -174,7 +174,7 @@
 								</prop>
 								<prop oor:name="Title" oor:type="xs:string">
 									<value />
-									<value xml:lang="en"><![CDATA[Netease-Data-Load2Db]]></value>
+									<value xml:lang="en"><![CDATA[Netease-Washed2Db]]></value>
 								</prop>
 							</node>
 							<node oor:name="m004004" oor:op="replace">
