@@ -59,7 +59,7 @@ public class DataBaseService extends JdbcAccessTemplate {
 		return rt;
 	}
 
-	public void addOrUpdateReport(int reportType, String corpId, Date reportDate, List<String> aliasList,
+	public void mergeReport(int reportType, String corpId, Date reportDate, List<String> aliasList,
 			List<BigDecimal> valueList) {
 
 		List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);

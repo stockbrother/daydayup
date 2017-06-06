@@ -17,6 +17,11 @@ public class AliasInfos {
 	private Map<Integer, Map<String, Integer>> reportAliasColumnMap = new HashMap<>();
 
 	public void initialize(Connection con, JdbcAccessTemplate t) {
+		this.updateCache(con, t);
+	}
+
+	private void updateCache(Connection con, JdbcAccessTemplate t) {
+		this.reportAliasColumnMap.clear();
 		String sql = "select reportType,aliasName,columnIndex from " + Tables.TN_ALIAS_INFO + "";
 		t.executeQuery(con, sql, new ResultSetProcessor<Object>() {
 
@@ -63,6 +68,9 @@ public class AliasInfos {
 						String sql = "insert into " + Tables.TN_ALIAS_INFO
 								+ "(reportType,aliasName,columnIndex) values(?,?,?)";
 						t.executeUpdate(con, sql, new Object[] { reportType, alias, tmpIndex });
+
+						updateCache(con, t);
+
 						return tmpIndex;
 					}
 				}, true);

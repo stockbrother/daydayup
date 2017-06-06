@@ -29,7 +29,7 @@ public class DataBaseTest extends TestCase {
 		aliasList.add("key2");
 		valueList.add(new BigDecimal("456789.012"));
 
-		dbs.addOrUpdateReport(reportType, corpId, reportDate, aliasList, valueList);
+		dbs.mergeReport(reportType, corpId, reportDate, aliasList, valueList);
 
 		List<Double> dL = dbs.getReport(reportType, corpId, reportDate, aliasList);
 		Assert.assertEquals(aliasList.size(), dL.size());
@@ -41,6 +41,11 @@ public class DataBaseTest extends TestCase {
 			Assert.assertEquals(d1, d2, 0.001D);
 
 		}
+		
+		//test more row
+		
+		dbs.mergeReport(reportType, corpId, reportDate, aliasList, valueList);
+		
 	}
 
 }
