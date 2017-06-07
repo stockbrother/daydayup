@@ -3,8 +3,8 @@ package daydayup.openstock;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,22 +32,27 @@ public class SheetCommand extends CommandBase<Object> {
 	public Object execute(CommandContext cc) {
 		XComponentContext xcc = cc.getComponentContext();
 		DataBaseService dbs = cc.getDataBaseService();
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xcc, "SQL_QUERY", false);
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xcc, "CMDS", false);
 
 		if (xSheet == null) {
-			// "no sheet with name SQL";
-			return null;
+			// "no sheet with name CMDS";
+			return "no sheet with name CMDS";
 		}
 		String invokeId = null;
-		Map<String, SqlCommandInfo> sqlMap = new HashMap<>();
 		boolean body = false;
+		String command = null;
+		List<String> argL = new ArrayList<>();
 		for (int i = 0; i < 1024 * 1024; i++) {
 			String value0I = DocUtil.getText(xSheet, 0, i);
+
 			if ("Invoke".equals(value0I)) {
 				invokeId = DocUtil.getText(xSheet, 1, i);
 				continue;
 			}
-			if ("Body".equals(value0I)) {
+			if (invokeId == null) {
+				continue;
+			}
+			if ("ID".equals(value0I)) {
 				body = true;
 				continue;
 			}
@@ -59,43 +64,84 @@ public class SheetCommand extends CommandBase<Object> {
 				break;
 			}
 
-			SqlCommandInfo ci = new SqlCommandInfo();
-			ci.id = value0I;
-			ci.sql = DocUtil.getText(xSheet, 1, i);
-			ci.targetSheet = DocUtil.getText(xSheet, 2, i);
-			sqlMap.put(ci.id, ci);
+			if (invokeId.equals(value0I)) {
+				// found the command to invoke.
+				command = DocUtil.getText(xSheet, 1, i);
+				for (int j = 2;; j++) {
+					String argJ = DocUtil.getText(xSheet, j, i);
+					if (argJ == null || argJ.trim().length() == 0) {
+						break;
+					}
+					argL.add(argJ);
+				}
+
+				break;
+			}
+
 		}
 
-		SqlCommandInfo sci = sqlMap.get(invokeId);
-		if (sci == null) {
-			LOG.warn("no sql command found for invokeId:{}", invokeId);
-			return null;
+		if (invokeId == null) {
+			LOG.warn("no invokeId found.");
+			return "no invokeId found.";
 		}
 
-		dbs.execute(new JdbcOperation<Object>() {
+		if (command == null) {
+			LOG.warn("no command found for invokeId:{}", invokeId);
+			return "no command found for invokeId";
+		}
+		if (command.equals("SQL_QUERY")) {
+			return this.executeSqlQuery(cc, argL);
+		} else {
+
+			return "not supporte:" + command;
+		}
+	}
+
+	private Object executeSqlQuery(CommandContext cc, List<String> argL) {
+		if (argL.isEmpty()) {
+			LOG.warn("illegel argument for sql query.");
+			return "illegel argument for sql query.";
+		}
+		String sqlId = argL.get(0);
+		String sql = null;
+		String targetSheet = null;
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), "SQL_QUERY", false);
+		for (int i = 0;; i++) {
+			String id = DocUtil.getText(xSheet, 0, i);
+			if (id == null || id.trim().length() == 0) {
+				break;
+			}
+			if (sqlId.equals(id)) {
+				sql = DocUtil.getText(xSheet, 1, i);
+				targetSheet = DocUtil.getText(xSheet, 2, i);
+				break;
+			}
+		}
+		final String sqlF = sql;
+		final String targetSheetF = targetSheet;
+		return cc.getDataBaseService().execute(new JdbcOperation<Object>() {
 
 			@Override
 			public Object execute(Connection con, JdbcAccessTemplate t) {
 
-				t.executeQuery(con, sci.sql, new ResultSetProcessor<Object>() {
+				return t.executeQuery(con, sqlF, new ResultSetProcessor<Object>() {
 
 					@Override
 					public Object process(ResultSet rs) throws SQLException {
-						writeToSheet(xcc, rs, sci.targetSheet);
-						return null;
+						writeToSheet(cc.getComponentContext(), rs, targetSheetF);
+						return "done.";
 					}
 
 				});
 
-				return null;
 			}
 		}, false);
-		return null;
 	}
 
 	private void writeToSheet(XComponentContext xcc, ResultSet rs, String targetSheet) throws SQLException {
-
+		
 		XSpreadsheet xSheet = DocUtil.getOrCreateSpreadsheetByName(xcc, targetSheet);
+		DocUtil.setActiveSheet(xcc, xSheet);
 		int cols = rs.getMetaData().getColumnCount();
 		// write header
 		for (int i = 0; i < cols; i++) {

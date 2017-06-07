@@ -22,6 +22,7 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.uno.XInterface;
 
+import daydayup.openstock.OpenStock;
 import daydayup.openstock.RtException;
 import daydayup.openstock.netease.NeteaseUtil;
 
@@ -43,14 +44,8 @@ public class DocUtil {
 		return xDoc2;
 	}
 
-	public static XSpreadsheet getActiveSheet(XComponentContext cc, String name) {
-
-		Object desktop = null;
-		try {
-			desktop = cc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", cc);
-		} catch (Exception e) {
-			throw new RtException(e);
-		}
+	public static void setActiveSheet(XComponentContext xcc, XSpreadsheet xSheet) {
+		Object desktop = OpenStock.getInstance().getDesktop(xcc);
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
 
 		XComponent xComp = xDesktop.getCurrentComponent();
@@ -61,7 +56,24 @@ public class DocUtil {
 
 		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
 				xModel.getCurrentController());
+		xView.setActiveSheet(xSheet);
+		
+	}
 
+	public static XSpreadsheet getActiveSheet(XComponentContext xcc, String name) {
+		
+		Object desktop = OpenStock.getInstance().getDesktop(xcc);
+		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
+
+		XComponent xComp = xDesktop.getCurrentComponent();
+
+		XModel xModel = UnoRuntime.queryInterface(XModel.class, xComp);
+		XController xControl = xModel.getCurrentController();
+		Object viewData = xControl.getViewData();
+
+		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
+				xModel.getCurrentController());
+		
 		XSpreadsheet xSheet = xView.getActiveSheet();
 
 		XNamed xName = UnoRuntime.queryInterface(XNamed.class, xSheet);
@@ -165,12 +177,13 @@ public class DocUtil {
 	}
 
 	public static void setText(XCell xCell, String text) {
-		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);		
+		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);
 		xCellText.setString(text);
 	}
 
 	public static XSpreadsheet createSheet(XSpreadsheetDocument xDoc, String name) {
-		xDoc.getSheets().insertNewByName(name, (short) 0);
+		String[] names = xDoc.getSheets().getElementNames();
+		xDoc.getSheets().insertNewByName(name, (short)names.length);
 		return getSpreadsheetByName(xDoc, name, true);
 	}
 }

@@ -55,7 +55,7 @@ xPSet = UnoRuntime.queryInterface(XPropertySet,xDoc);
 xSM= xContext.getServiceManager();
 osFunctions=xSM.createInstanceWithContext("daydayup.openstock.FunctionService", xContext);
 osFs = UnoRuntime.queryInterface(XFunctions,osFunctions);
-firstValue = osFs.osFirst(xPSet);
+result = osFs.osCommand(xPSet,"SheetCommand");
 
 
 //oDoc = UnoRuntime.queryInterface(XModel,XSCRIPTCONTEXT.getInvocationContext());

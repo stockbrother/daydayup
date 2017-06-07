@@ -1,14 +1,12 @@
 package daydayup.openstock;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.sheet.XSpreadsheet;
+import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
 
 import daydayup.openstock.cninfo.CorpInfoRefreshCommand;
@@ -19,10 +17,10 @@ import daydayup.openstock.netease.NeteaseDataDownloadCommand;
 import daydayup.openstock.netease.NeteaseDataPreprocCommand;
 import daydayup.openstock.netease.NeteaseWashed2DbCommand;
 import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
-import daydayup.openstock.util.DocUtil;
+import daydayup.openstock.util.MessageBoxUtil;
 
 public class OpenStock {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(OpenStock.class);
 
 	private static OpenStock ME;
@@ -32,6 +30,8 @@ public class OpenStock {
 	private TaskExecutor commandExecutor = new TaskExecutor();
 
 	private Map<String, Class> commandClassMap = new HashMap<>();
+
+	Map<XComponentContext, Object> desktopObjectMap = new HashMap<>();
 
 	public OpenStock() {
 		this.dbs = DataBaseService.getInstance(EnvUtil.getDataDir(), EnvUtil.getDbName());
@@ -59,6 +59,21 @@ public class OpenStock {
 		return this.dbs;
 	}
 
+	public Object getDesktop(XComponentContext xcc) {
+		Object desktop = this.desktopObjectMap.get(xcc);
+		if (desktop == null) {
+
+			try {
+				desktop = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", xcc);
+
+			} catch (Exception e) {
+				throw new RtException(e);
+			}
+			this.desktopObjectMap.put(xcc, desktop);
+		}
+		return desktop;
+	}
+
 	public void execute(String command, XComponentContext xcc) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("execute command:{}", command);
@@ -84,8 +99,6 @@ public class OpenStock {
 		}
 
 	}
-
-	
 
 	public void execute(CommandBase command, XComponentContext xcc) {
 		CommandContext cc = new CommandContext(xcc);
