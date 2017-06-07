@@ -1,11 +1,14 @@
 package daydayup.openstock;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.uno.XComponentContext;
 
 import daydayup.openstock.cninfo.CorpInfoRefreshCommand;
@@ -16,9 +19,10 @@ import daydayup.openstock.netease.NeteaseDataDownloadCommand;
 import daydayup.openstock.netease.NeteaseDataPreprocCommand;
 import daydayup.openstock.netease.NeteaseWashed2DbCommand;
 import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
+import daydayup.openstock.util.DocUtil;
 
 public class OpenStock {
-
+	
 	private static final Logger LOG = LoggerFactory.getLogger(OpenStock.class);
 
 	private static OpenStock ME;
@@ -39,6 +43,7 @@ public class OpenStock {
 		// InterruptAllTaskCommand.class);
 		commandClassMap.put("CorpsApply2MemoryCommand", CorpsApply2MemoryCommand.class);
 		commandClassMap.put("NeteaseWashed2SheetCommand", NeteaseWashed2SheetCommand.class);
+		commandClassMap.put("SheetCommand", SheetCommand.class);
 
 	}
 
@@ -79,6 +84,8 @@ public class OpenStock {
 		}
 
 	}
+
+	
 
 	public void execute(CommandBase command, XComponentContext xcc) {
 		CommandContext cc = new CommandContext(xcc);

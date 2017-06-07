@@ -31,7 +31,7 @@ public class DocUtil {
 		try {
 			desktop = cc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", cc);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RtException(e);
 		}
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
 
@@ -49,7 +49,7 @@ public class DocUtil {
 		try {
 			desktop = cc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", cc);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RtException(e);
 		}
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
 
@@ -72,6 +72,16 @@ public class DocUtil {
 
 	}
 
+	public static XSpreadsheet getOrCreateSpreadsheetByName(XComponentContext cc, String name) {
+		XSpreadsheetDocument xDoc = getSpreadsheetDocument(cc);
+
+		XSpreadsheet rt = getSpreadsheetByName(xDoc, name, false);
+		if (rt == null) {
+			rt = createSheet(xDoc, name);
+		}
+		return rt;
+	}
+
 	public static XSpreadsheet getSpreadsheetByName(XComponentContext cc, String name, boolean force) {
 		return getSpreadsheetByName(getSpreadsheetDocument(cc), name, force);
 	}
@@ -82,12 +92,12 @@ public class DocUtil {
 			return (XSpreadsheet) UnoRuntime.queryInterface(XSpreadsheet.class, xDoc.getSheets().getByName(name));
 		} catch (NoSuchElementException e) {
 			if (force) {
-				throw new RuntimeException(e);
+				throw new RtException(e);
 			} else {
 				return null;
 			}
 		} catch (WrappedTargetException e) {
-			throw new RuntimeException(e);
+			throw new RtException(e);
 		}
 
 	}
@@ -133,19 +143,34 @@ public class DocUtil {
 			XCell xCell = xSheet.getCellByPosition(col, row);
 			setText(xCell, text);
 		} catch (IndexOutOfBoundsException e) {
-			throw new RuntimeException(e);
+			throw new RtException(e);
 		}
 
 	}
 
-	public static void setText(XCell xCell, String text) {
-		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);
-		com.sun.star.text.XTextCursor xTextCursor = xCellText.createTextCursor();
-		xCellText.insertString(xTextCursor, text, false);
+	public static String getText(XSpreadsheet xSheet, int col, int row) {
+		try {
+			XCell xCell = xSheet.getCellByPosition(col, row);
+			return getText(xCell);
+		} catch (IndexOutOfBoundsException e) {
+			throw new RtException(e);
+		}
+
 	}
 
-	public static XSpreadsheet createSheet(XSpreadsheetDocument xDoc, String type) {
-		xDoc.getSheets().insertNewByName(type, (short) 0);
-		return getSpreadsheetByName(xDoc, type, true);
+	public static String getText(XCell xCell) {
+		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);
+
+		return xCellText.getString();
+	}
+
+	public static void setText(XCell xCell, String text) {
+		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);		
+		xCellText.setString(text);
+	}
+
+	public static XSpreadsheet createSheet(XSpreadsheetDocument xDoc, String name) {
+		xDoc.getSheets().insertNewByName(name, (short) 0);
+		return getSpreadsheetByName(xDoc, name, true);
 	}
 }
