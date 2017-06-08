@@ -117,7 +117,13 @@ public class OpenStockFunctionServiceImpl extends com.sun.star.lib.uno.helper.We
 
 	@Override
 	public String osCommand(XPropertySet arg0, String arg1) {
-		OpenStock.getInstance().execute(arg1, this.xContext);
+		try {
+			OpenStock.getInstance().execute(arg1, this.xContext);
+		} catch (RuntimeException e) {
+			LOG.error("", e);
+			return "error when execute command:" + arg1;
+		}
+
 		return "submit.";
 	}
 

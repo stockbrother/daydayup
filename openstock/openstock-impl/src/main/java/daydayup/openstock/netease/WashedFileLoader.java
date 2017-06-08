@@ -254,7 +254,7 @@ public class WashedFileLoader {
 
 	private Map<String, WashedFileProcessor> processMap = new HashMap<>();
 
-	private int maxSize = 1;
+	private int maxSize = -1;
 
 	private int processed;
 
@@ -286,10 +286,10 @@ public class WashedFileLoader {
 						LOG.trace("process file:" + f.getAbsolutePath());
 					}
 					fp.process(f, xContext);//
-					if (this.processed++ > this.maxSize) {
+					if (this.maxSize >= 0 && this.processed++ > this.maxSize) {
 						this.interrupted = true;
 					}
-					;
+					
 
 				}
 			}

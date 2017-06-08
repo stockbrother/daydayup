@@ -10,12 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.star.sheet.XSpreadsheet;
+import com.sun.star.sheet.XSpreadsheetDocument;
 import com.sun.star.uno.XComponentContext;
 
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.database.DataBaseService;
+import daydayup.openstock.netease.NeteaseUtil;
+import daydayup.openstock.netease.WashedFileLoader;
+import daydayup.openstock.netease.WashedFileLoader.DbWashedFileLoadContext;
+import daydayup.openstock.netease.WashedFileLoader.WashedFileLoadContext;
 import daydayup.openstock.util.DocUtil;
 
 public class SheetCommand extends CommandBase<Object> {
@@ -89,12 +94,22 @@ public class SheetCommand extends CommandBase<Object> {
 			LOG.warn("no command found for invokeId:{}", invokeId);
 			return "no command found for invokeId";
 		}
+
 		if (command.equals("SQL_QUERY")) {
 			return this.executeSqlQuery(cc, argL);
+		} else if (command.equals("NETEASE_WASHED_2_DB")) {
+			return this.executeNeteaseWashed2Db(cc, argL);
 		} else {
-
 			return "not supporte:" + command;
 		}
+	}
+
+	private Object executeNeteaseWashed2Db(CommandContext cc, List<String> argL) {
+		DataBaseService dbs = cc.getDataBaseService();
+		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
+		WashedFileLoadContext flc = new DbWashedFileLoadContext(dbs);
+		new WashedFileLoader(xDoc).load(NeteaseUtil.getDataWashedDir(), flc);
+		return "done";
 	}
 
 	private Object executeSqlQuery(CommandContext cc, List<String> argL) {
@@ -139,7 +154,7 @@ public class SheetCommand extends CommandBase<Object> {
 	}
 
 	private void writeToSheet(XComponentContext xcc, ResultSet rs, String targetSheet) throws SQLException {
-		
+
 		XSpreadsheet xSheet = DocUtil.getOrCreateSpreadsheetByName(xcc, targetSheet);
 		DocUtil.setActiveSheet(xcc, xSheet);
 		int cols = rs.getMetaData().getColumnCount();
@@ -153,8 +168,9 @@ public class SheetCommand extends CommandBase<Object> {
 		while (rs.next()) {
 
 			for (int i = 0; i < cols; i++) {
-				Object obj = rs.getObject(i + 1);
-				DocUtil.setText(xSheet, i, row, String.valueOf(obj));
+				Object obj = rs.getObject(i + 1);				
+				DocUtil.setValue(xSheet, i, row, obj);
+				
 			}
 			row++;
 		}

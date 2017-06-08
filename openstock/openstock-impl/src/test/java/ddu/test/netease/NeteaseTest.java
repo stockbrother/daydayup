@@ -3,7 +3,7 @@ package ddu.test.netease;
 import java.io.File;
 
 import daydayup.openstock.netease.NeteaseCollector;
-import daydayup.openstock.netease.NeteasePreprocessor;
+import daydayup.openstock.netease.NeteaseDataWashingProcessor;
 
 public class NeteaseTest {
 
@@ -15,7 +15,7 @@ public class NeteaseTest {
 		NeteaseCollector c = new NeteaseCollector(root1).types(new String[] { NeteaseCollector.TYPE_zcfzb })
 				.corpCodes("000001");
 		c.execute();
-		NeteasePreprocessor p = new NeteasePreprocessor(root1,root2);
+		NeteaseDataWashingProcessor p = new NeteaseDataWashingProcessor(root1,root2);
 		p.execute();
 		
 	}

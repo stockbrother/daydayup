@@ -24,8 +24,8 @@ import daydayup.openstock.executor.Interruptable;
  * @author wu
  *
  */
-public class NeteasePreprocessor implements Interruptable {
-	private static final Logger LOG = LoggerFactory.getLogger(NeteasePreprocessor.class);
+public class NeteaseDataWashingProcessor implements Interruptable {
+	private static final Logger LOG = LoggerFactory.getLogger(NeteaseDataWashingProcessor.class);
 
 	private File sourceDir;
 	private File targetDir;
@@ -34,19 +34,19 @@ public class NeteasePreprocessor implements Interruptable {
 
 	private boolean interrupted;
 
-	public NeteasePreprocessor(File sourceDir, File targetDir) {
+	public NeteaseDataWashingProcessor(File sourceDir, File targetDir) {
 		this.sourceDir = sourceDir;
 		this.targetDir = targetDir;
 	}
 
-	public NeteasePreprocessor types(String... types) {
+	public NeteaseDataWashingProcessor types(String... types) {
 		for (String type : types) {
 			this.types.add(type);
 		}
 		return this;
 	}
 
-	public NeteasePreprocessor xjllb() {
+	public NeteaseDataWashingProcessor xjllb() {
 		this.types.add("xjllb");
 		return this;
 	}

@@ -3,7 +3,6 @@ package daydayup.openstock.util;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.sun.star.beans.Property;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNamed;
 import com.sun.star.frame.XController;
@@ -12,7 +11,6 @@ import com.sun.star.frame.XModel;
 import com.sun.star.lang.IndexOutOfBoundsException;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
-import com.sun.star.lib.uno.helper.PropertySet;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
 import com.sun.star.sheet.XSpreadsheetView;
@@ -123,12 +121,9 @@ public class DocUtil {
 				// do nothing.
 			} else if (value instanceof Date) {
 				String str = NeteaseUtil.DF.format((Date) value);
-				setText(xCell, str);
-			} else if (value instanceof BigDecimal) {
-				xCell.setValue(((BigDecimal) value).doubleValue());
-				// PropertySet ptsSet =
-				// UnoRuntime.queryInterface(PropertySet.class, xCell);
-				// Property[] pts = ptsSet.getPropertySetInfo().getProperties();
+				setText(xCell, str);			
+			} else if(value instanceof Number){
+				xCell.setValue(((Number) value).doubleValue());
 			} else {
 				setText(xCell, value.toString());
 			}

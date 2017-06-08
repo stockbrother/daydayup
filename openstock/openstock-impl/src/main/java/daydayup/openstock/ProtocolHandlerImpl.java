@@ -15,7 +15,7 @@ import daydayup.openstock.executor.TaskConflictException;
 import daydayup.openstock.executor.TaskExecutor;
 import daydayup.openstock.netease.NeteaseDataDownloadCommand;
 import daydayup.openstock.netease.NeteaseWashed2DbCommand;
-import daydayup.openstock.netease.NeteaseDataPreprocCommand;
+import daydayup.openstock.netease.NeteaseDataWashingCommand;
 import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
 import daydayup.openstock.util.MessageBoxUtil;
 
@@ -71,7 +71,7 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 				return this;
 			}
 
-			if (aURL.Path.compareTo("NeteaseDataPreprocCommand") == 0) {
+			if (aURL.Path.compareTo("NeteaseDataWashingCommand") == 0) {
 				return this;
 			}
 			if (aURL.Path.compareTo("NeteaseWashed2DbCommand") == 0) {

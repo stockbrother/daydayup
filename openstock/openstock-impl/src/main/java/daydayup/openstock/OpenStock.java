@@ -14,7 +14,7 @@ import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.executor.TaskConflictException;
 import daydayup.openstock.executor.TaskExecutor;
 import daydayup.openstock.netease.NeteaseDataDownloadCommand;
-import daydayup.openstock.netease.NeteaseDataPreprocCommand;
+import daydayup.openstock.netease.NeteaseDataWashingCommand;
 import daydayup.openstock.netease.NeteaseWashed2DbCommand;
 import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
 import daydayup.openstock.util.MessageBoxUtil;
@@ -37,7 +37,7 @@ public class OpenStock {
 		this.dbs = DataBaseService.getInstance(EnvUtil.getDataDir(), EnvUtil.getDbName());
 		commandClassMap.put("CorpInfoRefreshCommand", CorpInfoRefreshCommand.class);
 		commandClassMap.put("NeteaseDataDownloadCommand", NeteaseDataDownloadCommand.class);
-		commandClassMap.put("NeteaseDataPreprocCommand", NeteaseDataPreprocCommand.class);
+		commandClassMap.put("NeteaseDataWashingCommand", NeteaseDataWashingCommand.class);
 		commandClassMap.put("NeteaseWashed2DbCommand", NeteaseWashed2DbCommand.class);
 		// commandClassMap.put("InterruptAllTaskCommand",
 		// InterruptAllTaskCommand.class);
