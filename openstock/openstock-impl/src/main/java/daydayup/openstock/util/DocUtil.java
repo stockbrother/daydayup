@@ -1,12 +1,12 @@
 package daydayup.openstock.util;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNamed;
 import com.sun.star.frame.XController;
 import com.sun.star.frame.XDesktop;
+import com.sun.star.frame.XFrame;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.IndexOutOfBoundsException;
 import com.sun.star.lang.WrappedTargetException;
@@ -15,6 +15,8 @@ import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
 import com.sun.star.sheet.XSpreadsheetView;
 import com.sun.star.table.XCell;
+import com.sun.star.task.XStatusIndicator;
+import com.sun.star.task.XStatusIndicatorFactory;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
@@ -25,21 +27,47 @@ import daydayup.openstock.RtException;
 import daydayup.openstock.netease.NeteaseUtil;
 
 public class DocUtil {
-	public static XSpreadsheetDocument getSpreadsheetDocument(XComponentContext cc) {
+	public static XSpreadsheetDocument getSpreadsheetDocument(XComponentContext xcc) {
 		Object desktop = null;
 		try {
-			desktop = cc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", cc);
+			desktop = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", xcc);
 		} catch (Exception e) {
 			throw new RtException(e);
 		}
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
-
 		XComponent xComp = xDesktop.getCurrentComponent();
-
+		
 		XInterface xDoc = UnoRuntime.queryInterface(XInterface.class, xComp);
 		XSpreadsheetDocument xDoc2 = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xDoc);
-
+		
 		return xDoc2;
+	}
+	public static XStatusIndicator createStatusIndicator(XComponentContext xcc){
+		Object desktop = null;
+		try {
+			desktop = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", xcc);
+		} catch (Exception e) {
+			throw new RtException(e);
+		}
+		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
+		XFrame frame = xDesktop.getCurrentFrame();
+		XStatusIndicatorFactory sif = UnoRuntime.queryInterface(XStatusIndicatorFactory.class, frame);
+		XStatusIndicator si = sif.createStatusIndicator();
+		return si;
+	}
+	
+	private static XStatusIndicator createStatusIndicator2(XComponentContext xcc){
+		Object frame;
+		try {
+			frame = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Frame", xcc);
+		} catch (Exception e) {
+			throw new RtException(e);
+		}
+		//Object service = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", xcc);
+		
+		XStatusIndicatorFactory sif = UnoRuntime.queryInterface(XStatusIndicatorFactory.class, frame);
+		XStatusIndicator si = sif.createStatusIndicator();
+		return si;
 	}
 
 	public static void setActiveSheet(XComponentContext xcc, XSpreadsheet xSheet) {

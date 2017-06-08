@@ -9,7 +9,7 @@ public class NeteaseDataDownloadCommand extends CommandBase<Void> implements Int
 	NeteaseCollector c;
 
 	@Override
-	public Void execute(CommandContext cc) {
+	public Void doExecute(CommandContext cc) {
 		String[] codeArray = GlobalVars.getInstance().getCorpNameService().getSortedCorpCodeArray();
 		c = new NeteaseCollector(NeteaseUtil.getDataDownloadDir())//
 				.types(new String[] { //

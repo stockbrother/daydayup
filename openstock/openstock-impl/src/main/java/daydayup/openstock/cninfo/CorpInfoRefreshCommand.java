@@ -13,7 +13,7 @@ import daydayup.openstock.GlobalVars;
 public class CorpInfoRefreshCommand extends CommandBase<Void> {
 
 	@Override
-	public Void execute(CommandContext cc) {
+	public Void doExecute(CommandContext cc) {
 
 		File csvFile = new File("C:\\D\\data\\cninfo\\20170602111822.csv");
 

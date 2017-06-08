@@ -14,7 +14,7 @@ public class CorpsApply2MemoryCommand extends CommandBase<Void> {
 	private static final Logger LOG = LoggerFactory.getLogger(CorpsApply2MemoryCommand.class);
 
 	@Override
-	public Void execute(CommandContext cc) {
+	public Void doExecute(CommandContext cc) {
 
 		CorpNameService cns = GlobalVars.getInstance().getCorpNameService();
 		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.componentContext, "CORPS", false);

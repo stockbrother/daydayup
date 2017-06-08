@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.star.task.XStatusIndicator;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
 
@@ -17,6 +18,7 @@ import daydayup.openstock.netease.NeteaseDataDownloadCommand;
 import daydayup.openstock.netease.NeteaseDataWashingCommand;
 import daydayup.openstock.netease.NeteaseWashed2DbCommand;
 import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
+import daydayup.openstock.util.DocUtil;
 import daydayup.openstock.util.MessageBoxUtil;
 
 public class OpenStock {
@@ -101,15 +103,17 @@ public class OpenStock {
 	}
 
 	public void execute(CommandBase command, XComponentContext xcc) {
-		CommandContext cc = new CommandContext(xcc);
+		XStatusIndicator si = DocUtil.createStatusIndicator(xcc);
+
+		CommandContext cc = new CommandContext(xcc, si);
 		try {
 			this.commandExecutor.execute(command, cc);
 		} catch (TaskConflictException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			MessageBoxUtil.showMessageBox(xcc, null, "Task Conflict Error", "Detail:" + e.getMessage());
-		}
+			LOG.error("", e);
 
+			MessageBoxUtil.showMessageBox(xcc, null, "Task Conflict Error", "Detail:" + e.getMessage());
+
+		}
 	}
 
 }

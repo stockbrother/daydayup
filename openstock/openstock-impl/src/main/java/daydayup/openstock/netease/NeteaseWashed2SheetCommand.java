@@ -11,7 +11,7 @@ import daydayup.openstock.util.DocUtil;
 public class NeteaseWashed2SheetCommand extends CommandBase<Void> {
 
 	@Override
-	public Void execute(CommandContext cc) {
+	public Void doExecute(CommandContext cc) {
 		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
 		WashedFileLoadContext flc = new DocWashedFileLoadContext(cc.getComponentContext());
 		new WashedFileLoader(xDoc).load(NeteaseUtil.getDataWashedDir(), flc);;

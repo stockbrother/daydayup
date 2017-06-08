@@ -8,7 +8,7 @@ public class NeteaseDataWashingCommand extends CommandBase<Void> implements Inte
 	NeteaseDataWashingProcessor pp;
 
 	@Override
-	public Void execute(CommandContext cc) {
+	public Void doExecute(CommandContext cc) {
 
 		pp = new NeteaseDataWashingProcessor(NeteaseUtil.getDataDownloadDir(), NeteaseUtil.getDataWashedDir());
 		pp.types(NeteaseCollector.TYPE_zcfzb, NeteaseCollector.TYPE_lrb, NeteaseCollector.TYPE_xjllb);

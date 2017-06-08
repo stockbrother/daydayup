@@ -8,8 +8,14 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.star.task.XStatusIndicator;
+import com.sun.star.task.XStatusIndicatorFactory;
+import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
+
 import daydayup.openstock.CommandBase;
 import daydayup.openstock.CommandContext;
+import daydayup.openstock.util.DocUtil;
 
 public class TaskExecutor {
 
@@ -17,45 +23,35 @@ public class TaskExecutor {
 
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 
-	private TaskWrapper taskWrapper;
+	private TaskWrapper<?> taskWrapper;
 
-	private static class TaskWrapper {
-		Runnable task;
+	private static class TaskWrapper<T> implements Callable<T>, Interruptable {
+		CommandBase task;
 		Future<?> future;
+		CommandContext cc;
 
-		TaskWrapper(Runnable task, Future<?> future2) {
+		TaskWrapper(CommandBase task, CommandContext cc) {
+			this.cc = cc;
 			this.task = task;
-			this.future = future2;
 		}
 
+		@Override
 		public void interrupt() {
 			if (task instanceof Interruptable) {
 				((Interruptable) this.task).interrupt();
 			}
 		}
-	}
-
-	private static class CommandWrapper implements Runnable, Interruptable {
-		CommandBase command;
-		CommandContext cc;
-
-		CommandWrapper(CommandBase command, CommandContext cc) {
-			this.command = command;
-			this.cc = cc;
-		}
 
 		@Override
-		public void interrupt() {
-			if (this.command instanceof Interruptable) {
-				((Interruptable) this.command).interrupt();
+		public T call() throws Exception {
+			try {
+				task.execute(cc);				
+			} catch (Exception e) {
+				LOG.error("", e);
 			}
-		}
 
-		@Override
-		public void run() {
-			this.command.execute(cc);
+			return null;
 		}
-
 	}
 
 	public void interruptAll() {
@@ -65,10 +61,6 @@ public class TaskExecutor {
 	}
 
 	public void execute(CommandBase command, CommandContext cc) throws TaskConflictException {
-		execute(new CommandWrapper(command, cc));
-	}
-
-	public void execute(Runnable task) throws TaskConflictException {
 
 		if (this.taskWrapper != null) {
 			if (this.taskWrapper.future.isDone()) {
@@ -77,22 +69,9 @@ public class TaskExecutor {
 				throw new TaskConflictException("task is running, please wait");
 			}
 		}
-
-		Future<?> future = executor.submit(new Callable<Object>() {
-
-			@Override
-			public Object call() throws Exception {
-				try {
-					task.run();
-				} catch (Exception e) {
-					LOG.error("", e);
-				}
-
-				return null;
-			}
-
-		});
-		this.taskWrapper = new TaskWrapper(task, future);
+		TaskWrapper<Object> tw = new TaskWrapper<Object>(command, cc);
+		Future<?> future = executor.submit(tw);
+		tw.future = future;
 
 	}
 }

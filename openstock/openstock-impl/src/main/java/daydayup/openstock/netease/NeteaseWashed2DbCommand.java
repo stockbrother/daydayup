@@ -12,7 +12,7 @@ import daydayup.openstock.util.DocUtil;
 public class NeteaseWashed2DbCommand extends CommandBase<Void> {
 
 	@Override
-	public Void execute(CommandContext cc) {
+	public Void doExecute(CommandContext cc) {
 		DataBaseService dbs = cc.getDataBaseService();
 		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
 		WashedFileLoadContext flc = new DbWashedFileLoadContext(dbs);

@@ -4,13 +4,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.star.container.NoSuchElementException;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
+import com.sun.star.task.XStatusIndicator;
 import com.sun.star.uno.XComponentContext;
 
 import daydayup.jdbc.JdbcAccessTemplate;
@@ -27,6 +32,8 @@ public class SheetCommand extends CommandBase<Object> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SheetCommand.class);
 
+	private int maxRows = 1000;
+
 	private static class SqlCommandInfo {
 		public String id;
 		public String sql;
@@ -34,7 +41,7 @@ public class SheetCommand extends CommandBase<Object> {
 	}
 
 	@Override
-	public Object execute(CommandContext cc) {
+	public Object doExecute(CommandContext cc) {
 		XComponentContext xcc = cc.getComponentContext();
 		DataBaseService dbs = cc.getDataBaseService();
 		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xcc, "CMDS", false);
@@ -99,9 +106,32 @@ public class SheetCommand extends CommandBase<Object> {
 			return this.executeSqlQuery(cc, argL);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {
 			return this.executeNeteaseWashed2Db(cc, argL);
+		} else if (command.equals("RESET_SHEET")) {
+			return this.executeResetSheet(cc);
 		} else {
 			return "not supporte:" + command;
 		}
+	}
+
+	private Object executeResetSheet(CommandContext cc) {
+		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
+		Set<String> remainNames = new HashSet<>();
+		remainNames.add("CMDS");
+		remainNames.add("SQL_QUERY");
+		String[] names = xDoc.getSheets().getElementNames();
+		for (String name : names) {
+			if (remainNames.contains(name)) {
+				continue;
+			}
+			try {
+				xDoc.getSheets().removeByName(name);
+			} catch (NoSuchElementException e) {
+				throw RtException.toRtException(e);
+			} catch (WrappedTargetException e) {
+				throw RtException.toRtException(e);
+			} //
+		}
+		return "done";
 	}
 
 	private Object executeNeteaseWashed2Db(CommandContext cc, List<String> argL) {
@@ -143,7 +173,7 @@ public class SheetCommand extends CommandBase<Object> {
 
 					@Override
 					public Object process(ResultSet rs) throws SQLException {
-						writeToSheet(cc.getComponentContext(), rs, targetSheetF);
+						writeToSheet(cc, rs, targetSheetF);
 						return "done.";
 					}
 
@@ -153,8 +183,9 @@ public class SheetCommand extends CommandBase<Object> {
 		}, false);
 	}
 
-	private void writeToSheet(XComponentContext xcc, ResultSet rs, String targetSheet) throws SQLException {
-
+	private void writeToSheet(CommandContext cc, ResultSet rs, String targetSheet) throws SQLException {
+		XComponentContext xcc = cc.getComponentContext();
+		XStatusIndicator si = cc.getStatusIndicator();
 		XSpreadsheet xSheet = DocUtil.getOrCreateSpreadsheetByName(xcc, targetSheet);
 		DocUtil.setActiveSheet(xcc, xSheet);
 		int cols = rs.getMetaData().getColumnCount();
@@ -165,14 +196,20 @@ public class SheetCommand extends CommandBase<Object> {
 		}
 		// write rows
 		int row = 1;
-		while (rs.next()) {
 
+		while (rs.next()) {
+			if (row > this.maxRows) {
+				break;
+			}
 			for (int i = 0; i < cols; i++) {
-				Object obj = rs.getObject(i + 1);				
+				Object obj = rs.getObject(i + 1);
 				DocUtil.setValue(xSheet, i, row, obj);
-				
+
 			}
 			row++;
+			si.setText("Row:" + row + ",Limit:" + this.maxRows);
+			si.setValue(row * 100 / this.maxRows);
+
 		}
 
 	}

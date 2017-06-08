@@ -1,5 +1,6 @@
 package daydayup.openstock;
 
+import com.sun.star.task.XStatusIndicator;
 import com.sun.star.uno.XComponentContext;
 
 import daydayup.openstock.database.DataBaseService;
@@ -7,9 +8,11 @@ import daydayup.openstock.database.DataBaseService;
 public class CommandContext {
 
 	XComponentContext componentContext;
+	XStatusIndicator statusIndicator;
 
-	public CommandContext(XComponentContext xcc) {
+	public CommandContext(XComponentContext xcc, XStatusIndicator statusIndicator) {
 		this.componentContext = xcc;
+		this.statusIndicator = statusIndicator;
 	}
 
 	public DataBaseService getDataBaseService() {
@@ -20,5 +23,8 @@ public class CommandContext {
 		return this.componentContext;
 	}
 
+	public XStatusIndicator getStatusIndicator() {
+		return statusIndicator;
+	}
 
 }
