@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+
+import javax.xml.ws.Holder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.database.DataBaseService;
+import daydayup.openstock.database.Tables;
 import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.netease.WashedFileLoader;
 import daydayup.openstock.netease.WashedFileLoader.DbWashedFileLoadContext;
@@ -31,6 +34,14 @@ import daydayup.openstock.util.DocUtil;
 public class SheetCommand extends CommandBase<Object> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SheetCommand.class);
+
+	private static final String SN_SYS_CMDS = "SYS_CMDS";
+
+	private static final String SN_SYS_SQL_QUERY = "SYS_SQL_QUERY";
+
+	private static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
+
+	private static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
 
 	private int maxRows = 1000;
 
@@ -44,11 +55,11 @@ public class SheetCommand extends CommandBase<Object> {
 	public Object doExecute(CommandContext cc) {
 		XComponentContext xcc = cc.getComponentContext();
 		DataBaseService dbs = cc.getDataBaseService();
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xcc, "CMDS", false);
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xcc, SN_SYS_CMDS, false);
 
 		if (xSheet == null) {
 			// "no sheet with name CMDS";
-			return "no sheet with name CMDS";
+			return "no sheet with name " + SN_SYS_CMDS;
 		}
 		String invokeId = null;
 		boolean body = false;
@@ -102,8 +113,10 @@ public class SheetCommand extends CommandBase<Object> {
 			return "no command found for invokeId";
 		}
 
-		if (command.equals("SQL_QUERY")) {
+		if (command.equals(SN_SYS_SQL_QUERY)) {
 			return this.executeSqlQuery(cc, argL);
+		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
+			return this.executeIndexTable(cc, argL);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {
 			return this.executeNeteaseWashed2Db(cc, argL);
 		} else if (command.equals("RESET_SHEET")) {
@@ -113,14 +126,136 @@ public class SheetCommand extends CommandBase<Object> {
 		}
 	}
 
+	private Object executeIndexTable(CommandContext cc, List<String> argL) {
+		String tableId = argL.get(0);
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_INDEX_TABLE, false);
+		//
+		Holder<String> tableName = new Holder<>();
+		List<String> indexNameL = new ArrayList<>();
+		for (int i = 0;; i++) {
+			String id = DocUtil.getText(xSheet, 0, i);
+
+			if (id == null || id.trim().length() == 0) {
+				break;
+			}
+
+			if (tableId.equals(id)) {
+				tableName.value = DocUtil.getText(xSheet, 1, i);
+				for (int col = 2;; col++) {
+
+					String idxNameC = DocUtil.getText(xSheet, col, i);
+					if (idxNameC == null || idxNameC.trim().length() == 0) {
+						break;
+					}
+					indexNameL.add(idxNameC);
+				}
+				break;
+			}
+		}
+
+		if (indexNameL.isEmpty()) {
+			return "empty index name list";
+		}
+
+		Map<Integer, List<Integer>> reportColumnMap = new HashMap<>();
+
+		for (int i = 0; i < indexNameL.size(); i++) {
+			String idxName = indexNameL.get(i);
+			int[] typeColumn = resolveIndex(cc, idxName);
+			if (typeColumn == null) {
+				// TODO ignore?error?
+				continue;
+			}
+
+			List<Integer> columnL = reportColumnMap.get(typeColumn[0]);
+			if (columnL == null) {
+				columnL = new ArrayList<Integer>();
+				reportColumnMap.put(typeColumn[0], columnL);
+			}
+			columnL.add(typeColumn[1]);
+		}
+		StringBuffer sql = new StringBuffer();
+		for (Map.Entry<Integer, List<Integer>> reportType : reportColumnMap.entrySet()) {
+
+		}
+		String targetSheetF = "" + tableName.value;
+		cc.getDataBaseService().execute(new JdbcOperation<String>() {
+
+			@Override
+			public String execute(Connection con, JdbcAccessTemplate t) {
+				return t.executeQuery(con, sql.toString(), new ResultSetProcessor<String>() {
+
+					@Override
+					public String process(ResultSet rs) throws SQLException {
+						writeToSheet(cc, rs, targetSheetF);
+						return null;
+					}
+				});
+			}
+		}, false);
+
+		return "done";
+	}
+
+	public int[] resolveIndex(CommandContext cc, String indexName) {
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_INDEX_DEFINE, false);
+		//
+		String alias = null;
+		String formula = null;
+		for (int i = 0;; i++) {
+			String name = DocUtil.getText(xSheet, 1, i);
+			if (name == null || name.trim().length() == 0) {
+				break;
+			}
+			if (name.equals(indexName)) {
+				alias = DocUtil.getText(xSheet, 2, i);
+				formula = DocUtil.getText(xSheet, 3, i);
+				break;
+			}
+		}
+
+		if (alias != null) {
+			int[] typeCol = resolveAlias(cc, alias);
+			if (typeCol == null) {
+				throw RtException.toRtException("no alias found:" + alias);
+			}
+			return typeCol;
+		}
+		if (formula != null) {
+			// TODO
+		}
+		return null;
+	}
+
+	public int[] resolveAlias(CommandContext cc, String alias) {
+		DataBaseService dbs = cc.getDataBaseService();
+		String sql = "select reportType,columnIndex from " + Tables.TN_ALIAS_INFO + " where aliasName = ?";
+
+		return dbs.execute(new JdbcOperation<int[]>() {
+
+			@Override
+			public int[] execute(Connection con, JdbcAccessTemplate t) {
+				return t.executeQuery(con, sql, alias, new ResultSetProcessor<int[]>() {
+
+					@Override
+					public int[] process(ResultSet rs) throws SQLException {
+						while (rs.next()) {
+							return new int[] { rs.getInt("reportType"), rs.getInt("columnIndex") };
+						}
+						return null;
+					}
+				});
+			}
+		}, false);
+
+	}
+
 	private Object executeResetSheet(CommandContext cc) {
 		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
-		Set<String> remainNames = new HashSet<>();
-		remainNames.add("CMDS");
-		remainNames.add("SQL_QUERY");
+
 		String[] names = xDoc.getSheets().getElementNames();
 		for (String name : names) {
-			if (remainNames.contains(name)) {
+			if (name.startsWith("SYS_")) {
 				continue;
 			}
 			try {
@@ -150,7 +285,7 @@ public class SheetCommand extends CommandBase<Object> {
 		String sqlId = argL.get(0);
 		String sql = null;
 		String targetSheet = null;
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), "SQL_QUERY", false);
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_SQL_QUERY, false);
 		for (int i = 0;; i++) {
 			String id = DocUtil.getText(xSheet, 0, i);
 			if (id == null || id.trim().length() == 0) {
