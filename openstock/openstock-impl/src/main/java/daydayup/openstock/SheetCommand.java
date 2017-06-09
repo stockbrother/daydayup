@@ -4,9 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.ws.Holder;
 
@@ -157,26 +158,42 @@ public class SheetCommand extends CommandBase<Object> {
 			return "empty index name list";
 		}
 
-		Map<Integer, List<Integer>> reportColumnMap = new HashMap<>();
+		List<int[]> typeColumnL = resolveIndex(cc, indexNameL);
 
-		for (int i = 0; i < indexNameL.size(); i++) {
-			String idxName = indexNameL.get(i);
-			int[] typeColumn = resolveIndex(cc, idxName);
-			if (typeColumn == null) {
-				// TODO ignore?error?
+		StringBuffer sql = new StringBuffer();
+		sql.append("select corpId as CORP,reportDate as DATE");
+
+		Set<Integer> typeSet = new HashSet<>();
+		for (int i = 0; i < typeColumnL.size(); i++) {
+			int[] typeCol = typeColumnL.get(i);
+			int type = typeCol[0];
+			typeSet.add(type);
+			sql.append(",r" + typeCol[0] + "." + Tables.getReportColumn(typeCol[1]) + " as " + indexNameL.get(i));
+		}
+
+		// from
+		int ts = 0;
+		sql.append(" from ");
+		for (Integer type : typeSet) {
+			if (ts > 0) {
+				sql.append(",");
+			}
+			sql.append(Tables.getReportTable(type) + " as r" + type);
+			ts++;
+		}
+
+		// where join on.
+		ts = 0;
+		sql.append(" where 1=1 ");
+		Integer preType = null;
+		for (Integer type : typeSet) {
+			if (preType == null) {
+				preType = type;
 				continue;
 			}
 
-			List<Integer> columnL = reportColumnMap.get(typeColumn[0]);
-			if (columnL == null) {
-				columnL = new ArrayList<Integer>();
-				reportColumnMap.put(typeColumn[0], columnL);
-			}
-			columnL.add(typeColumn[1]);
-		}
-		StringBuffer sql = new StringBuffer();
-		for (Map.Entry<Integer, List<Integer>> reportType : reportColumnMap.entrySet()) {
-
+			sql.append("and r" + type + " = r" + preType);
+			ts++;
 		}
 		String targetSheetF = "" + tableName.value;
 		cc.getDataBaseService().execute(new JdbcOperation<String>() {
@@ -195,6 +212,15 @@ public class SheetCommand extends CommandBase<Object> {
 		}, false);
 
 		return "done";
+	}
+
+	public List<int[]> resolveIndex(CommandContext cc, List<String> indexNameL) {
+		List<int[]> rt = new ArrayList<>();
+		for (int i = 0; i < indexNameL.size(); i++) {
+			rt.add(resolveIndex(cc, indexNameL.get(i)));
+		}
+
+		return rt;
 	}
 
 	public int[] resolveIndex(CommandContext cc, String indexName) {
@@ -326,7 +352,7 @@ public class SheetCommand extends CommandBase<Object> {
 		int cols = rs.getMetaData().getColumnCount();
 		// write header
 		for (int i = 0; i < cols; i++) {
-			String colName = rs.getMetaData().getColumnName(i + 1);
+			String colName = rs.getMetaData().getColumnLabel(i + 1);
 			DocUtil.setText(xSheet, i, 0, colName);
 		}
 		// write rows
