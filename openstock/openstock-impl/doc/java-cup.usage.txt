@@ -1,0 +1,82 @@
+Usage: java_cup [options] [filename]
+  and expects a specification file on standard input if no filename is given.
+  Legal options include:
+    -package name  specify package generated classes go in [default none]
+    -destdir name  specify the destination directory, to store the generated files in
+    -parser name   specify parser class name [default "parser"]
+    -typearg args  specify type arguments for parser class
+    -symbols name  specify name for symbol constant class [default "sym"]
+    -interface     put symbols in an interface, rather than a class
+    -nonterms      put non terminals in symbol constant class
+    -expect #      number of conflicts expected/allowed [default 0]
+    -compact_red   compact tables by defaulting to most frequent reduce
+    -nowarn        don't warn about useless productions, etc.
+    -nosummary     don't print the usual summary of parse states, etc.
+    -nopositions   don't propagate the left and right token position values
+    -locations     generate handles xleft/xright for symbol positions in actions
+    -xmlactions    make the generated parser yield its parse tree as XML
+    -genericlabels automatically generate labels to all symbols in XML mode
+    -noscanner     don't refer to java_cup.runtime.Scanner
+    -progress      print messages to indicate progress of the system
+    -time          print time usage summary
+    -dump_grammar  produce a human readable dump of the symbols and grammar
+    -dump_states   produce a dump of parse state machine
+    -dump_tables   produce a dump of the parse tables
+    -dump          produce a dump of all of the above
+    -version       print the version information for CUP and exit
+    
+    <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath>
+							<dependency>com.github.vbmacher:java-cup</dependency>
+						</classpath>
+						<argument>java_cup.Main</argument>
+						<argument>-destdir</argument>
+						<argument>target/generated-sources/java/daydayup/openstock/cup</argument>
+						<argument>-package</argument>
+						<argument>daydayup.openstock.cup</argument>
+						<argument>src/main/cup/parser.cup</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<tasks>
+								<mkdir dir="target/generated-sources/java/daydayup/openstock/cup" />
+								<exec executable="java">
+									<arg value="-classpath"/>
+									<arg value="lib/java-cup-11b.jar"/>			
+									<arg value="java_cup.Main"/>
+									<arg value="-destdir"/>
+									<arg value="target/generated-sources/java/daydayup/openstock/cup"/>
+									<arg value="src/main/cup/parser.cup"/>
+								</exec>
+
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>

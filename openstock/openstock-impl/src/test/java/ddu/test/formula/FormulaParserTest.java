@@ -1,12 +1,16 @@
 package ddu.test.formula;
 
-import daydayup.openstock.formula.parser.ParseException;
-import daydayup.openstock.formula.parser.Parser;
+import java.io.Reader;
+
+import daydayup_openstock_formula_parser.parser;
+import daydayup_openstock_formula_parser.scanner;
 import junit.framework.TestCase;
 
 public class FormulaParserTest extends TestCase {
-	public void test() throws ParseException {
-		Object result = new Parser(new java.io.StringReader("(1+1)*2")).S();
+	public void test() throws Exception {
+		Reader r = new java.io.StringReader("1+1");
+		Object result = new parser(new scanner(r)).parse();
 		System.out.println(result);
+		
 	}
 }

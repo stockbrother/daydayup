@@ -23,7 +23,7 @@
 	</repositories>
 	<build>
 		<plugins>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -115,33 +115,81 @@
 					<downloadJavadocs>false</downloadJavadocs>
 				</configuration>
 			</plugin>
-			
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<tasks>
+								<mkdir
+									dir="target/generated-sources/java/daydayup_openstock_formula_parser" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.6.0</version>
 				<executions>
 					<execution>
+						<id>jflex</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
+						<configuration>
+							<executable>java</executable>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath>
+									<dependency>de.jflex:jflex</dependency>
+								</classpath>
+								<argument>jflex.Main</argument>
+								<argument>-d</argument>
+								<argument>target/generated-sources/java/daydayup_openstock_formula_parser</argument>
+								<argument>src/main/jflex/scanner.jflex</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>cup</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>java</executable>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath>
+									<dependency>com.github.vbmacher:java-cup</dependency>
+								</classpath>
+								<argument>java_cup.Main</argument>
+								<argument>-package</argument>
+								<argument>daydayup_openstock_formula_parser</argument>
+								<argument>-destdir</argument>
+								<argument>target/generated-sources/java/daydayup_openstock_formula_parser</argument>
+								<argument>-parser</argument>
+								<argument>parser</argument>
+								<argument>-symbols</argument>
+								<argument>sym</argument>
+
+								<argument>src/main/cup/parser.cup</argument>
+							</arguments>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<executable>java</executable>
-					<arguments>
-						<argument>-classpath</argument>
-						<classpath>
-							<dependency>net.java.dev.javacc:javacc</dependency>
-						</classpath>
-						<argument>javacc</argument>
-						<argument>-OUTPUT_DIRECTORY=target/generated-sources/java/daydayup/openstock/formula/parser</argument>
-						<argument>src/main/javacc/os-formula.jj</argument>
-					</arguments>
-				</configuration>
+
 			</plugin>
-			
+
 		</plugins>
 	</build>
 
@@ -195,7 +243,7 @@
 			<groupId>org.openoffice</groupId>
 			<artifactId>bootstrap-connector</artifactId>
 			<version>0.1.1</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -220,6 +268,22 @@
 			<version>${log4j.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.vbmacher</groupId>
+			<artifactId>java-cup</artifactId>
+			<version>11b-20160615</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.vbmacher</groupId>
+			<artifactId>java-cup-runtime</artifactId>
+			<version>11b-20160615</version>
+		</dependency>
+		<dependency>
+			<groupId>de.jflex</groupId>
+			<artifactId>jflex</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
 		<!-- scope:compile -->
 		<dependency>
 			<groupId>net.java.dev.javacc</groupId>

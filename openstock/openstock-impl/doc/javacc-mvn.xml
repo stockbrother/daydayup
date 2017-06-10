@@ -1,0 +1,25 @@
+<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath>
+							<dependency>net.java.dev.javacc:javacc</dependency>
+						</classpath>
+						<argument>javacc</argument>
+						<argument>-OUTPUT_DIRECTORY=target/generated-sources/java/daydayup/openstock/formula/parser</argument>
+						<argument>src/main/javacc/os-formula.jj</argument>
+					</arguments>
+				</configuration>
+			</plugin>
