@@ -16,12 +16,14 @@
 
 	<properties>
 		<RegistrationClassName>daydayup.openstock.ServiceRegistraction</RegistrationClassName>
+		<javacc.version>7.0.2</javacc.version>
 	</properties>
 	<repositories>
 
 	</repositories>
 	<build>
 		<plugins>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -48,6 +50,27 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Add generated sources -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>target/generated-sources/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -82,35 +105,72 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath>
+							<dependency>net.java.dev.javacc:javacc</dependency>
+						</classpath>
+						<argument>javacc</argument>
+						<argument>-OUTPUT_DIRECTORY=target/generated-sources/java/daydayup/openstock/formula/parser</argument>
+						<argument>src/main/javacc/os-formula.jj</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+			
 		</plugins>
 	</build>
 
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.192</version>
-		</dependency>	
-	
+		</dependency>
+
 		<dependency>
 			<groupId>daydayup.openstock</groupId>
 			<artifactId>openstock-idl</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>2.3</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.5.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openoffice</groupId>
 			<artifactId>jurt</artifactId>
@@ -135,13 +195,7 @@
 			<groupId>org.openoffice</groupId>
 			<artifactId>bootstrap-connector</artifactId>
 			<version>0.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.version}</version>
-			<scope>runtime</scope>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -165,6 +219,13 @@
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>${log4j.version}</version>
 			<scope>runtime</scope>
+		</dependency>
+		<!-- scope:compile -->
+		<dependency>
+			<groupId>net.java.dev.javacc</groupId>
+			<artifactId>javacc</artifactId>
+			<version>${javacc.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<!-- scope:test -->
 		<dependency>
