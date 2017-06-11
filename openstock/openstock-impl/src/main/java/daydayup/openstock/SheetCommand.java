@@ -47,7 +47,7 @@ public class SheetCommand extends CommandBase<Object> {
 
 	private static final String SN_SYS_SQL_QUERY = "SYS_SQL_QUERY";
 
-	private static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
+	public static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
 
 	private static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
 
@@ -177,14 +177,12 @@ public class SheetCommand extends CommandBase<Object> {
 
 		for (int i = 0; i < indexNameL.size(); i++) {
 			String indexName = indexNameL.get(i);
-			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(cc);
-			src.indexName = indexName;
+			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(cc,indexName);
 			sql.append(",");
-			this.resolveSqlSelectFields4Index(src, sql);
+			src.resolveSqlSelectFields(sql);
 
-			sql.append(" as " + indexNameL.get(i));
-			List<ColumnIdentifier> ciL = src.getColumnIdentifierList();
-			typeSet.addAll(src.getReportTypeSet());
+			sql.append(" as " + indexNameL.get(i));			
+			src.getReportTypeSet(typeSet,true);
 		}
 
 		// from
@@ -228,45 +226,6 @@ public class SheetCommand extends CommandBase<Object> {
 		}, false);
 
 		return "done";
-	}
-
-	private String getFormulaByIndexName(CommandContext cc, String indexName) {
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_INDEX_DEFINE, false);
-		//
-
-		String formula = null;
-		for (int i = 0;; i++) {
-			String name = DocUtil.getText(xSheet, 1, i);
-			if (name == null || name.trim().length() == 0) {
-				break;
-			}
-			if (name.equals(indexName)) {
-				formula = DocUtil.getText(xSheet, 2, i);
-				break;
-			}
-		}
-		return formula;
-	}
-
-	public StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext src, StringBuffer sql) {
-
-		String indexName = src.indexName;
-		String formula = this.getFormulaByIndexName(src.getCommandContext(), indexName);
-		if (formula == null) {
-			throw new RtException("no formula found for index:" + indexName);
-		}
-		
-		Reader r = new StringReader(formula);
-		Symbol result;
-		try {
-			result = new parser(new scanner(r)).parse();
-		} catch (Exception e) {
-			throw new RtException("failed to parse formula:" + formula, e);
-		}
-		CupExpr expr = (CupExpr) result.value;
-		expr.resolveSqlSelectFields4Index(src, sql);
-
-		return sql;
 	}
 
 	private Object executeResetSheet(CommandContext cc) {

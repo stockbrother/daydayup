@@ -1,20 +1,29 @@
 package daydayup.openstock.cup;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.sun.star.sheet.XSpreadsheet;
+
 import daydayup.jdbc.JdbcAccessTemplate;
-import daydayup.jdbc.ResultSetProcessor;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
+import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.CommandContext;
+import daydayup.openstock.RtException;
+import daydayup.openstock.SheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.database.Tables;
+import daydayup.openstock.util.DocUtil;
+import daydayup_openstock_cup.parser;
+import daydayup_openstock_cup.scanner;
+import java_cup.runtime.Symbol;
 
 public class IndexSqlSelectFieldsResolveContext {
 
@@ -24,11 +33,32 @@ public class IndexSqlSelectFieldsResolveContext {
 
 	private CommandContext commandContext;
 
-	public IndexSqlSelectFieldsResolveContext(CommandContext commandContext) {
-		this.commandContext = commandContext;
+	private IndexSqlSelectFieldsResolveContext parent;
+
+	private List<IndexSqlSelectFieldsResolveContext> childList = new ArrayList<>();
+
+	public IndexSqlSelectFieldsResolveContext(CommandContext commandContext, String indexName) {
+		this(null, commandContext, indexName);
 	}
 
-	public List<ColumnIdentifier> getColumnIdentifierList() {
+	public IndexSqlSelectFieldsResolveContext newChild(String indexName) {
+		IndexSqlSelectFieldsResolveContext rt = new IndexSqlSelectFieldsResolveContext(this, indexName);
+		this.childList.add(rt);
+		return rt;
+	}
+
+	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, String indexName) {
+		this(parent, parent.commandContext, indexName);
+	}
+
+	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, CommandContext commandContext,
+			String indexName) {
+		this.parent = parent;
+		this.commandContext = commandContext;
+		this.indexName = indexName;
+	}
+
+	public List<ColumnIdentifier> getColumnIdentifierList(boolean includeChildren) {
 		return columnIdentifierList;
 	}
 
@@ -36,13 +66,57 @@ public class IndexSqlSelectFieldsResolveContext {
 		return commandContext;
 	}
 
-	public ColumnIdentifier addColumnIdentifierByAlias(String alias) {
-		ColumnIdentifier rt = this.resolveColumnIdentifierByAlias(alias);
-		this.columnIdentifierList.add(rt);
-		return rt;
+	private String getFormulaByIndexName(CommandContext cc, String indexName) {
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SheetCommand.SN_SYS_INDEX_DEFINE,
+				false);
+		//
+
+		String formula = null;
+		for (int i = 0;; i++) {
+			String name = DocUtil.getText(xSheet, 1, i);
+			if (name == null || name.trim().length() == 0) {
+				break;
+			}
+			if (name.equals(indexName)) {
+				formula = DocUtil.getText(xSheet, 2, i);
+				break;
+			}
+		}
+		return formula;
 	}
 
-	private ColumnIdentifier resolveColumnIdentifierByAlias(String alias) {
+	public static IndexSqlSelectFieldsResolveContext resolveSqlSelectFields(IndexSqlSelectFieldsResolveContext parent,
+			CommandContext cc, String indexName, StringBuffer sql) {
+		IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(parent, cc, indexName);
+		src.resolveSqlSelectFields(sql);
+		return src;
+	}
+
+	public StringBuffer resolveSqlSelectFields(StringBuffer sql) {
+
+		String formula = this.getFormulaByIndexName(this.commandContext, this.indexName);
+		if (formula == null) {
+			throw new RtException("no formula found for index:" + this.indexName);
+		}
+
+		Reader r = new StringReader(formula);
+		Symbol result;
+		try {
+			result = new parser(new scanner(r)).parse();
+		} catch (Exception e) {
+			throw new RtException("failed to parse formula:" + formula, e);
+		}
+		CupExpr expr = (CupExpr) result.value;
+		expr.resolveSqlSelectFields4Index(this, sql);
+
+		return sql;
+	}
+
+	public void addColumnIdentifier(ColumnIdentifier rt) {
+		this.columnIdentifierList.add(rt);
+	}
+
+	public ColumnIdentifier getColumnIdentifierByAlias(String alias) {
 		DataBaseService dbs = this.commandContext.getDataBaseService();
 		String sql = "select reportType,columnIndex from " + Tables.TN_ALIAS_INFO + " where aliasName = ?";
 
@@ -68,12 +142,16 @@ public class IndexSqlSelectFieldsResolveContext {
 
 	}
 
-	public Set<Integer> getReportTypeSet() {
+	public Set<Integer> getReportTypeSet(Set<Integer> set, boolean recusive) {
 		//
-		Set<Integer> rt = new HashSet<>();
 		for (ColumnIdentifier ci : this.columnIdentifierList) {
-			rt.add(ci.reportType);
+			set.add(ci.reportType);
+			if (recusive) {
+				for (IndexSqlSelectFieldsResolveContext c : this.childList) {
+					c.getReportTypeSet(set, true);
+				}
+			}
 		}
-		return rt;
+		return set;
 	}
 }

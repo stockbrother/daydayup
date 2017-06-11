@@ -69,9 +69,18 @@ public abstract class CupExpr {
 
 		@Override
 		public StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext src, StringBuffer buf) {
-			ColumnIdentifier ci = src.addColumnIdentifierByAlias(this.value);
-			
-			buf.append("r" + ci.reportType + "." + Tables.getReportColumn(ci.columnNumber));
+			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.value);
+			if (ci == null) {// is not a alias, it must be an index defined in
+								// sheet.
+				buf.append("(");
+				IndexSqlSelectFieldsResolveContext childSrc = src.newChild(this.value);
+				childSrc.resolveSqlSelectFields(buf);
+				buf.append(")");
+
+			} else {
+				src.addColumnIdentifier(ci);
+				buf.append("r" + ci.reportType + "." + Tables.getReportColumn(ci.columnNumber));
+			}
 
 			return buf;
 		}
