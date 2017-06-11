@@ -1,5 +1,7 @@
 package daydayup.openstock.cup;
 
+import daydayup.openstock.database.Tables;
+
 public abstract class CupExpr {
 	public static final int PLUS = 1;
 	public static final int MINUS = 2;
@@ -18,8 +20,8 @@ public abstract class CupExpr {
 		}
 
 		@Override
-		public StringBuffer resolve(StringBuffer buf) {
-			exprLeft.resolve(buf);
+		public StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext cc, StringBuffer buf) {
+			exprLeft.resolveSqlSelectFields4Index(cc, buf);
 			String opStr = null;
 			switch (this.oper) {
 			case PLUS:
@@ -37,7 +39,7 @@ public abstract class CupExpr {
 
 			}
 			buf.append(opStr);
-			exprRight.resolve(buf);
+			exprRight.resolveSqlSelectFields4Index(cc, buf);
 			return buf;
 		}
 
@@ -51,7 +53,7 @@ public abstract class CupExpr {
 		}
 
 		@Override
-		public StringBuffer resolve(StringBuffer buf) {
+		public StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext cc, StringBuffer buf) {
 			buf.append(value);
 			return buf;
 		}
@@ -66,8 +68,11 @@ public abstract class CupExpr {
 		}
 
 		@Override
-		public StringBuffer resolve(StringBuffer buf) {
-			buf.append(value);
+		public StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext src, StringBuffer buf) {
+			ColumnIdentifier ci = src.addColumnIdentifierByAlias(this.value);
+			
+			buf.append("r" + ci.reportType + "." + Tables.getReportColumn(ci.columnNumber));
+
 			return buf;
 		}
 
@@ -82,9 +87,9 @@ public abstract class CupExpr {
 		}
 
 		@Override
-		public StringBuffer resolve(StringBuffer buf) {
+		public StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext cc, StringBuffer buf) {
 			buf.append("(");
-			expr.resolve(buf);
+			expr.resolveSqlSelectFields4Index(cc, buf);
 			buf.append(")");
 			return buf;
 		}
@@ -123,5 +128,5 @@ public abstract class CupExpr {
 		return new CupExprIdentifier(value);
 	}
 
-	public abstract StringBuffer resolve(StringBuffer buf);
+	public abstract StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext cc, StringBuffer buf);
 }

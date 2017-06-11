@@ -1,12 +1,13 @@
 package daydayup.openstock;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.ws.Holder;
@@ -24,6 +25,9 @@ import com.sun.star.uno.XComponentContext;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
+import daydayup.openstock.cup.ColumnIdentifier;
+import daydayup.openstock.cup.CupExpr;
+import daydayup.openstock.cup.IndexSqlSelectFieldsResolveContext;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.database.Tables;
 import daydayup.openstock.netease.NeteaseUtil;
@@ -31,6 +35,9 @@ import daydayup.openstock.netease.WashedFileLoader;
 import daydayup.openstock.netease.WashedFileLoader.DbWashedFileLoadContext;
 import daydayup.openstock.netease.WashedFileLoader.WashedFileLoadContext;
 import daydayup.openstock.util.DocUtil;
+import daydayup_openstock_cup.parser;
+import daydayup_openstock_cup.scanner;
+import java_cup.runtime.Symbol;
 
 public class SheetCommand extends CommandBase<Object> {
 
@@ -127,11 +134,9 @@ public class SheetCommand extends CommandBase<Object> {
 		}
 	}
 
-	private Object executeIndexTable(CommandContext cc, List<String> argL) {
-		String tableId = argL.get(0);
+	private List<String> getIndexNameList(CommandContext cc, String tableId, Holder<String> tableName) {
 		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_INDEX_TABLE, false);
 		//
-		Holder<String> tableName = new Holder<>();
 		List<String> indexNameL = new ArrayList<>();
 		for (int i = 0;; i++) {
 			String id = DocUtil.getText(xSheet, 0, i);
@@ -153,22 +158,33 @@ public class SheetCommand extends CommandBase<Object> {
 				break;
 			}
 		}
+		return indexNameL;
+	}
 
+	private Object executeIndexTable(CommandContext cc, List<String> argL) {
+		String tableId = argL.get(0);
+
+		Holder<String> tableName = new Holder<>();
+		List<String> indexNameL = this.getIndexNameList(cc, tableId, tableName);
 		if (indexNameL.isEmpty()) {
 			return "empty index name list";
 		}
-
-		List<int[]> typeColumnL = resolveIndex(cc, indexNameL);
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("select corpId as CORP,reportDate as DATE");
 
 		Set<Integer> typeSet = new HashSet<>();
-		for (int i = 0; i < typeColumnL.size(); i++) {
-			int[] typeCol = typeColumnL.get(i);
-			int type = typeCol[0];
-			typeSet.add(type);
-			sql.append(",r" + typeCol[0] + "." + Tables.getReportColumn(typeCol[1]) + " as " + indexNameL.get(i));
+
+		for (int i = 0; i < indexNameL.size(); i++) {
+			String indexName = indexNameL.get(i);
+			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(cc);
+			src.indexName = indexName;
+			sql.append(",");
+			this.resolveSqlSelectFields4Index(src, sql);
+
+			sql.append(" as " + indexNameL.get(i));
+			List<ColumnIdentifier> ciL = src.getColumnIdentifierList();
+			typeSet.addAll(src.getReportTypeSet());
 		}
 
 		// from
@@ -214,19 +230,10 @@ public class SheetCommand extends CommandBase<Object> {
 		return "done";
 	}
 
-	public List<int[]> resolveIndex(CommandContext cc, List<String> indexNameL) {
-		List<int[]> rt = new ArrayList<>();
-		for (int i = 0; i < indexNameL.size(); i++) {
-			rt.add(resolveIndex(cc, indexNameL.get(i)));
-		}
-
-		return rt;
-	}
-
-	public int[] resolveIndex(CommandContext cc, String indexName) {
+	private String getFormulaByIndexName(CommandContext cc, String indexName) {
 		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_INDEX_DEFINE, false);
 		//
-		String alias = null;
+
 		String formula = null;
 		for (int i = 0;; i++) {
 			String name = DocUtil.getText(xSheet, 1, i);
@@ -234,46 +241,32 @@ public class SheetCommand extends CommandBase<Object> {
 				break;
 			}
 			if (name.equals(indexName)) {
-				alias = DocUtil.getText(xSheet, 2, i);
-				formula = DocUtil.getText(xSheet, 3, i);
+				formula = DocUtil.getText(xSheet, 2, i);
 				break;
 			}
 		}
-
-		if (alias != null) {
-			int[] typeCol = resolveAlias(cc, alias);
-			if (typeCol == null) {
-				throw RtException.toRtException("no alias found:" + alias);
-			}
-			return typeCol;
-		}
-		if (formula != null) {
-			// TODO
-		}
-		return null;
+		return formula;
 	}
 
-	public int[] resolveAlias(CommandContext cc, String alias) {
-		DataBaseService dbs = cc.getDataBaseService();
-		String sql = "select reportType,columnIndex from " + Tables.TN_ALIAS_INFO + " where aliasName = ?";
+	public StringBuffer resolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext src, StringBuffer sql) {
 
-		return dbs.execute(new JdbcOperation<int[]>() {
+		String indexName = src.indexName;
+		String formula = this.getFormulaByIndexName(src.getCommandContext(), indexName);
+		if (formula == null) {
+			throw new RtException("no formula found for index:" + indexName);
+		}
+		
+		Reader r = new StringReader(formula);
+		Symbol result;
+		try {
+			result = new parser(new scanner(r)).parse();
+		} catch (Exception e) {
+			throw new RtException("failed to parse formula:" + formula, e);
+		}
+		CupExpr expr = (CupExpr) result.value;
+		expr.resolveSqlSelectFields4Index(src, sql);
 
-			@Override
-			public int[] execute(Connection con, JdbcAccessTemplate t) {
-				return t.executeQuery(con, sql, alias, new ResultSetProcessor<int[]>() {
-
-					@Override
-					public int[] process(ResultSet rs) throws SQLException {
-						while (rs.next()) {
-							return new int[] { rs.getInt("reportType"), rs.getInt("columnIndex") };
-						}
-						return null;
-					}
-				});
-			}
-		}, false);
-
+		return sql;
 	}
 
 	private Object executeResetSheet(CommandContext cc) {

@@ -38,6 +38,9 @@
 				<exclude>org.openoffice:jurt</exclude>
 				<exclude>org.openoffice:ridl</exclude>
 				<exclude>org.openoffice:unoil</exclude>
+				<exclude>de.jflex:jflex</exclude>
+				<exclude>com.github.vbmacher:java_cup</exclude>
+				
 			</excludes>
 		</dependencySet>
 	</dependencySets>
