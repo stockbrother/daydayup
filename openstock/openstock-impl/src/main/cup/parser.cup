@@ -1,6 +1,6 @@
 /* Simple +/-/* expression language; parser evaluates constant expressions on the fly*/
 import java_cup.runtime.*;
-
+import daydayup.openstock.cup.CupExpr;
 parser code {:
     // Connect this parser to a scanner!
     protected scanner s;
@@ -18,10 +18,10 @@ scan with {:
 
 // Terminals (tokens returned by the scanner). 
 terminal            PLUS, MINUS, TIMES, DIV, LPAREN, RPAREN;
-terminal Integer    NUMBER;        // our scanner provides numbers as integers
-
+terminal Integer    NUMBER;        // our scanner provides numbers
+terminal String     IDENTIFIER;
 // Non terminals 
-non terminal Integer    expr;      // used to store evaluated subexpressions
+non terminal CupExpr    expr;      // used to store evaluated subexpressions
 
 // Precedences 
 precedence left PLUS, MINUS;
@@ -29,10 +29,11 @@ precedence left TIMES;
 precedence left DIV;
 
 // The grammar rules
-expr ::= expr:e1 PLUS expr:e2      {: System.out.println(e1+"+"+e2);RESULT = e1+e2;       :}
-	| expr:e1 MINUS expr:e2        {: System.out.println(e1+"-"+e2);RESULT = e1-e2;       :}
-	| expr:e1 TIMES expr:e2        {: System.out.println(e1+"*"+e2);RESULT = e1*e2;       :}
-	| MINUS expr:e                 {: System.out.println("-"+e);RESULT = -e;          :}  	     
-	| LPAREN expr:e RPAREN	       {: System.out.println("("+e+")");RESULT = e;           :}
-	| NUMBER:n	                   {: System.out.println(n); RESULT = n;           :}
+expr ::= expr:e1 PLUS expr:e2      {: System.out.println(e1+"+"+e2);RESULT = CupExpr.plus(e1,e2);       :}
+	| expr:e1 MINUS expr:e2        {: System.out.println(e1+"-"+e2);RESULT = CupExpr.minus(e1,e2);       :}
+	| expr:e1 TIMES expr:e2        {: System.out.println(e1+"*"+e2);RESULT = CupExpr.times(e1,e2);       :}
+	| MINUS expr:e                 {: System.out.println("-"+e);RESULT = CupExpr.minus(e);          :}  	     
+	| LPAREN expr:e RPAREN	       {: System.out.println("("+e+")");RESULT = CupExpr.paren(e);           :}
+	| NUMBER:n	                   {: System.out.println(n); RESULT = CupExpr.number(n);           :}
+	| IDENTIFIER:id	               {: System.out.println(id); RESULT = CupExpr.identifier(id);           :}
 ;

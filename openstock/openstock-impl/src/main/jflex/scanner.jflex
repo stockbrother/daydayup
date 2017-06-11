@@ -1,5 +1,5 @@
 
-package daydayup_openstock_formula_parser;
+package daydayup_openstock_cup;
 
 import java_cup.runtime.*;
 
@@ -38,6 +38,7 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 <YYINITIAL> {
 	// literals 
     {DecIntegerLiteral}            { Integer value = new Integer(yytext());;return symbol(sym.NUMBER, value); }
+    {Identifier}            	   { String value = yytext();return symbol(sym.IDENTIFIER, value); }
     // operators     
     "+"                            { return symbol(sym.PLUS); }
 	"-"                            { return symbol(sym.MINUS); }

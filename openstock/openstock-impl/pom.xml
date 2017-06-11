@@ -154,7 +154,7 @@
 								</classpath>
 								<argument>jflex.Main</argument>
 								<argument>-d</argument>
-								<argument>target/generated-sources/java/daydayup_openstock_formula_parser</argument>
+								<argument>target/generated-sources/java/daydayup_openstock_cup</argument>
 								<argument>src/main/jflex/scanner.jflex</argument>
 							</arguments>
 						</configuration>
@@ -174,9 +174,9 @@
 								</classpath>
 								<argument>java_cup.Main</argument>
 								<argument>-package</argument>
-								<argument>daydayup_openstock_formula_parser</argument>
+								<argument>daydayup_openstock_cup</argument>
 								<argument>-destdir</argument>
-								<argument>target/generated-sources/java/daydayup_openstock_formula_parser</argument>
+								<argument>target/generated-sources/java/daydayup_openstock_cup</argument>
 								<argument>-parser</argument>
 								<argument>parser</argument>
 								<argument>-symbols</argument>
