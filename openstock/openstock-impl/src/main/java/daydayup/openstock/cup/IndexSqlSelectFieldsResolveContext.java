@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +19,7 @@ import daydayup.openstock.RtException;
 import daydayup.openstock.SheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.database.Tables;
+import daydayup.openstock.sheetcommand.DatedIndex;
 import daydayup.openstock.util.DocUtil;
 import daydayup_openstock_cup.parser;
 import daydayup_openstock_cup.scanner;
@@ -27,7 +27,7 @@ import java_cup.runtime.Symbol;
 
 public class IndexSqlSelectFieldsResolveContext {
 
-	public String indexName;
+	public DatedIndex indexName;
 
 	public List<ColumnIdentifier> columnIdentifierList = new ArrayList<>();
 
@@ -37,22 +37,22 @@ public class IndexSqlSelectFieldsResolveContext {
 
 	private List<IndexSqlSelectFieldsResolveContext> childList = new ArrayList<>();
 
-	public IndexSqlSelectFieldsResolveContext(CommandContext commandContext, String indexName) {
+	public IndexSqlSelectFieldsResolveContext(CommandContext commandContext, DatedIndex indexName) {
 		this(null, commandContext, indexName);
 	}
 
-	public IndexSqlSelectFieldsResolveContext newChild(String indexName) {
+	public IndexSqlSelectFieldsResolveContext newChild(DatedIndex indexName) {
 		IndexSqlSelectFieldsResolveContext rt = new IndexSqlSelectFieldsResolveContext(this, indexName);
 		this.childList.add(rt);
 		return rt;
 	}
 
-	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, String indexName) {
+	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, DatedIndex indexName) {
 		this(parent, parent.commandContext, indexName);
 	}
 
 	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, CommandContext commandContext,
-			String indexName) {
+			DatedIndex indexName) {
 		this.parent = parent;
 		this.commandContext = commandContext;
 		this.indexName = indexName;
@@ -66,7 +66,7 @@ public class IndexSqlSelectFieldsResolveContext {
 		return commandContext;
 	}
 
-	private String getFormulaByIndexName(CommandContext cc, String indexName) {
+	private String getFormulaByIndexName(CommandContext cc, DatedIndex indexName) {
 		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SheetCommand.SN_SYS_INDEX_DEFINE,
 				false);
 		//
@@ -77,7 +77,7 @@ public class IndexSqlSelectFieldsResolveContext {
 			if (name == null || name.trim().length() == 0) {
 				break;
 			}
-			if (name.equals(indexName)) {
+			if (name.equals(indexName.indexName)) {
 				formula = DocUtil.getText(xSheet, 2, i);
 				break;
 			}
@@ -86,7 +86,7 @@ public class IndexSqlSelectFieldsResolveContext {
 	}
 
 	public static IndexSqlSelectFieldsResolveContext resolveSqlSelectFields(IndexSqlSelectFieldsResolveContext parent,
-			CommandContext cc, String indexName, StringBuffer sql) {
+			CommandContext cc, DatedIndex indexName, StringBuffer sql) {
 		IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(parent, cc, indexName);
 		src.resolveSqlSelectFields(sql);
 		return src;

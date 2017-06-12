@@ -36,13 +36,14 @@ public class DocUtil {
 		}
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
 		XComponent xComp = xDesktop.getCurrentComponent();
-		
+
 		XInterface xDoc = UnoRuntime.queryInterface(XInterface.class, xComp);
 		XSpreadsheetDocument xDoc2 = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xDoc);
-		
+
 		return xDoc2;
 	}
-	public static XStatusIndicator createStatusIndicator(XComponentContext xcc){
+
+	public static XStatusIndicator createStatusIndicator(XComponentContext xcc) {
 		Object desktop = null;
 		try {
 			desktop = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", xcc);
@@ -55,16 +56,18 @@ public class DocUtil {
 		XStatusIndicator si = sif.createStatusIndicator();
 		return si;
 	}
-	
-	private static XStatusIndicator createStatusIndicator2(XComponentContext xcc){
+
+	private static XStatusIndicator createStatusIndicator2(XComponentContext xcc) {
 		Object frame;
 		try {
 			frame = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Frame", xcc);
 		} catch (Exception e) {
 			throw new RtException(e);
 		}
-		//Object service = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", xcc);
-		
+		// Object service =
+		// xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop",
+		// xcc);
+
 		XStatusIndicatorFactory sif = UnoRuntime.queryInterface(XStatusIndicatorFactory.class, frame);
 		XStatusIndicator si = sif.createStatusIndicator();
 		return si;
@@ -83,11 +86,11 @@ public class DocUtil {
 		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
 				xModel.getCurrentController());
 		xView.setActiveSheet(xSheet);
-		
+
 	}
 
 	public static XSpreadsheet getActiveSheet(XComponentContext xcc, String name) {
-		
+
 		Object desktop = OpenStock.getInstance().getDesktop(xcc);
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
 
@@ -99,7 +102,7 @@ public class DocUtil {
 
 		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
 				xModel.getCurrentController());
-		
+
 		XSpreadsheet xSheet = xView.getActiveSheet();
 
 		XNamed xName = UnoRuntime.queryInterface(XNamed.class, xSheet);
@@ -149,8 +152,8 @@ public class DocUtil {
 				// do nothing.
 			} else if (value instanceof Date) {
 				String str = NeteaseUtil.DF.format((Date) value);
-				setText(xCell, str);			
-			} else if(value instanceof Number){
+				setText(xCell, str);
+			} else if (value instanceof Number) {
 				xCell.setValue(((Number) value).doubleValue());
 			} else {
 				setText(xCell, value.toString());
@@ -183,6 +186,26 @@ public class DocUtil {
 
 	}
 
+	public static int getColIndex(XSpreadsheet xSheet, String name) {
+		int rt = -1;
+		for (int i = 0;; i++) {
+			String nameI = getText(xSheet, i, 0);
+			if (nameI == null || nameI.trim().length() == 0) {
+				break;
+			}
+			if (name.equals(nameI)) {
+				rt = i;
+				break;
+			}
+		}
+
+		return rt;
+	}
+
+	public static String getText(XSpreadsheet xSheet, String col, int row) {
+		return getText(xSheet, getColIndex(xSheet, col), row);
+	}
+
 	public static String getText(XSpreadsheet xSheet, int col, int row) {
 		try {
 			XCell xCell = xSheet.getCellByPosition(col, row);
@@ -206,7 +229,7 @@ public class DocUtil {
 
 	public static XSpreadsheet createSheet(XSpreadsheetDocument xDoc, String name) {
 		String[] names = xDoc.getSheets().getElementNames();
-		xDoc.getSheets().insertNewByName(name, (short)names.length);
+		xDoc.getSheets().insertNewByName(name, (short) names.length);
 		return getSpreadsheetByName(xDoc, name, true);
 	}
 }

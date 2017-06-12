@@ -1,16 +1,10 @@
 package daydayup.openstock;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.xml.ws.Holder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,19 +19,13 @@ import com.sun.star.uno.XComponentContext;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
-import daydayup.openstock.cup.ColumnIdentifier;
-import daydayup.openstock.cup.CupExpr;
-import daydayup.openstock.cup.IndexSqlSelectFieldsResolveContext;
 import daydayup.openstock.database.DataBaseService;
-import daydayup.openstock.database.Tables;
 import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.netease.WashedFileLoader;
 import daydayup.openstock.netease.WashedFileLoader.DbWashedFileLoadContext;
 import daydayup.openstock.netease.WashedFileLoader.WashedFileLoadContext;
+import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
 import daydayup.openstock.util.DocUtil;
-import daydayup_openstock_cup.parser;
-import daydayup_openstock_cup.scanner;
-import java_cup.runtime.Symbol;
 
 public class SheetCommand extends CommandBase<Object> {
 
@@ -49,9 +37,9 @@ public class SheetCommand extends CommandBase<Object> {
 
 	public static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
 
-	private static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
+	public static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
 
-	private int maxRows = 1000;
+	private static int maxRows = 1000;
 
 	private static class SqlCommandInfo {
 		public String id;
@@ -124,7 +112,8 @@ public class SheetCommand extends CommandBase<Object> {
 		if (command.equals(SN_SYS_SQL_QUERY)) {
 			return this.executeSqlQuery(cc, argL);
 		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
-			return this.executeIndexTable(cc, argL);
+			SheetCommandContext scc = new SheetCommandContext(cc, argL);
+			return new IndexTableSheetCommand().execute(scc);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {
 			return this.executeNeteaseWashed2Db(cc, argL);
 		} else if (command.equals("RESET_SHEET")) {
@@ -132,100 +121,6 @@ public class SheetCommand extends CommandBase<Object> {
 		} else {
 			return "not supporte:" + command;
 		}
-	}
-
-	private List<String> getIndexNameList(CommandContext cc, String tableId, Holder<String> tableName) {
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_INDEX_TABLE, false);
-		//
-		List<String> indexNameL = new ArrayList<>();
-		for (int i = 0;; i++) {
-			String id = DocUtil.getText(xSheet, 0, i);
-
-			if (id == null || id.trim().length() == 0) {
-				break;
-			}
-
-			if (tableId.equals(id)) {
-				tableName.value = DocUtil.getText(xSheet, 1, i);
-				for (int col = 2;; col++) {
-
-					String idxNameC = DocUtil.getText(xSheet, col, i);
-					if (idxNameC == null || idxNameC.trim().length() == 0) {
-						break;
-					}
-					indexNameL.add(idxNameC);
-				}
-				break;
-			}
-		}
-		return indexNameL;
-	}
-
-	private Object executeIndexTable(CommandContext cc, List<String> argL) {
-		String tableId = argL.get(0);
-
-		Holder<String> tableName = new Holder<>();
-		List<String> indexNameL = this.getIndexNameList(cc, tableId, tableName);
-		if (indexNameL.isEmpty()) {
-			return "empty index name list";
-		}
-
-		StringBuffer sql = new StringBuffer();
-		sql.append("select corpId as CORP,reportDate as DATE");
-
-		Set<Integer> typeSet = new HashSet<>();
-
-		for (int i = 0; i < indexNameL.size(); i++) {
-			String indexName = indexNameL.get(i);
-			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(cc,indexName);
-			sql.append(",");
-			src.resolveSqlSelectFields(sql);
-
-			sql.append(" as " + indexNameL.get(i));			
-			src.getReportTypeSet(typeSet,true);
-		}
-
-		// from
-		int ts = 0;
-		sql.append(" from ");
-		for (Integer type : typeSet) {
-			if (ts > 0) {
-				sql.append(",");
-			}
-			sql.append(Tables.getReportTable(type) + " as r" + type);
-			ts++;
-		}
-
-		// where join on.
-		ts = 0;
-		sql.append(" where 1=1 ");
-		Integer preType = null;
-		for (Integer type : typeSet) {
-			if (preType == null) {
-				preType = type;
-				continue;
-			}
-
-			sql.append("and r" + type + " = r" + preType);
-			ts++;
-		}
-		String targetSheetF = "" + tableName.value;
-		cc.getDataBaseService().execute(new JdbcOperation<String>() {
-
-			@Override
-			public String execute(Connection con, JdbcAccessTemplate t) {
-				return t.executeQuery(con, sql.toString(), new ResultSetProcessor<String>() {
-
-					@Override
-					public String process(ResultSet rs) throws SQLException {
-						writeToSheet(cc, rs, targetSheetF);
-						return null;
-					}
-				});
-			}
-		}, false);
-
-		return "done";
 	}
 
 	private Object executeResetSheet(CommandContext cc) {
@@ -296,7 +191,7 @@ public class SheetCommand extends CommandBase<Object> {
 		}, false);
 	}
 
-	private void writeToSheet(CommandContext cc, ResultSet rs, String targetSheet) throws SQLException {
+	public static void writeToSheet(CommandContext cc, ResultSet rs, String targetSheet) throws SQLException {
 		XComponentContext xcc = cc.getComponentContext();
 		XStatusIndicator si = cc.getStatusIndicator();
 		XSpreadsheet xSheet = DocUtil.getOrCreateSpreadsheetByName(xcc, targetSheet);
@@ -311,7 +206,7 @@ public class SheetCommand extends CommandBase<Object> {
 		int row = 1;
 
 		while (rs.next()) {
-			if (row > this.maxRows) {
+			if (row > maxRows) {
 				break;
 			}
 			for (int i = 0; i < cols; i++) {
@@ -320,8 +215,8 @@ public class SheetCommand extends CommandBase<Object> {
 
 			}
 			row++;
-			si.setText("Row:" + row + ",Limit:" + this.maxRows);
-			si.setValue(row * 100 / this.maxRows);
+			si.setText("Row:" + row + ",Limit:" + maxRows);
+			si.setValue(row * 100 / maxRows);
 
 		}
 
