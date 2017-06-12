@@ -2,7 +2,6 @@
 package daydayup_openstock_cup;
 
 import java_cup.runtime.*;
-
 %%
 
 %public
@@ -31,6 +30,8 @@ Identifier = [:jletter:] [:jletterdigit:]*
 
 DecIntegerLiteral = 0 | [1-9][0-9]*
 
+DateLiteral = [1-9][0-9][0-9][0-9][/][0-9][0-9][/][0-9][0-9]
+
 %%
 
 // keywords
@@ -39,6 +40,7 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 	// literals 
     {DecIntegerLiteral}            { Integer value = new Integer(yytext());;return symbol(sym.NUMBER, value); }
     {Identifier}            	   { String value = yytext();return symbol(sym.IDENTIFIER, value); }
+    {DateLiteral}                  { String value = yytext();return symbol(sym.DATE, value); }
     // operators     
     "+"                            { return symbol(sym.PLUS); }
 	"-"                            { return symbol(sym.MINUS); }
@@ -46,6 +48,7 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 	"/"                            { return symbol(sym.DIV); }
 	"("                            { return symbol(sym.LPAREN); }
 	")"                            { return symbol(sym.RPAREN); }
+    "@"                            { return symbol(sym.AT); }
       
     // whitespace
     {WhiteSpace}                   {  }

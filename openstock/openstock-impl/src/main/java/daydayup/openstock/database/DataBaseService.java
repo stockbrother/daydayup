@@ -31,9 +31,10 @@ public class DataBaseService extends JdbcAccessTemplate {
 
 	static {
 		upgraderList.add(new DBUpgrader_001());
+		upgraderList.add(new DBUpgrader_002());
 	}
-
-	private DataVersion targetDataVersion = DataVersion.V_0_0_1;
+	//the target data version to be upgraded to.
+	private DataVersion targetDataVersion = DataVersion.V_0_0_2;
 
 	private DataVersion dataVersion;
 

@@ -19,6 +19,7 @@ import com.sun.star.uno.XComponentContext;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
+import daydayup.openstock.cninfo.CninfoCorpInfo2DbSheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.netease.WashedFileLoader;
@@ -40,12 +41,6 @@ public class SheetCommand extends CommandBase<Object> {
 	public static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
 
 	private static int maxRows = 1000;
-
-	private static class SqlCommandInfo {
-		public String id;
-		public String sql;
-		public String targetSheet;
-	}
 
 	@Override
 	public Object doExecute(CommandContext cc) {
@@ -108,17 +103,19 @@ public class SheetCommand extends CommandBase<Object> {
 			LOG.warn("no command found for invokeId:{}", invokeId);
 			return "no command found for invokeId";
 		}
+		SheetCommandContext scc = new SheetCommandContext(cc, argL);
 
 		if (command.equals(SN_SYS_SQL_QUERY)) {
 			return this.executeSqlQuery(cc, argL);
 		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
-			SheetCommandContext scc = new SheetCommandContext(cc, argL);
 			return new IndexTableSheetCommand().execute(scc);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {
 			return this.executeNeteaseWashed2Db(cc, argL);
 		} else if (command.equals("RESET_SHEET")) {
 			return this.executeResetSheet(cc);
-		} else {
+		} else if(command.equals("CNINFO_CORPINFO_2_DB")){
+			return new CninfoCorpInfo2DbSheetCommand().execute(scc);
+		}else {
 			return "not supporte:" + command;
 		}
 	}

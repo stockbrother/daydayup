@@ -37,6 +37,8 @@ public class IndexSqlSelectFieldsResolveContext {
 
 	private List<IndexSqlSelectFieldsResolveContext> childList = new ArrayList<>();
 
+	public String corpInfoTableAlias = "ci";
+
 	public IndexSqlSelectFieldsResolveContext(CommandContext commandContext, DatedIndex indexName) {
 		this(null, commandContext, indexName);
 	}
@@ -107,7 +109,7 @@ public class IndexSqlSelectFieldsResolveContext {
 			throw new RtException("failed to parse formula:" + formula, e);
 		}
 		CupExpr expr = (CupExpr) result.value;
-		expr.resolveSqlSelectFields4Index(this, sql);
+		expr.resolveSqlSelectFields4Index(null, this, sql);
 
 		return sql;
 	}

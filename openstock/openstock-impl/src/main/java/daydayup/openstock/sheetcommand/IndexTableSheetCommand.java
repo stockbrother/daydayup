@@ -30,7 +30,8 @@ import daydayup.openstock.util.DocUtil;
 
 public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
-	private static final DateFormat DF = new SimpleDateFormat("yyyy/MM/dd");
+	public static final DateFormat DF = new SimpleDateFormat("yyyy/MM/dd");
+
 	@Override
 	protected Object doExecute(SheetCommandContext scc) {
 		List<String> argL = scc.getArgumentList();
@@ -43,44 +44,54 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 		}
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select corpId as CORP,reportDate as DATE");
+		sql.append("select corpId as CORP,corpName as NAME");
 
 		Set<Integer> typeSet = new HashSet<>();
+		String corpInfoTableAlias = "ci";
 
 		for (int i = 0; i < indexNameL.size(); i++) {
 			DatedIndex indexName = indexNameL.get(i);
 			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(scc, indexName);
+			src.corpInfoTableAlias = corpInfoTableAlias;
 			sql.append(",");
 			src.resolveSqlSelectFields(sql);
 
-			sql.append(" as " + indexNameL.get(i));
+			sql.append(" as " + indexNameL.get(i).as());
 			src.getReportTypeSet(typeSet, true);
 		}
-
 		// from
 		int ts = 0;
-		sql.append(" from ");
+		sql.append(" from " + Tables.TN_CORP_INFO + " as " + corpInfoTableAlias);
+		/**
+		 * <code>
 		for (Integer type : typeSet) {
 			if (ts > 0) {
 				sql.append(",");
 			}
 			sql.append(Tables.getReportTable(type) + " as r" + type);
 			ts++;
-		}
+			</code> }
+		 */
 
 		// where join on.
 		ts = 0;
-		sql.append(" where 1=1 ");
+		sql.append(" where 1=1");
+		sql.append(" order by corpId");
+
+		/**
+		 * 
+		 * <code>
 		Integer preType = null;
 		for (Integer type : typeSet) {
 			if (preType == null) {
 				preType = type;
 				continue;
 			}
-
+		
 			sql.append("and r" + type + " = r" + preType);
 			ts++;
-		}
+		}</code>
+		 */
 		String targetSheetF = "" + tableName.value;
 		scc.getDataBaseService().execute(new JdbcOperation<String>() {
 
@@ -115,21 +126,16 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 			if (tableId.equals(id)) {
 				tableName.value = DocUtil.getText(xSheet, "TABLE", i);
 				Date rDate = null;
-				for (int col = 2;; col++) {
 
-					String idxNameC = DocUtil.getText(xSheet, col, i);
+				for (int idx = 1;; idx++) {
+
+					String idxNameC = DocUtil.getText(xSheet, "INDEX" + idx, i);
 					if (idxNameC == null || idxNameC.trim().length() == 0) {
 						break;
 					}
-					if (idxNameC.startsWith("INDEX")) {
-						indexNameL.add(new DatedIndex(rDate, idxNameC));
-					} else if (idxNameC.startsWith("Date")) {
-						try {
-							rDate = DF.parse(idxNameC);
-						} catch (ParseException e) {
-							throw RtException.toRtException(e);
-						}
-					}
+
+					indexNameL.add(DatedIndex.parse(idxNameC));
+
 				}
 				break;
 			}
