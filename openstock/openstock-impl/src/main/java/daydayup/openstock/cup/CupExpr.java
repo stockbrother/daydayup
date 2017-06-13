@@ -26,8 +26,8 @@ public abstract class CupExpr {
 		@Override
 		public void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc) {
 
+			StringBuffer buf = cc.getBuf();
 			exprLeft.resolveSqlSelectFields4Index(this, cc);
-
 			String opStr = null;
 			switch (this.oper) {
 			case PLUS:
@@ -45,8 +45,13 @@ public abstract class CupExpr {
 
 			}
 			cc.getBuf().append(opStr);
-
+			if (this.oper == DIV) {
+				buf.append(" nullif(");//
+			}
 			exprRight.resolveSqlSelectFields4Index(this, cc);
+			if (this.oper == DIV) {
+				buf.append(",0)");
+			}
 
 		}
 
@@ -79,25 +84,15 @@ public abstract class CupExpr {
 
 		@Override
 		public void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext src) {
-			boolean isDivRight = false;
+
 			StringBuffer buf = src.getBuf();
-			if (parent != null && parent instanceof CupExprBinary) {
-				CupExprBinary ceb = (CupExprBinary) parent;
-				if (ceb.oper == DIV && this == ceb.exprRight) {
-					isDivRight = true;
-				}
-			}
+
 			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.identifier);
 			String field = " r." + Tables.getReportColumn(ci.columnNumber) + "";
 
 			buf.append("(");//
 			buf.append("select");//
-			if (isDivRight) {
-				buf.append(" casewhen(" + field + "=0,NULL," + field + ")");
-			} else {
-				buf.append(" ifnull(" + field + ",0)");//
-			}
-
+			buf.append(" ifnull(" + field + ",0)");//
 			buf.append(" from " + Tables.getReportTable(ci.reportType) + " as r");//
 			buf.append(" where r.corpId = " + src.corpInfoTableAlias + ".corpId");
 			// buf.append(" and r.reportDate = PARSEDATETIME('"+ dateLiteral +
@@ -108,7 +103,6 @@ public abstract class CupExpr {
 
 			buf.append(")");
 		}
-		
 
 		public StringBuffer xresolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext src, StringBuffer buf) {
 			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.identifier);
@@ -122,7 +116,8 @@ public abstract class CupExpr {
 				// throw RtException.toRtException(e);
 				// }
 
-				//DerivedDatedIndex did = new DerivedDatedIndex(this.identifier,"date");
+				// DerivedDatedIndex did = new
+				// DerivedDatedIndex(this.identifier,"date");
 				IndexSqlSelectFieldsResolveContext childSrc = src.newChild(null);
 				childSrc.resolveSqlSelectFields();
 				buf.append(")");
