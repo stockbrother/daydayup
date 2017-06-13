@@ -6,7 +6,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.sun.star.sheet.XSpreadsheet;
@@ -27,7 +29,11 @@ import java_cup.runtime.Symbol;
 
 public class IndexSqlSelectFieldsResolveContext {
 
-	public DatedIndex indexName;
+	private DatedIndex datedIndex;
+
+	public DatedIndex getDatedIndex() {
+		return datedIndex;
+	}
 
 	public List<ColumnIdentifier> columnIdentifierList = new ArrayList<>();
 
@@ -39,25 +45,41 @@ public class IndexSqlSelectFieldsResolveContext {
 
 	public String corpInfoTableAlias = "ci";
 
-	public IndexSqlSelectFieldsResolveContext(CommandContext commandContext, DatedIndex indexName) {
-		this(null, commandContext, indexName);
+	private Map<String, Object> variableMap = new HashMap<String, Object>();
+
+	private List<Object> sqlArgumentList;
+	
+	private StringBuffer buf;
+
+	public List<Object> getSqlArgumentList() {
+		return sqlArgumentList;
+	}
+
+	public StringBuffer getBuf() {
+		return buf;
+	}
+
+	public IndexSqlSelectFieldsResolveContext(CommandContext commandContext, DatedIndex indexName, StringBuffer sql, List<Object> argL) {
+		this(null, commandContext, indexName, sql, argL);		
 	}
 
 	public IndexSqlSelectFieldsResolveContext newChild(DatedIndex indexName) {
-		IndexSqlSelectFieldsResolveContext rt = new IndexSqlSelectFieldsResolveContext(this, indexName);
+		IndexSqlSelectFieldsResolveContext rt = new IndexSqlSelectFieldsResolveContext(this, indexName,this.buf, this.sqlArgumentList);
 		this.childList.add(rt);
 		return rt;
 	}
 
-	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, DatedIndex indexName) {
-		this(parent, parent.commandContext, indexName);
+	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, DatedIndex indexName, StringBuffer sql, List<Object> argL) {
+		this(parent, parent.commandContext, indexName,sql,argL);
 	}
 
 	private IndexSqlSelectFieldsResolveContext(IndexSqlSelectFieldsResolveContext parent, CommandContext commandContext,
-			DatedIndex indexName) {
+			DatedIndex indexName, StringBuffer sql, List<Object> argL) {
+		this.buf = sql;
+		this.sqlArgumentList = argL;
 		this.parent = parent;
 		this.commandContext = commandContext;
-		this.indexName = indexName;
+		this.datedIndex = indexName;
 	}
 
 	public List<ColumnIdentifier> getColumnIdentifierList(boolean includeChildren) {
@@ -88,17 +110,17 @@ public class IndexSqlSelectFieldsResolveContext {
 	}
 
 	public static IndexSqlSelectFieldsResolveContext resolveSqlSelectFields(IndexSqlSelectFieldsResolveContext parent,
-			CommandContext cc, DatedIndex indexName, StringBuffer sql) {
-		IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(parent, cc, indexName);
-		src.resolveSqlSelectFields(sql);
+			CommandContext cc, DatedIndex indexName, StringBuffer sql, List<Object> argL) {
+		IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(parent, cc, indexName, sql,argL);
+		src.resolveSqlSelectFields();
 		return src;
 	}
 
-	public StringBuffer resolveSqlSelectFields(StringBuffer sql) {
+	public void resolveSqlSelectFields() {
 
-		String formula = this.getFormulaByIndexName(this.commandContext, this.indexName);
+		String formula = this.getFormulaByIndexName(this.commandContext, this.datedIndex);
 		if (formula == null) {
-			throw new RtException("no formula found for index:" + this.indexName);
+			throw new RtException("no formula found for index:" + this.datedIndex);
 		}
 
 		Reader r = new StringReader(formula);
@@ -109,9 +131,8 @@ public class IndexSqlSelectFieldsResolveContext {
 			throw new RtException("failed to parse formula:" + formula, e);
 		}
 		CupExpr expr = (CupExpr) result.value;
-		expr.resolveSqlSelectFields4Index(null, this, sql);
+		expr.resolveSqlSelectFields4Index(null, this);
 
-		return sql;
 	}
 
 	public void addColumnIdentifier(ColumnIdentifier rt) {
@@ -155,5 +176,26 @@ public class IndexSqlSelectFieldsResolveContext {
 			}
 		}
 		return set;
+	}
+
+	public Object setVariable(String key, Object value) {
+		return this.variableMap.put(key, value);
+	}
+
+	public Object getVariable(String dateVar, boolean force) {
+		Object rt = this.variableMap.get(dateVar);
+		if (rt == null) {
+			if (parent != null) {
+				rt = parent.getVariable(dateVar, false);
+			}
+		}
+		if (rt == null && force) {
+			throw new RtException("no var found:" + dateVar);
+		}
+		return rt;
+	}
+
+	public void addSqlArgument(Object arg) {
+		this.sqlArgumentList.add(arg);
 	}
 }

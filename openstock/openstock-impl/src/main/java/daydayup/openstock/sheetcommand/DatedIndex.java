@@ -15,10 +15,18 @@ public class DatedIndex {
 		this.indexName = idxNameC;
 	}
 
-	public Date reportDate;
+	private Date reportDate;
+
+	public Date getReportDate() {
+		return reportDate;
+	}
 
 	public String indexName;
 
+	protected DatedIndex(String indexName, Date reportDate){
+		this.indexName = indexName;
+		this.reportDate = reportDate;
+	}
 	public static DatedIndex parse(String datedIndexS) {
 
 		int idx = datedIndexS.indexOf('@');

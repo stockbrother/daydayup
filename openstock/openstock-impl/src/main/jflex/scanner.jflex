@@ -39,9 +39,8 @@ DateLiteral = [1-9][0-9][0-9][0-9][/][0-9][0-9][/][0-9][0-9]
 <YYINITIAL> {
 	// literals 
     {DecIntegerLiteral}            { Integer value = new Integer(yytext());;return symbol(sym.NUMBER, value); }
-    {Identifier}            	   { String value = yytext();return symbol(sym.IDENTIFIER, value); }
-    {DateLiteral}                  { String value = yytext();return symbol(sym.DATE, value); }
-    // operators     
+    {Identifier}            	   { String value = yytext();return symbol(sym.IDENTIFIER, value); }    
+    // operators
     "+"                            { return symbol(sym.PLUS); }
 	"-"                            { return symbol(sym.MINUS); }
 	"*"                            { return symbol(sym.TIMES); }

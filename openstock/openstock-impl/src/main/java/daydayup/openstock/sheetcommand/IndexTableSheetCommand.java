@@ -48,13 +48,15 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 		Set<Integer> typeSet = new HashSet<>();
 		String corpInfoTableAlias = "ci";
+		List<Object> sqlArgL = new ArrayList<>();
 
 		for (int i = 0; i < indexNameL.size(); i++) {
 			DatedIndex indexName = indexNameL.get(i);
-			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(scc, indexName);
+			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(scc, indexName, sql, sqlArgL);
+			
 			src.corpInfoTableAlias = corpInfoTableAlias;
 			sql.append(",");
-			src.resolveSqlSelectFields(sql);
+			src.resolveSqlSelectFields();
 
 			sql.append(" as " + indexNameL.get(i).as());
 			src.getReportTypeSet(typeSet, true);
@@ -97,7 +99,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 			@Override
 			public String execute(Connection con, JdbcAccessTemplate t) {
-				return t.executeQuery(con, sql.toString(), new ResultSetProcessor<String>() {
+				return t.executeQuery(con, sql.toString(),sqlArgL, new ResultSetProcessor<String>() {
 
 					@Override
 					public String process(ResultSet rs) throws SQLException {

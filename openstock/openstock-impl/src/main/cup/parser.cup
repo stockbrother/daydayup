@@ -21,7 +21,6 @@ scan with {:
 terminal            PLUS, MINUS, TIMES, DIV, LPAREN, RPAREN, AT;
 terminal Integer    NUMBER;        // our scanner provides numbers
 terminal String     IDENTIFIER;
-terminal String     DATE;
 // Non terminals 
 non terminal CupExpr    expr;      // used to store evaluated subexpressions
 
@@ -32,13 +31,13 @@ precedence left DIV;
 precedence left AT;
 
 // The grammar rules
-expr ::= expr:e1 PLUS expr:e2      {: System.out.println(e1+"+"+e2);RESULT = CupExpr.plus(e1,e2);       :}
-	| expr:e1 MINUS expr:e2        {: System.out.println(e1+"-"+e2);RESULT = CupExpr.minus(e1,e2);       :}
-	| expr:e1 TIMES expr:e2        {: System.out.println(e1+"*"+e2);RESULT = CupExpr.times(e1,e2);       :}
-	| expr:e1 DIV expr:e2          {: System.out.println(e1+"*"+e2);RESULT = CupExpr.div(e1,e2);       :}
-	| MINUS expr:e                 {: System.out.println("-"+e);RESULT = CupExpr.minus(e);          :}
-	| LPAREN expr:e RPAREN	       {: System.out.println("("+e+")");RESULT = CupExpr.paren(e);           :}
-	| NUMBER:n	                   {: System.out.println(n); RESULT = CupExpr.number(n);           :}	
-	| IDENTIFIER:id AT DATE:d      {: System.out.println(""+id+"@"+d);RESULT = CupExpr.index(id,d);          :}  	     
+expr ::= expr:e1 PLUS expr:e2      	    {: System.out.println(e1+"+"+e2);RESULT = CupExpr.plus(e1,e2);       :}
+	| expr:e1 MINUS expr:e2        	    {: System.out.println(e1+"-"+e2);RESULT = CupExpr.minus(e1,e2);       :}
+	| expr:e1 TIMES expr:e2        	    {: System.out.println(e1+"*"+e2);RESULT = CupExpr.times(e1,e2);       :}
+	| expr:e1 DIV expr:e2          	    {: System.out.println(e1+"*"+e2);RESULT = CupExpr.div(e1,e2);        :}
+	| MINUS expr:e                 	    {: System.out.println("-"+e);RESULT = CupExpr.minus(e);              :}
+	| LPAREN expr:e RPAREN	            {: System.out.println("("+e+")");RESULT = CupExpr.paren(e);           :}
+	| NUMBER:n	                        {: System.out.println(n); RESULT = CupExpr.number(n);           :}	
+	| IDENTIFIER:id AT IDENTIFIER:date   {: System.out.println(""+id+"@"+date);RESULT = CupExpr.index(id,date);          :}  	     
 	
 ;

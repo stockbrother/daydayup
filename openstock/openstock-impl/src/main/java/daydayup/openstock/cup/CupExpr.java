@@ -1,12 +1,10 @@
 package daydayup.openstock.cup;
 
-import java.text.ParseException;
 import java.util.Date;
 
-import daydayup.openstock.RtException;
 import daydayup.openstock.database.Tables;
 import daydayup.openstock.sheetcommand.DatedIndex;
-import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
+import daydayup.openstock.sheetcommand.DerivedDatedIndex;
 
 public abstract class CupExpr {
 	public static final int PLUS = 1;
@@ -26,10 +24,9 @@ public abstract class CupExpr {
 		}
 
 		@Override
-		public StringBuffer resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc,
-				StringBuffer buf) {
+		public void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc) {
 
-			exprLeft.resolveSqlSelectFields4Index(this, cc, buf);
+			exprLeft.resolveSqlSelectFields4Index(this, cc);
 
 			String opStr = null;
 			switch (this.oper) {
@@ -47,11 +44,10 @@ public abstract class CupExpr {
 				break;
 
 			}
-			buf.append(opStr);
+			cc.getBuf().append(opStr);
 
-			exprRight.resolveSqlSelectFields4Index(this, cc, buf);
+			exprRight.resolveSqlSelectFields4Index(this, cc);
 
-			return buf;
 		}
 
 	}
@@ -64,10 +60,8 @@ public abstract class CupExpr {
 		}
 
 		@Override
-		public StringBuffer resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc,
-				StringBuffer buf) {
-			buf.append(value);
-			return buf;
+		public void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc) {
+			cc.getBuf().append(value);
 		}
 
 	}
@@ -76,17 +70,17 @@ public abstract class CupExpr {
 
 		String identifier;
 
-		String dateLiteral;
+		String dateVar;
 
 		CupExprIndex(String identifier, String dateS) {
 			this.identifier = identifier;
-			this.dateLiteral = dateS;
+			this.dateVar = dateS;
 		}
 
 		@Override
-		public StringBuffer resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext src,
-				StringBuffer buf) {
+		public void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext src) {
 			boolean isDivRight = false;
+			StringBuffer buf = src.getBuf();
 			if (parent != null && parent instanceof CupExprBinary) {
 				CupExprBinary ceb = (CupExprBinary) parent;
 				if (ceb.oper == DIV && this == ceb.exprRight) {
@@ -105,12 +99,16 @@ public abstract class CupExpr {
 			}
 
 			buf.append(" from " + Tables.getReportTable(ci.reportType) + " as r");//
-			buf.append(" where r.corpId = " + src.corpInfoTableAlias + ".corpId and r.reportDate = PARSEDATETIME('"
-					+ dateLiteral + "','yyyy/MM/dd')")//
-					.append(")")//
-					;
-			return buf;
+			buf.append(" where r.corpId = " + src.corpInfoTableAlias + ".corpId");
+			// buf.append(" and r.reportDate = PARSEDATETIME('"+ dateLiteral +
+			// "','yyyy/MM/dd')");
+			buf.append(" and r.reportDate = ?");
+			Date date = src.getDatedIndex().getReportDate();
+			src.addSqlArgument(date);
+
+			buf.append(")");
 		}
+		
 
 		public StringBuffer xresolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext src, StringBuffer buf) {
 			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.identifier);
@@ -118,15 +116,15 @@ public abstract class CupExpr {
 								// sheet.
 				buf.append("(");
 				Date date = null;
-				try {
-					date = IndexTableSheetCommand.DF.parse(this.dateLiteral);
-				} catch (ParseException e) {
-					throw RtException.toRtException(e);
-				}
+				// try {
+				// date = IndexTableSheetCommand.DF.parse(this.dateLiteral);
+				// } catch (ParseException e) {
+				// throw RtException.toRtException(e);
+				// }
 
-				DatedIndex di = DatedIndex.valueOf(date, this.identifier);
-				IndexSqlSelectFieldsResolveContext childSrc = src.newChild(di);
-				childSrc.resolveSqlSelectFields(buf);
+				//DerivedDatedIndex did = new DerivedDatedIndex(this.identifier,"date");
+				IndexSqlSelectFieldsResolveContext childSrc = src.newChild(null);
+				childSrc.resolveSqlSelectFields();
 				buf.append(")");
 
 			} else {
@@ -148,12 +146,10 @@ public abstract class CupExpr {
 		}
 
 		@Override
-		public StringBuffer resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc,
-				StringBuffer buf) {
-			buf.append("(");
-			expr.resolveSqlSelectFields4Index(this, cc, buf);
-			buf.append(")");
-			return buf;
+		public void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc) {
+			cc.getBuf().append("(");
+			expr.resolveSqlSelectFields4Index(this, cc);
+			cc.getBuf().append(")");
 		}
 
 	}
@@ -190,6 +186,5 @@ public abstract class CupExpr {
 		return new CupExprIndex(identifier, date);
 	}
 
-	public abstract StringBuffer resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc,
-			StringBuffer buf);
+	public abstract void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext cc);
 }
