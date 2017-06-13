@@ -39,8 +39,8 @@ public class SheetCommand extends CommandBase<Object> {
 	public static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
 
 	public static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
-
-	private static int maxRows = 1000;
+	
+	public static final String SN_SYS_CFG = "SYS_CFG";
 
 	@Override
 	public Object doExecute(CommandContext cc) {
@@ -188,7 +188,21 @@ public class SheetCommand extends CommandBase<Object> {
 		}, false);
 	}
 
+	public static int getSheetMaxRows(CommandContext cc){
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SheetCommand.SN_SYS_CFG, false);
+		if(xSheet == null){
+			return 10000;
+		}
+		Double value = DocUtil.getValueByNameVertically(xSheet,"Name","sheet.max.rows","Value");
+		
+		if(value == null){
+			return 10000;
+		}
+		return value.intValue();
+	}
+	
 	public static void writeToSheet(CommandContext cc, ResultSet rs, String targetSheet) throws SQLException {
+		int maxRows = getSheetMaxRows(cc);
 		XComponentContext xcc = cc.getComponentContext();
 		XStatusIndicator si = cc.getStatusIndicator();
 		XSpreadsheet xSheet = DocUtil.getOrCreateSpreadsheetByName(xcc, targetSheet);

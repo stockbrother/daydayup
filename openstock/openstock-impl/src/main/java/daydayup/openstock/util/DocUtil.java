@@ -232,4 +232,30 @@ public class DocUtil {
 		xDoc.getSheets().insertNewByName(name, (short) names.length);
 		return getSpreadsheetByName(xDoc, name, true);
 	}
+
+	public static Double getValue(XSpreadsheet xSheet, int col, int row) {
+		try {
+			XCell cell = xSheet.getCellByPosition(col, row);
+			return cell.getValue();
+		} catch (IndexOutOfBoundsException e) {
+			throw new RtException(e);
+		}
+
+	}
+
+	public static Double getValueByNameVertically(XSpreadsheet xSheet, String nameCol, String name, String valueCol) {
+		int nameC = DocUtil.getColIndex(xSheet, nameCol);
+		int valueC = DocUtil.getColIndex(xSheet, valueCol);
+		for (int i = 1;; i++) {
+			String nameI = DocUtil.getText(xSheet, nameC, i);
+			if (nameI == null || nameI.trim().length() == 0) {
+				break;
+			}
+			if (name.equals(nameI)) {
+				return DocUtil.getValue(xSheet, valueC, i);
+			}
+
+		}
+		return null;
+	}
 }
