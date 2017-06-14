@@ -295,6 +295,11 @@
 			<version>1.6.1</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160212</version>
+		</dependency>
 		
 		<!-- scope:test -->
 		<dependency>

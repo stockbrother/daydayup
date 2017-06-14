@@ -22,11 +22,10 @@ import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.cninfo.CninfoCorpInfo2DbSheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.netease.NeteaseUtil;
-import daydayup.openstock.netease.WashedFileLoader;
-import daydayup.openstock.netease.WashedFileLoader.DbWashedFileLoadContext;
-import daydayup.openstock.netease.WashedFileLoader.WashedFileLoadContext;
 import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
 import daydayup.openstock.util.DocUtil;
+import daydayup.openstock.wash.WashedFileLoader;
+import daydayup.openstock.wash.WashedFileLoader.WashedFileLoadContext;
 
 public class SheetCommand extends CommandBase<Object> {
 
@@ -140,10 +139,9 @@ public class SheetCommand extends CommandBase<Object> {
 	}
 
 	private Object executeNeteaseWashed2Db(CommandContext cc, List<String> argL) {
-		DataBaseService dbs = cc.getDataBaseService();
-		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
-		WashedFileLoadContext flc = new DbWashedFileLoadContext(dbs);
-		new WashedFileLoader(xDoc).load(NeteaseUtil.getDataWashedDir(), flc);
+		DataBaseService dbs = cc.getDataBaseService();		
+		WashedFileLoadContext flc = new WashedFileLoadContext(dbs);
+		new WashedFileLoader().load(NeteaseUtil.getDataWashedDir(), flc);
 		return "done";
 	}
 
