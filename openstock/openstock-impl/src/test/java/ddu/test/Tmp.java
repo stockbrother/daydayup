@@ -1,6 +1,8 @@
 package ddu.test;
 
-import daydayup.openstock.ServiceRegistraction;
+import java.util.Date;
+
+import daydayup.openstock.util.DocUtil;
 
 public class Tmp {
 	public static void main(String[] args) throws Exception {
@@ -26,8 +28,9 @@ public class Tmp {
 	}
 
 	public static void test() throws Exception {
-		String s = "\u8425\u4e1a\u603b\u6536\u5165";
-		System.out.print(s);
+		System.out.println(DocUtil.DF.format(new Date()));
+		//String s = "\u8425\u4e1a\u603b\u6536\u5165";
+		//System.out.print(s);
 		//com.sun.star.comp.servicemanager.ServiceManager sm = new com.sun.star.comp.servicemanager.ServiceManager();
 		//sm.insert(OpenStockImpl.__getServiceFactory(OpenStockImpl.class.getName(), sm, null));
 		//Object serObj = sm.createInstance(OpenStockImpl.__serviceName);

@@ -17,6 +17,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import daydayup.openstock.Attributes;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.netease.NeteaseWashedFileProcessor;
 import daydayup.openstock.sina.AllQuotesFileProcessor;
@@ -30,7 +31,7 @@ public class WashedFileLoader {
 			typeMap.put("ZCFZB", 1);
 			typeMap.put("LRB", 2);
 			typeMap.put("XJLLB", 3);
-
+			typeMap.put("quotes", 4);
 		}
 
 		DataBaseService dbs;
@@ -61,6 +62,8 @@ public class WashedFileLoader {
 		protected Map<String, WashedDataTypeContext> nextRowMap = new HashMap<>();
 
 		public DataBaseService dbs;
+		
+		public Attributes attributes = new Attributes();
 
 		public WashedFileLoadContext(DataBaseService dbs) {
 			this.dbs = dbs;

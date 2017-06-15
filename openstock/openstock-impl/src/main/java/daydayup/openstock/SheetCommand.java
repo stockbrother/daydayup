@@ -1,8 +1,5 @@
 package daydayup.openstock;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +10,16 @@ import com.sun.star.container.NoSuchElementException;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
-import com.sun.star.task.XStatusIndicator;
 import com.sun.star.uno.XComponentContext;
 
-import daydayup.jdbc.JdbcAccessTemplate;
-import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
-import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.cninfo.CninfoCorpInfo2DbSheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
+import daydayup.openstock.sheetcommand.SqlQuerySheetCommand;
+import daydayup.openstock.sheetcommand.SqlUpdateSheetCommand;
+import daydayup.openstock.sina.SinaQuotesDownloadAndWashSheetCommand;
+import daydayup.openstock.sina.SinaQuotesWashed2DBSheetCommand;
 import daydayup.openstock.util.DocUtil;
 import daydayup.openstock.wash.WashedFileLoader;
 import daydayup.openstock.wash.WashedFileLoader.WashedFileLoadContext;
@@ -31,14 +28,16 @@ public class SheetCommand extends CommandBase<Object> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SheetCommand.class);
 
-	private static final String SN_SYS_CMDS = "SYS_CMDS";
+	public static final String SN_SYS_CMDS = "SYS_CMDS";
 
-	private static final String SN_SYS_SQL_QUERY = "SYS_SQL_QUERY";
+	public static final String SN_SYS_SQL_QUERY = "SYS_SQL_QUERY";
+
+	public static final String SN_SYS_SQL_UPDATE = "SYS_SQL_UPDATE";
 
 	public static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
 
 	public static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
-	
+
 	public static final String SN_SYS_CFG = "SYS_CFG";
 
 	@Override
@@ -105,16 +104,22 @@ public class SheetCommand extends CommandBase<Object> {
 		SheetCommandContext scc = new SheetCommandContext(cc, argL);
 
 		if (command.equals(SN_SYS_SQL_QUERY)) {
-			return this.executeSqlQuery(cc, argL);
+			return new SqlQuerySheetCommand().execute(scc);
+		} else if (command.equals(SN_SYS_SQL_UPDATE)) {
+			return new SqlUpdateSheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
 			return new IndexTableSheetCommand().execute(scc);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {
 			return this.executeNeteaseWashed2Db(cc, argL);
 		} else if (command.equals("RESET_SHEET")) {
 			return this.executeResetSheet(cc);
-		} else if(command.equals("CNINFO_CORPINFO_2_DB")){
+		} else if (command.equals("CNINFO_CORPINFO_2_DB")) {
 			return new CninfoCorpInfo2DbSheetCommand().execute(scc);
-		}else {
+		} else if (command.equals("SINA_DOWNLOAD_AND_WASH")) {
+			return new SinaQuotesDownloadAndWashSheetCommand().execute(scc);
+		} else if (command.equals("SINA_WASHED_2_DB")) {
+			return new SinaQuotesWashed2DBSheetCommand().execute(scc);
+		} else {
 			return "not supporte:" + command;
 		}
 	}
@@ -139,95 +144,10 @@ public class SheetCommand extends CommandBase<Object> {
 	}
 
 	private Object executeNeteaseWashed2Db(CommandContext cc, List<String> argL) {
-		DataBaseService dbs = cc.getDataBaseService();		
+		DataBaseService dbs = cc.getDataBaseService();
 		WashedFileLoadContext flc = new WashedFileLoadContext(dbs);
 		new WashedFileLoader().load(NeteaseUtil.getDataWashedDir(), flc);
 		return "done";
 	}
 
-	private Object executeSqlQuery(CommandContext cc, List<String> argL) {
-		if (argL.isEmpty()) {
-			LOG.warn("illegel argument for sql query.");
-			return "illegel argument for sql query.";
-		}
-		String sqlId = argL.get(0);
-		String sql = null;
-		String targetSheet = null;
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SN_SYS_SQL_QUERY, false);
-		for (int i = 0;; i++) {
-			String id = DocUtil.getText(xSheet, 0, i);
-			if (id == null || id.trim().length() == 0) {
-				break;
-			}
-			if (sqlId.equals(id)) {
-				sql = DocUtil.getText(xSheet, 1, i);
-				targetSheet = DocUtil.getText(xSheet, 2, i);
-				break;
-			}
-		}
-		final String sqlF = sql;
-		final String targetSheetF = targetSheet;
-		return cc.getDataBaseService().execute(new JdbcOperation<Object>() {
-
-			@Override
-			public Object execute(Connection con, JdbcAccessTemplate t) {
-
-				return t.executeQuery(con, sqlF, new ResultSetProcessor<Object>() {
-
-					@Override
-					public Object process(ResultSet rs) throws SQLException {
-						writeToSheet(cc, rs, targetSheetF);
-						return "done.";
-					}
-
-				});
-
-			}
-		}, false);
-	}
-
-	public static int getSheetMaxRows(CommandContext cc){
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SheetCommand.SN_SYS_CFG, false);
-		if(xSheet == null){
-			return 10000;
-		}
-		Double value = DocUtil.getValueByNameVertically(xSheet,"Name","sheet.max.rows","Value");
-		
-		if(value == null){
-			return 10000;
-		}
-		return value.intValue();
-	}
-	
-	public static void writeToSheet(CommandContext cc, ResultSet rs, String targetSheet) throws SQLException {
-		int maxRows = getSheetMaxRows(cc);
-		XComponentContext xcc = cc.getComponentContext();
-		XStatusIndicator si = cc.getStatusIndicator();
-		XSpreadsheet xSheet = DocUtil.getOrCreateSpreadsheetByName(xcc, targetSheet);
-		DocUtil.setActiveSheet(xcc, xSheet);
-		int cols = rs.getMetaData().getColumnCount();
-		// write header
-		for (int i = 0; i < cols; i++) {
-			String colName = rs.getMetaData().getColumnLabel(i + 1);
-			DocUtil.setText(xSheet, i, 0, colName);
-		}
-		// write rows
-		int row = 1;
-
-		while (rs.next()) {
-			if (row > maxRows) {
-				break;
-			}
-			for (int i = 0; i < cols; i++) {
-				Object obj = rs.getObject(i + 1);
-				DocUtil.setValue(xSheet, i, row, obj);
-
-			}
-			row++;
-			si.setText("Row:" + row + ",Limit:" + maxRows);
-			si.setValue(row * 100 / maxRows);
-
-		}
-
-	}
 }

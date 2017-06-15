@@ -103,7 +103,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 					@Override
 					public String process(ResultSet rs) throws SQLException {
-						SheetCommand.writeToSheet(scc, rs, targetSheetF);
+						DocUtil.writeToSheet(scc, rs, targetSheetF);
 						return null;
 					}
 				});

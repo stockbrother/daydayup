@@ -46,4 +46,19 @@ public class DateUtil {
 		c.set(Calendar.MILLISECOND, 0);//
 		return c.getTime();
 	}
+	public static Date floorHour(Date date, TimeZone zone) {
+		Calendar c = Calendar.getInstance(zone);
+		c.setTimeInMillis(date.getTime());
+		c.set(Calendar.HOUR_OF_DAY,0);
+		c.set(Calendar.MINUTE,0);
+		c.set(Calendar.SECOND,0);
+		c.set(Calendar.MILLISECOND,0);
+		return c.getTime();
+	}
+	public static Date newDate(int year, int month, int day, TimeZone zone) {
+		Calendar c = Calendar.getInstance(zone);
+		c.set(year, month, day, 0, 0, 0);
+		c.set(Calendar.MILLISECOND, 0);//
+		return c.getTime();
+	}
 }

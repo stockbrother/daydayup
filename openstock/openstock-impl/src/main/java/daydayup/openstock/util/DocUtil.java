@@ -1,5 +1,9 @@
 package daydayup.openstock.util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.sun.star.container.NoSuchElementException;
@@ -22,11 +26,16 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.uno.XInterface;
 
+import daydayup.openstock.CommandContext;
 import daydayup.openstock.OpenStock;
 import daydayup.openstock.RtException;
+import daydayup.openstock.SheetCommand;
 import daydayup.openstock.netease.NeteaseUtil;
 
 public class DocUtil {
+	
+	public static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+	
 	public static XSpreadsheetDocument getSpreadsheetDocument(XComponentContext xcc) {
 		Object desktop = null;
 		try {
@@ -151,7 +160,7 @@ public class DocUtil {
 			if (value == null) {
 				// do nothing.
 			} else if (value instanceof Date) {
-				String str = NeteaseUtil.DF.format((Date) value);
+				String str = DF.format((Date) value);
 				setText(xCell, str);
 			} else if (value instanceof Number) {
 				xCell.setValue(((Number) value).doubleValue());
@@ -169,7 +178,7 @@ public class DocUtil {
 		if (obj == null) {
 			return "";
 		} else if (obj instanceof Date) {
-			return NeteaseUtil.DF.format((Date) obj);
+			return DF.format((Date) obj);
 		} else {
 			return obj.toString();
 		}
@@ -257,5 +266,50 @@ public class DocUtil {
 
 		}
 		return null;
+	}
+
+	public static int getSheetMaxRows(CommandContext cc){
+		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SheetCommand.SN_SYS_CFG, false);
+		if(xSheet == null){
+			return 10000;
+		}
+		Double value = DocUtil.getValueByNameVertically(xSheet,"Name","sheet.max.rows","Value");
+		
+		if(value == null){
+			return 10000;
+		}
+		return value.intValue();
+	}
+	
+	public static void writeToSheet(CommandContext cc, ResultSet rs, String targetSheet) throws SQLException {
+		int maxRows = getSheetMaxRows(cc);
+		XComponentContext xcc = cc.getComponentContext();
+		XStatusIndicator si = cc.getStatusIndicator();
+		XSpreadsheet xSheet = DocUtil.getOrCreateSpreadsheetByName(xcc, targetSheet);
+		DocUtil.setActiveSheet(xcc, xSheet);
+		int cols = rs.getMetaData().getColumnCount();
+		// write header
+		for (int i = 0; i < cols; i++) {
+			String colName = rs.getMetaData().getColumnLabel(i + 1);
+			DocUtil.setText(xSheet, i, 0, colName);
+		}
+		// write rows
+		int row = 1;
+
+		while (rs.next()) {
+			if (row > maxRows) {
+				break;
+			}
+			for (int i = 0; i < cols; i++) {
+				Object obj = rs.getObject(i + 1);
+				DocUtil.setValue(xSheet, i, row, obj);
+
+			}
+			row++;
+			si.setText("Row:" + row + ",Limit:" + maxRows);
+			si.setValue(row * 100 / maxRows);
+
+		}
+
 	}
 }

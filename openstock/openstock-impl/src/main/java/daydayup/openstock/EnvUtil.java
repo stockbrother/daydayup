@@ -89,4 +89,9 @@ public class EnvUtil {
 		return "openstock";
 	}
 
+	public static Date floorHour(Date date) {
+		
+		return DateUtil.floorHour(date, dataTimeZone);
+	}
+
 }

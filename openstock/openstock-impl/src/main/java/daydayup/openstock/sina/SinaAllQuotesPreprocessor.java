@@ -35,7 +35,7 @@ public class SinaAllQuotesPreprocessor extends FilesPreprocessor {
 		File from = new File(data, "sina\\raw");
 
 		File to = new File(data, "sina\\washed");
-		
+
 		new SinaAllQuotesPreprocessor(from, to).process();
 
 	}
@@ -74,6 +74,10 @@ public class SinaAllQuotesPreprocessor extends FilesPreprocessor {
 
 		CSVWriter cw = new CSVWriter(new OutputStreamWriter(new FileOutputStream(outputWork), Charset.forName("UTF-8")),
 				',', CSVWriter.NO_QUOTE_CHARACTER);
+		cw.writeNext(new String[] { "Header","" });
+		cw.writeNext(new String[] { "日期格式", "yyyyMMddHHmmssSSS" });
+		cw.writeNext(new String[] { "报告日期", name });		
+		cw.writeNext(new String[] { "Body","" });
 		cw.writeNext(HEADERS);
 		int total = 0;
 		for (File f : dir.listFiles()) {
