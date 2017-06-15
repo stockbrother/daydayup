@@ -3,8 +3,6 @@ package daydayup.openstock.cup;
 import java.util.Date;
 
 import daydayup.openstock.database.Tables;
-import daydayup.openstock.sheetcommand.DatedIndex;
-import daydayup.openstock.sheetcommand.DerivedDatedIndex;
 
 public abstract class CupExpr {
 	public static final int PLUS = 1;
@@ -81,6 +79,14 @@ public abstract class CupExpr {
 			this.identifier = identifier;
 			this.dateVar = dateS;
 		}
+		
+		private int getDateArgIndex(){
+			if(dateVar == null){
+				return 0;
+			}
+			String rtI = dateVar.substring("date".length());
+			return Integer.parseInt(rtI);
+		}
 
 		@Override
 		public void resolveSqlSelectFields4Index(CupExpr parent, IndexSqlSelectFieldsResolveContext src) {
@@ -98,7 +104,11 @@ public abstract class CupExpr {
 			// buf.append(" and r.reportDate = PARSEDATETIME('"+ dateLiteral +
 			// "','yyyy/MM/dd')");
 			buf.append(" and r.reportDate = ?");
-			Date date = src.getDatedIndex().getReportDate();
+			
+			int argI = getDateArgIndex();
+			
+			Date date = src.getDatedIndex().getReportDateList().get(argI);
+			
 			src.addSqlArgument(date);
 
 			buf.append(")");
