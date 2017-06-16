@@ -20,6 +20,8 @@ import daydayup.openstock.sheetcommand.SqlQuerySheetCommand;
 import daydayup.openstock.sheetcommand.SqlUpdateSheetCommand;
 import daydayup.openstock.sina.SinaQuotesDownloadAndWashSheetCommand;
 import daydayup.openstock.sina.SinaQuotesWashed2DBSheetCommand;
+import daydayup.openstock.sse.SseCorpInfo2DbSheetCommand;
+import daydayup.openstock.szse.SzseCorpInfo2DbSheetCommand;
 import daydayup.openstock.util.DocUtil;
 import daydayup.openstock.wash.WashedFileLoader;
 import daydayup.openstock.wash.WashedFileLoader.WashedFileLoadContext;
@@ -119,7 +121,11 @@ public class SheetCommand extends CommandBase<Object> {
 			return new SinaQuotesDownloadAndWashSheetCommand().execute(scc);
 		} else if (command.equals("SINA_WASHED_2_DB")) {
 			return new SinaQuotesWashed2DBSheetCommand().execute(scc);
-		} else {
+		} else if (command.equals("SSE_CORPINFO_2_DB")) {
+			return new SseCorpInfo2DbSheetCommand().execute(scc);
+		}else if (command.equals("SZSE_CORPINFO_2_DB")) {
+			return new SzseCorpInfo2DbSheetCommand().execute(scc);
+		}else {
 			return "not supporte:" + command;
 		}
 	}
