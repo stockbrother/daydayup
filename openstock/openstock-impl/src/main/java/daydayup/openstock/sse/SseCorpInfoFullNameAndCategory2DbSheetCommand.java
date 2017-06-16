@@ -22,13 +22,13 @@ import daydayup.openstock.RtException;
 import daydayup.openstock.SheetCommandContext;
 import daydayup.openstock.database.Tables;
 
-public class SseCorpInfo2DbSheetCommand extends BaseSheetCommand<Object> {
+public class SseCorpInfoFullNameAndCategory2DbSheetCommand extends BaseSheetCommand<Object> {
 
 	private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Override
 	protected Object doExecute(SheetCommandContext scc) {
-		File csvFile = new File("C:\\openstock\\sse\\sse.corplist.csv");
+		File csvFile = new File("C:\\openstock\\sse\\sse.corplist2.csv");
 
 		scc.getDataBaseService().execute(new JdbcOperation<Object>() {
 
@@ -44,7 +44,7 @@ public class SseCorpInfo2DbSheetCommand extends BaseSheetCommand<Object> {
 	}
 
 	public void loadCorpInfo2Db(File csvFile, Connection con, JdbcAccessTemplate t) {
-		String sql = "merge into " + Tables.TN_CORP_INFO + "(corpId,corpName,ipoDate)key(corpId)values(?,?,?)";
+		String sql = "merge into " + Tables.TN_CORP_INFO + "(corpId,fullName,category)key(corpId)values(?,?,?)";
 
 		try {
 			Charset cs = Charset.forName("UTF-8");
@@ -65,9 +65,12 @@ public class SseCorpInfo2DbSheetCommand extends BaseSheetCommand<Object> {
 					break;
 				}
 
-				String x0 = getValueByColumn(next, colIndexMap, "A股代码");
-				String x1 = getValueByColumn(next, colIndexMap, "A股简称");
-				Date x2 = getDateValueByColumn(next, colIndexMap, "A股上市日期", DF, "-");
+				String x0 = SseCorpInfo2DbSheetCommand.getValueByColumn(next, colIndexMap, "A股代码");
+				if ("-".equals(x0)) {
+					continue;
+				}
+				String x1 = SseCorpInfo2DbSheetCommand.getValueByColumn(next, colIndexMap, "公司全称");
+				String x2 = SseCorpInfo2DbSheetCommand.getValueByColumn(next, colIndexMap, "所属行业");
 
 				t.executeUpdate(con, sql, new Object[] { x0, x1, x2, });
 
@@ -75,47 +78,6 @@ public class SseCorpInfo2DbSheetCommand extends BaseSheetCommand<Object> {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public static Date getDateValueByColumn(String[] line, Map<String, Integer> colIndexMap, String col,
-			DateFormat df) {
-		return getDateValueByColumn(line, colIndexMap, col, DF, "");
-	}
-
-	public static Date getDateValueByColumn(String[] line, Map<String, Integer> colIndexMap, String col, DateFormat df,
-			String asNull) {
-		String str = getValueByColumn(line, colIndexMap, col, asNull);
-		if (str == null || str.length() == 0) {
-			return null;
-		}
-		try {
-			return df.parse(str);
-		} catch (ParseException e) {
-			throw RtException.toRtException(e);
-		}
-	}
-
-	public static String getValueByColumn(String[] line, Map<String, Integer> colIndexMap, String col) {
-		return getValueByColumn(line, colIndexMap, col, "");
-	}
-
-	public static String getValueByColumn(String[] line, Map<String, Integer> colIndexMap, String col, String asNull) {
-		Integer idx = colIndexMap.get(col);
-		if (idx == null) {
-			throw new RtException("no column found:" + col + ",all are:" + colIndexMap);
-		}
-
-		String rt = line[idx];
-		if (rt == null) {
-			return null;
-		}
-
-		rt = rt.trim();
-		if (rt.equals(asNull)) {
-			rt = null;
-		}
-
-		return rt;
 	}
 
 }
