@@ -16,6 +16,7 @@ import daydayup.openstock.cninfo.CninfoCorpInfo2DbSheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
+import daydayup.openstock.sheetcommand.ScopedIndexTableSheetCommand;
 import daydayup.openstock.sheetcommand.SqlQuerySheetCommand;
 import daydayup.openstock.sheetcommand.SqlUpdateSheetCommand;
 import daydayup.openstock.sina.SinaQuotesDownloadAndWashSheetCommand;
@@ -37,6 +38,8 @@ public class SheetCommand extends CommandBase<Object> {
 	public static final String SN_SYS_SQL_UPDATE = "SYS_SQL_UPDATE";
 
 	public static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
+
+	public static final String SN_SYS_SCOPED_INDEX_TABLE = "SYS_SCOPED_INDEX_TABLE";
 
 	public static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
 
@@ -109,6 +112,8 @@ public class SheetCommand extends CommandBase<Object> {
 			return new SqlQuerySheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_SQL_UPDATE)) {
 			return new SqlUpdateSheetCommand().execute(scc);
+		} else if (command.equals(SN_SYS_SCOPED_INDEX_TABLE)) {
+			return new ScopedIndexTableSheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
 			return new IndexTableSheetCommand().execute(scc);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {

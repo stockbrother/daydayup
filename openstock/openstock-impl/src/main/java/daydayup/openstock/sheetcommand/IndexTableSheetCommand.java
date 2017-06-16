@@ -32,10 +32,16 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 	public static final DateFormat DF = new SimpleDateFormat("yyyy/MM/dd");
 
-	@Override
-	protected Object doExecute(SheetCommandContext scc) {
+	protected String getTableId(SheetCommandContext scc) {
 		List<String> argL = scc.getArgumentList();
 		String tableId = argL.get(0);
+		return tableId;
+	}
+
+	@Override
+	protected Object doExecute(SheetCommandContext scc) {
+
+		String tableId = this.getTableId(scc);
 
 		Holder<String> tableName = new Holder<>();
 		List<DatedIndex> indexNameL = this.getIndexNameList(scc, tableId, tableName);
@@ -52,8 +58,9 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 		for (int i = 0; i < indexNameL.size(); i++) {
 			DatedIndex indexName = indexNameL.get(i);
-			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(scc, indexName, sql, sqlArgL);
-			
+			IndexSqlSelectFieldsResolveContext src = new IndexSqlSelectFieldsResolveContext(scc, indexName, sql,
+					sqlArgL);
+
 			src.corpInfoTableAlias = corpInfoTableAlias;
 			sql.append(",");
 			src.resolveSqlSelectFields();
@@ -78,6 +85,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 		// where join on.
 		ts = 0;
 		sql.append(" where 1=1");
+		this.appendSqlWhere(scc, sql);
 		sql.append(" order by corpId");
 
 		/**
@@ -94,12 +102,12 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 			ts++;
 		}</code>
 		 */
-		String targetSheetF = "" + tableName.value;
+		String targetSheetF = getTargetSheet(scc, tableName.value);
 		scc.getDataBaseService().execute(new JdbcOperation<String>() {
 
 			@Override
 			public String execute(Connection con, JdbcAccessTemplate t) {
-				return t.executeQuery(con, sql.toString(),sqlArgL, new ResultSetProcessor<String>() {
+				return t.executeQuery(con, sql.toString(), sqlArgL, new ResultSetProcessor<String>() {
 
 					@Override
 					public String process(ResultSet rs) throws SQLException {
@@ -111,6 +119,14 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 		}, false);
 
 		return "done";
+	}
+
+	protected String getTargetSheet(SheetCommandContext scc, String tableName) {
+		return "" + tableName;
+	}
+
+	protected void appendSqlWhere(SheetCommandContext scc, StringBuffer sql) {
+
 	}
 
 	private List<DatedIndex> getIndexNameList(CommandContext cc, String tableId, Holder<String> tableName) {
