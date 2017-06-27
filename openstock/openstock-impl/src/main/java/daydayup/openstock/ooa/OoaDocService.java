@@ -15,7 +15,6 @@ public class OoaDocService implements DocumentService {
 
 	XComponentContext xcc;
 	SpreadsheetDocument doc;
-	
 
 	public OoaDocService(XComponentContext xcc) {
 		this.xcc = xcc;
@@ -23,10 +22,10 @@ public class OoaDocService implements DocumentService {
 
 	@Override
 	public SpreadsheetDocument getDocument() {
-		if(doc != null){
+		if (doc != null) {
 			return doc;
 		}
-		
+
 		Object desktop = null;
 		try {
 			desktop = xcc.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", xcc);
@@ -38,8 +37,8 @@ public class OoaDocService implements DocumentService {
 
 		XInterface xDoc = UnoRuntime.queryInterface(XInterface.class, xComp);
 		XSpreadsheetDocument xDoc2 = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xDoc);
-		
-		return new OoaSpreadsheetDocument(xDoc2);
+
+		return new OoaSpreadsheetDocument(xDoc2, this);
 	}
 
 }

@@ -6,11 +6,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.star.container.NoSuchElementException;
+import com.sun.star.container.XNamed;
+import com.sun.star.frame.XController;
+import com.sun.star.frame.XDesktop;
+import com.sun.star.frame.XModel;
 import com.sun.star.lang.WrappedTargetException;
+import com.sun.star.lang.XComponent;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
+import com.sun.star.sheet.XSpreadsheetView;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 
+import daydayup.openstock.OpenStock;
 import daydayup.openstock.RtException;
 import daydayup.openstock.SheetCommand;
 import daydayup.openstock.document.Spreadsheet;
@@ -22,9 +30,11 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 	XSpreadsheetDocument xDoc;
 
 	private Map<String, Spreadsheet> sheetMap = new HashMap<String, Spreadsheet>();
+	OoaDocService docService;
 
-	public OoaSpreadsheetDocument(XSpreadsheetDocument xDoc2) {
+	public OoaSpreadsheetDocument(XSpreadsheetDocument xDoc2, OoaDocService docService) {
 		this.xDoc = xDoc2;
+		this.docService = docService;
 	}
 
 	@Override
@@ -74,7 +84,7 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 		if (rt == null) {
 			XSpreadsheet xSheet = this.doGetSpreadsheetByName(name);
 			if (xSheet != null) {
-				rt = new OoaSpreadsheet(xSheet);
+				rt = new OoaSpreadsheet(xSheet, this);
 				this.sheetMap.put(name, rt);
 			}
 		}
@@ -85,6 +95,7 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 
 	}
 
+	@Override
 	public Spreadsheet getOrCreateSpreadsheetByName(String name) {
 
 		Spreadsheet rt = getSpreadsheetByName(name, false);
@@ -100,7 +111,45 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 		return getSpreadsheetByName(name, true);
 	}
 
-	public void activeSheet(Spreadsheet sheet) {
+	public void activeSheet(Spreadsheet xSheet) {
+
+		Object desktop = OpenStock.getInstance().getDesktop(this.docService.xcc);
+		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
+
+		XComponent xComp = xDesktop.getCurrentComponent();
+
+		XModel xModel = UnoRuntime.queryInterface(XModel.class, xComp);
+		XController xControl = xModel.getCurrentController();
+		Object viewData = xControl.getViewData();
+
+		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
+				xModel.getCurrentController());
+
+		xView.setActiveSheet(((OoaSpreadsheet) xSheet).xSheet);
+
+	}
+
+	private XSpreadsheet getActiveSheet(String name) {
+
+		Object desktop = OpenStock.getInstance().getDesktop(this.docService.xcc);
+		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
+
+		XComponent xComp = xDesktop.getCurrentComponent();
+
+		XModel xModel = UnoRuntime.queryInterface(XModel.class, xComp);
+		XController xControl = xModel.getCurrentController();
+		Object viewData = xControl.getViewData();
+
+		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
+				xModel.getCurrentController());
+
+		XSpreadsheet xSheet = xView.getActiveSheet();
+
+		XNamed xName = UnoRuntime.queryInterface(XNamed.class, xSheet);
+		if (!name.equals(xName.getName())) {
+			throw new RuntimeException("sheet name:" + name + " expected,actually is:" + xName.getName());
+		}
+		return xSheet;
 
 	}
 
@@ -108,7 +157,7 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 	public void writeToSheet(ResultSet rs, String targetSheet, StatusIndicator si) throws SQLException {
 		int maxRows = getSheetMaxRows();
 		Spreadsheet xSheet = this.getOrCreateSpreadsheetByName(targetSheet);
-		activeSheet(xSheet);
+		xSheet.active();
 		int cols = rs.getMetaData().getColumnCount();
 		// write header
 		for (int i = 0; i < cols; i++) {

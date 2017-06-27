@@ -10,7 +10,7 @@ public interface SpreadsheetDocument {
 	public void removeByName(String name);
 
 	public String[] getSheetNames();
-
+	public Spreadsheet getOrCreateSpreadsheetByName(String name);
 	public void writeToSheet(ResultSet rs, String sheet, StatusIndicator si) throws SQLException;
 
 }

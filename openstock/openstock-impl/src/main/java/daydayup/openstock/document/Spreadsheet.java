@@ -7,4 +7,6 @@ public interface Spreadsheet {
 	public Double getValueByNameVertically(String nameCol, String name, String value);
 	public void setValue(int col, int row, Object value);
 	public void setText(int col, int row, String value);
+	public void active();
+	
 }

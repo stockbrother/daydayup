@@ -3,8 +3,6 @@ package daydayup.openstock;
 import java.util.ArrayList;
 import java.util.List;
 
-import daydayup.openstock.document.StatusIndicator;
-
 public class SheetCommandContext extends CommandContext {
 
 	private List<String> argumentList = new ArrayList<>();
@@ -22,11 +20,6 @@ public class SheetCommandContext extends CommandContext {
 
 	public Attributes getAttributes() {
 		return attributes;
-	}
-
-	public StatusIndicator getStatusIndicator() {
-		
-		return null;
 	}
 
 }

@@ -12,15 +12,22 @@ import daydayup.openstock.document.Spreadsheet;
 
 public class OoaSpreadsheet implements Spreadsheet {
 	XSpreadsheet xSheet;
+	OoaSpreadsheetDocument doc;
 
-	public OoaSpreadsheet(XSpreadsheet xSheet) {
+	public OoaSpreadsheet(XSpreadsheet xSheet, OoaSpreadsheetDocument doc) {
 		this.xSheet = xSheet;
+		this.doc = doc;
 	}
 
 	@Override
 	public String getText(int col, int row) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			XCell xCell = xSheet.getCellByPosition(col, row);
+			return getText(xCell);
+		} catch (IndexOutOfBoundsException e) {
+			throw new RtException(e);
+		}
+
 	}
 
 	public Double getValue(int col, int row) {
@@ -123,7 +130,7 @@ public class OoaSpreadsheet implements Spreadsheet {
 
 	}
 
-	public static String getText(XCell xCell) {
+	private static String getText(XCell xCell) {
 		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);
 
 		return xCellText.getString();
@@ -153,6 +160,11 @@ public class OoaSpreadsheet implements Spreadsheet {
 		} catch (IndexOutOfBoundsException e) {
 			throw RtException.toRtException(e);
 		}
+	}
+
+	@Override
+	public void active() {
+		doc.activeSheet(this);//
 	}
 
 }
