@@ -1,4 +1,4 @@
-package daydayup.openstock.util;
+package daydayup.openstock.ooa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

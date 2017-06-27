@@ -2,7 +2,7 @@ package ddu.test;
 
 import java.util.Date;
 
-import daydayup.openstock.util.DocUtil;
+import daydayup.openstock.ooa.DocUtil;
 
 public class Tmp {
 	public static void main(String[] args) throws Exception {

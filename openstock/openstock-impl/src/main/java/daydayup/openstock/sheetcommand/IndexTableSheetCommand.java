@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,19 +13,17 @@ import java.util.Set;
 
 import javax.xml.ws.Holder;
 
-import com.sun.star.sheet.XSpreadsheet;
-
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.BaseSheetCommand;
 import daydayup.openstock.CommandContext;
-import daydayup.openstock.RtException;
 import daydayup.openstock.SheetCommand;
 import daydayup.openstock.SheetCommandContext;
 import daydayup.openstock.cup.IndexSqlSelectFieldsResolveContext;
 import daydayup.openstock.database.Tables;
-import daydayup.openstock.util.DocUtil;
+import daydayup.openstock.document.Spreadsheet;
+import daydayup.openstock.ooa.DocUtil;
 
 public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
@@ -111,7 +108,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 					@Override
 					public String process(ResultSet rs) throws SQLException {
-						DocUtil.writeToSheet(scc, rs, targetSheetF);
+						scc.getDocument().writeToSheet(rs, targetSheetF, scc.getStatusIndicator());
 						return null;
 					}
 				});
@@ -130,24 +127,23 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 	}
 
 	private List<DatedIndex> getIndexNameList(CommandContext cc, String tableId, Holder<String> tableName) {
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SheetCommand.SN_SYS_INDEX_TABLE,
-				false);
+		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_INDEX_TABLE, false);
 		//
 		List<DatedIndex> indexNameL = new ArrayList<>();
 		for (int i = 0;; i++) {
-			String id = DocUtil.getText(xSheet, 0, i);
+			String id = xSheet.getText(0, i);
 
 			if (id == null || id.trim().length() == 0) {
 				break;
 			}
 
 			if (tableId.equals(id)) {
-				tableName.value = DocUtil.getText(xSheet, "TABLE", i);
+				tableName.value = xSheet.getText("TABLE", i);
 				Date rDate = null;
 
 				for (int idx = 1;; idx++) {
 
-					String idxNameC = DocUtil.getText(xSheet, "INDEX" + idx, i);
+					String idxNameC = xSheet.getText("INDEX" + idx, i);
 					if (idxNameC == null || idxNameC.trim().length() == 0) {
 						break;
 					}

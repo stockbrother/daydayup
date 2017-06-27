@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>daydayup.openstock</groupId>
 	<artifactId>openstock-impl</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Open Stock IMPL</name>
 	<description></description>
@@ -15,8 +15,9 @@
 	</parent>
 
 	<properties>
-		<RegistrationClassName>daydayup.openstock.ServiceRegistraction</RegistrationClassName>
+		<RegistrationClassName>daydayup.openstock.ooa.ServiceRegistraction</RegistrationClassName>
 		<javacc.version>7.0.2</javacc.version>
+		<openstockIdl.version>0.0.1-SNAPSHOT</openstockIdl.version>
 	</properties>
 	<repositories>
 
@@ -49,7 +50,7 @@
 								<artifactItem>
 									<groupId>daydayup.openstock</groupId>
 									<artifactId>openstock-idl</artifactId>
-									<version>${project.version}</version>
+									<version>${openstockIdl.version}</version>
 									<type>jar</type>
 									<includes>META-INF/openoffice/openstock.rdb</includes>
 									<outputDirectory>target/unpacked</outputDirectory>
@@ -89,7 +90,7 @@
 						<index>true</index>
 						<manifestEntries>
 							<RegistrationClassName>${RegistrationClassName}</RegistrationClassName>
-							<UNO-Type-Path>openstock-idl-0.0.1-SNAPSHOT.jar</UNO-Type-Path>
+							<UNO-Type-Path>openstock-idl-${openstockIdl.version}.jar</UNO-Type-Path>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -213,7 +214,7 @@
 		<dependency>
 			<groupId>daydayup.openstock</groupId>
 			<artifactId>openstock-idl</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${openstockIdl.version}</version>
 		</dependency>
 
 		<dependency>

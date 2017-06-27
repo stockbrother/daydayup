@@ -7,21 +7,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
-import com.sun.star.container.XNamed;
-import com.sun.star.frame.XController;
-import com.sun.star.frame.XDesktop;
-import com.sun.star.frame.XModel;
-import com.sun.star.lang.XComponent;
-import com.sun.star.sheet.XSheetCellRange;
-import com.sun.star.sheet.XSpreadsheet;
-import com.sun.star.sheet.XSpreadsheetDocument;
-import com.sun.star.sheet.XSpreadsheetView;
-import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XInterface;
-
 import au.com.bytecode.opencsv.CSVReader;
 import daydayup.openstock.CorpNameService;
-import daydayup.openstock.util.DocUtil;
 
 public class CorpInfoLoader {
 
@@ -50,41 +37,5 @@ public class CorpInfoLoader {
 		}
 	}
 
-	public void loadCorpInfoToSheet(CorpNameService cns, XDesktop xDesktop) {
-
-		XComponent xComp = xDesktop.getCurrentComponent();
-
-		XInterface xDoc = UnoRuntime.queryInterface(XInterface.class, xComp);
-		XSpreadsheetDocument xDoc2 = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xDoc);
-
-		XModel xModel = UnoRuntime.queryInterface(XModel.class, xComp);
-		XController xControl = xModel.getCurrentController();
-		Object viewData = xControl.getViewData();
-
-		XSpreadsheetView xView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class,
-				xModel.getCurrentController());
-
-		XSpreadsheet xSheet = xView.getActiveSheet();
-
-		XNamed xName = UnoRuntime.queryInterface(XNamed.class, xSheet);
-
-		if (!"CORPS".equals(xName.getName())) {
-			throw new RuntimeException("sheet name:" + "CORPS" + " expected,actually is:" + xName.getName());
-		}
-		// https://wiki.openoffice.org/wiki/Documentation/DevGuide/Spreadsheets/Example:_Editing_Spreadsheet_Cells
-		String[] codes = cns.getSortedCorpCodeArray();
-		for (int i = 0; i < codes.length; i++) {
-
-			String code = codes[i];
-			String name = cns.getName(codes[i]);
-
-			DocUtil.setText(xSheet, 0, i, code);
-			DocUtil.setText(xSheet, 1, i, name);
-
-		}
-		Object selected = xModel.getCurrentSelection();
-		XSheetCellRange xSelected2 = UnoRuntime.queryInterface(XSheetCellRange.class, selected);
-
-	}
 
 }

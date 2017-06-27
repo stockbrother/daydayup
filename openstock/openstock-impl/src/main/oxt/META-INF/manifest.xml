@@ -10,5 +10,5 @@
 		manifest:media-type="application/vnd.sun.star.uno-typelibrary;type=RDB"
 		manifest:full-path="openstock.rdb" />
 	<manifest:file-entry manifest:media-type="application/vnd.sun.star.uno-component;type=Java"
-		manifest:full-path="openstock-impl-0.0.1-SNAPSHOT.jar" />
+		manifest:full-path="openstock-impl-0.0.2-SNAPSHOT.jar" />
 </manifest:manifest>

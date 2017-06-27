@@ -15,7 +15,7 @@ import com.sun.star.uno.XComponentContext;
 
 import daydayup.openstock.CommandBase;
 import daydayup.openstock.CommandContext;
-import daydayup.openstock.util.DocUtil;
+import daydayup.openstock.ooa.DocUtil;
 
 public class TaskExecutor {
 

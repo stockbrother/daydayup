@@ -1,28 +1,18 @@
-package daydayup.openstock;
+package daydayup.openstock.ooa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.star.document.XEventBroadcaster;
 import com.sun.star.lang.XServiceInfo;
-import com.sun.star.lib.uno.helper.WeakBase;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
-import daydayup.openstock.cninfo.CorpInfoRefreshCommand;
-import daydayup.openstock.database.DataBaseService;
-import daydayup.openstock.executor.TaskConflictException;
-import daydayup.openstock.executor.TaskExecutor;
-import daydayup.openstock.netease.NeteaseDataDownloadCommand;
-import daydayup.openstock.netease.NeteaseWashed2DbCommand;
-import daydayup.openstock.netease.NeteaseDataWashingCommand;
-import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
-import daydayup.openstock.util.MessageBoxUtil;
+import daydayup.openstock.OpenStock;
 
-public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.frame.XDispatchProvider,
+public final class ProtocolHandlerImpl extends BaseComponent implements com.sun.star.frame.XDispatchProvider,
 		com.sun.star.frame.XDispatch, com.sun.star.lang.XInitialization, XServiceInfo {
 
-	public final XComponentContext xContext;
 	private com.sun.star.frame.XFrame xFrame;
 
 	public static final String SERVICE_NAME = "com.sun.star.frame.ProtocolHandler";
@@ -30,7 +20,8 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 	private static final Logger LOG = LoggerFactory.getLogger(ProtocolHandlerImpl.class);
 
 	public ProtocolHandlerImpl(XComponentContext context) {
-		xContext = context;
+		super(context);
+
 	};
 
 	@Override
@@ -126,7 +117,7 @@ public final class ProtocolHandlerImpl extends WeakBase implements com.sun.star.
 				return;
 			}
 			String command = aURL.Path;
-			OpenStock.getInstance().execute(command, this.xContext);
+			OpenStock.getInstance().execute(command, this.componentContext);
 		}
 	}
 

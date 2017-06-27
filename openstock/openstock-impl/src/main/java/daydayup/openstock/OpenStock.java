@@ -6,20 +6,19 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.task.XStatusIndicator;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
 
-import daydayup.openstock.cninfo.CorpInfoRefreshCommand;
 import daydayup.openstock.database.DataBaseService;
+import daydayup.openstock.document.ComponentContext;
+import daydayup.openstock.document.StatusIndicator;
 import daydayup.openstock.executor.TaskConflictException;
 import daydayup.openstock.executor.TaskExecutor;
 import daydayup.openstock.netease.NeteaseDataDownloadCommand;
 import daydayup.openstock.netease.NeteaseDataWashingCommand;
 import daydayup.openstock.netease.NeteaseWashed2DbCommand;
 import daydayup.openstock.netease.NeteaseWashed2SheetCommand;
-import daydayup.openstock.util.DocUtil;
-import daydayup.openstock.util.MessageBoxUtil;
+import daydayup.openstock.ooa.MessageBoxUtil;
 
 public class OpenStock {
 
@@ -37,13 +36,11 @@ public class OpenStock {
 
 	public OpenStock() {
 		this.dbs = DataBaseService.getInstance(EnvUtil.getDataDir(), EnvUtil.getDbName());
-		commandClassMap.put("CorpInfoRefreshCommand", CorpInfoRefreshCommand.class);
 		commandClassMap.put("NeteaseDataDownloadCommand", NeteaseDataDownloadCommand.class);
 		commandClassMap.put("NeteaseDataWashingCommand", NeteaseDataWashingCommand.class);
 		commandClassMap.put("NeteaseWashed2DbCommand", NeteaseWashed2DbCommand.class);
 		// commandClassMap.put("InterruptAllTaskCommand",
 		// InterruptAllTaskCommand.class);
-		commandClassMap.put("CorpsApply2MemoryCommand", CorpsApply2MemoryCommand.class);
 		commandClassMap.put("NeteaseWashed2SheetCommand", NeteaseWashed2SheetCommand.class);
 		commandClassMap.put("SheetCommand", SheetCommand.class);
 
@@ -76,7 +73,7 @@ public class OpenStock {
 		return desktop;
 	}
 
-	public void execute(String command, XComponentContext xcc) {
+	public void execute(String command, ComponentContext xcc) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("execute command:{}", command);
 		}
@@ -102,17 +99,16 @@ public class OpenStock {
 
 	}
 
-	public void execute(CommandBase command, XComponentContext xcc) {
-		XStatusIndicator si = DocUtil.createStatusIndicator(xcc);
+	public void execute(CommandBase command, ComponentContext xcc) {
+		StatusIndicator si = xcc.createStatusIndicator();
 
-		CommandContext cc = new CommandContext(xcc, si);
+		CommandContext cc = new CommandContext(xcc);
 		try {
 			this.commandExecutor.execute(command, cc);
 		} catch (TaskConflictException e) {
 			LOG.error("", e);
-
-			MessageBoxUtil.showMessageBox(xcc, null, "Task Conflict Error", "Detail:" + e.getMessage());
-
+			// MessageBoxUtil.showMessageBox(xcc, null, "Task Conflict Error",
+			// "Detail:" + e.getMessage());
 		}
 	}
 

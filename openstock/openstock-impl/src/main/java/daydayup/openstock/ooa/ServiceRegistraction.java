@@ -1,4 +1,4 @@
-package daydayup.openstock;
+package daydayup.openstock.ooa;
 
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;

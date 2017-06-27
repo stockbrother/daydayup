@@ -1,4 +1,4 @@
-package daydayup.openstock;
+package daydayup.openstock.ooa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +8,7 @@ import com.sun.star.document.XEventListener;
 import com.sun.star.lang.EventObject;
 import com.sun.star.uno.UnoRuntime;
 
-import daydayup.openstock.util.XObjectUtil;
+import daydayup.openstock.OpenStock;
 
 public class TheGlobalEventListener implements XEventListener {
 	private static Logger LOG = LoggerFactory.getLogger(TheGlobalEventListener.class);
@@ -32,7 +32,7 @@ public class TheGlobalEventListener implements XEventListener {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(XObjectUtil.format(xSourceProps, new StringBuffer()).toString());
 			}
-			OpenStock.getInstance().execute("CorpsApply2MemoryCommand", ph.xContext);
+			OpenStock.getInstance().execute("CorpsApply2MemoryCommand", ph.componentContext);
 
 		}
 	}

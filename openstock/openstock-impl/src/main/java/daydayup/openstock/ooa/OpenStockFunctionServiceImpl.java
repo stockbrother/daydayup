@@ -1,4 +1,4 @@
-package daydayup.openstock;
+package daydayup.openstock.ooa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,8 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.uno.XInterface;
 
-import daydayup.openstock.util.XObjectUtil;
+import daydayup.openstock.OpenStock;
+import daydayup.openstock.XFunctions;
 
 /**
  * see <br>
@@ -33,12 +34,9 @@ import daydayup.openstock.util.XObjectUtil;
  * @author wu
  *
  */
-public class OpenStockFunctionServiceImpl extends com.sun.star.lib.uno.helper.WeakBase
-		implements XFunctions, XServiceInfo {
+public class OpenStockFunctionServiceImpl extends BaseComponent implements XFunctions, XServiceInfo {
 
 	private static final Logger LOG = LoggerFactory.getLogger(OpenStockFunctionServiceImpl.class);
-
-	private final XComponentContext xContext;
 
 	public static String SERVICE_NAME = "daydayup.openstock.FunctionService";
 
@@ -46,7 +44,7 @@ public class OpenStockFunctionServiceImpl extends com.sun.star.lib.uno.helper.We
 	// https://wiki.openoffice.org/wiki/Documentation/DevGuide/WritingUNO/Create_Instance_with_Arguments
 
 	public OpenStockFunctionServiceImpl(XComponentContext xCompContext) {
-		this.xContext = xCompContext;
+		super(xCompContext);
 	}
 
 	@Override
@@ -118,7 +116,7 @@ public class OpenStockFunctionServiceImpl extends com.sun.star.lib.uno.helper.We
 	@Override
 	public String osCommand(XPropertySet arg0, String arg1) {
 		try {
-			OpenStock.getInstance().execute(arg1, this.xContext);
+			OpenStock.getInstance().execute(arg1, this.componentContext);
 		} catch (RuntimeException e) {
 			LOG.error("", e);
 			return "error when execute command:" + arg1;

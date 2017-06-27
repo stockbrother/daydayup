@@ -5,6 +5,8 @@ import com.sun.star.document.XDocumentEventListener;
 import com.sun.star.lang.EventObject;
 import com.sun.star.sheet.XSpreadsheetDocument;
 
+import daydayup.openstock.ooa.ProtocolHandlerImpl;
+
 public class TheDocumentEventListener implements XDocumentEventListener {
 	ProtocolHandlerImpl ph;
 

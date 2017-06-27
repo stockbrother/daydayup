@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sun.star.sheet.XSpreadsheet;
-
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
@@ -21,8 +19,9 @@ import daydayup.openstock.RtException;
 import daydayup.openstock.SheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.database.Tables;
+import daydayup.openstock.document.Spreadsheet;
+import daydayup.openstock.ooa.DocUtil;
 import daydayup.openstock.sheetcommand.DatedIndex;
-import daydayup.openstock.util.DocUtil;
 import daydayup_openstock_cup.parser;
 import daydayup_openstock_cup.scanner;
 import java_cup.runtime.Symbol;
@@ -91,18 +90,18 @@ public class IndexSqlSelectFieldsResolveContext {
 	}
 
 	private String getFormulaByIndexName(CommandContext cc, DatedIndex indexName) {
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(cc.getComponentContext(), SheetCommand.SN_SYS_INDEX_DEFINE,
+		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_INDEX_DEFINE,
 				false);
 		//
 
 		String formula = null;
 		for (int i = 0;; i++) {
-			String name = DocUtil.getText(xSheet, 1, i);
+			String name = xSheet.getText( 1, i);
 			if (name == null || name.trim().length() == 0) {
 				break;
 			}
 			if (name.equals(indexName.indexName)) {
-				formula = DocUtil.getText(xSheet, 2, i);
+				formula = xSheet.getText( 2, i);
 				break;
 			}
 		}

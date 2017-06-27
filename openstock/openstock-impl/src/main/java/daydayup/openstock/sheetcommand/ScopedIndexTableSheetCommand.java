@@ -1,12 +1,8 @@
 package daydayup.openstock.sheetcommand;
 
-import java.util.Date;
-
-import com.sun.star.sheet.XSpreadsheet;
-
 import daydayup.openstock.SheetCommand;
 import daydayup.openstock.SheetCommandContext;
-import daydayup.openstock.util.DocUtil;
+import daydayup.openstock.document.Spreadsheet;
 
 public class ScopedIndexTableSheetCommand extends IndexTableSheetCommand {
 
@@ -21,20 +17,20 @@ public class ScopedIndexTableSheetCommand extends IndexTableSheetCommand {
 		if (att == null) {
 			String scopedId = scc.getArgumentList().get(0);
 
-			XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(scc.getComponentContext(),
+			Spreadsheet xSheet = scc.getSpreadsheetByName(
 					SheetCommand.SN_SYS_SCOPED_INDEX_TABLE, false);
 			att = new Attribute();
 			for (int i = 0;; i++) {
-				String id = DocUtil.getText(xSheet, 0, i);
+				String id = xSheet.getText( 0, i);
 
 				if (id == null || id.trim().length() == 0) {
 					break;
 				}
 
 				if (scopedId.equals(id)) {
-					att.tableId = DocUtil.getText(xSheet, "TABLEID", i);
-					att.scope = DocUtil.getText(xSheet, "SCOPE", i);
-					att.name = DocUtil.getText(xSheet, "NAME", i);
+					att.tableId = xSheet.getText( "TABLEID", i);
+					att.scope = xSheet.getText( "SCOPE", i);
+					att.name = xSheet.getText( "NAME", i);
 					break;
 				}
 			}

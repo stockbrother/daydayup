@@ -6,14 +6,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.container.NoSuchElementException;
-import com.sun.star.lang.WrappedTargetException;
-import com.sun.star.sheet.XSpreadsheet;
-import com.sun.star.sheet.XSpreadsheetDocument;
-import com.sun.star.uno.XComponentContext;
-
 import daydayup.openstock.cninfo.CninfoCorpInfo2DbSheetCommand;
 import daydayup.openstock.database.DataBaseService;
+import daydayup.openstock.document.Spreadsheet;
+import daydayup.openstock.document.SpreadsheetDocument;
 import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
 import daydayup.openstock.sheetcommand.ScopedIndexTableSheetCommand;
@@ -24,7 +20,6 @@ import daydayup.openstock.sina.SinaQuotesWashed2DBSheetCommand;
 import daydayup.openstock.sse.SseCorpInfo2DbSheetCommand;
 import daydayup.openstock.sse.SseCorpInfoFullNameAndCategory2DbSheetCommand;
 import daydayup.openstock.szse.SzseCorpInfo2DbSheetCommand;
-import daydayup.openstock.util.DocUtil;
 import daydayup.openstock.wash.WashedFileLoader;
 import daydayup.openstock.wash.WashedFileLoader.WashedFileLoadContext;
 
@@ -48,9 +43,10 @@ public class SheetCommand extends CommandBase<Object> {
 
 	@Override
 	public Object doExecute(CommandContext cc) {
-		XComponentContext xcc = cc.getComponentContext();
+		
 		DataBaseService dbs = cc.getDataBaseService();
-		XSpreadsheet xSheet = DocUtil.getSpreadsheetByName(xcc, SN_SYS_CMDS, false);
+		
+		Spreadsheet xSheet = cc.getSpreadsheetByName(SN_SYS_CMDS, false);
 
 		if (xSheet == null) {
 			// "no sheet with name CMDS";
@@ -61,10 +57,10 @@ public class SheetCommand extends CommandBase<Object> {
 		String command = null;
 		List<String> argL = new ArrayList<>();
 		for (int i = 0; i < 1024 * 1024; i++) {
-			String value0I = DocUtil.getText(xSheet, 0, i);
+			String value0I = xSheet.getText(0, i);
 
 			if ("Invoke".equals(value0I)) {
-				invokeId = DocUtil.getText(xSheet, 1, i);
+				invokeId = xSheet.getText(1, i);
 				continue;
 			}
 			if (invokeId == null) {
@@ -84,9 +80,9 @@ public class SheetCommand extends CommandBase<Object> {
 
 			if (invokeId.equals(value0I)) {
 				// found the command to invoke.
-				command = DocUtil.getText(xSheet, 1, i);
+				command = xSheet.getText( 1, i);
 				for (int j = 2;; j++) {
-					String argJ = DocUtil.getText(xSheet, j, i);
+					String argJ = xSheet.getText( j, i);
 					if (argJ == null || argJ.trim().length() == 0) {
 						break;
 					}
@@ -139,20 +135,16 @@ public class SheetCommand extends CommandBase<Object> {
 	}
 
 	private Object executeResetSheet(CommandContext cc) {
-		XSpreadsheetDocument xDoc = DocUtil.getSpreadsheetDocument(cc.getComponentContext());
+		SpreadsheetDocument xDoc = cc.getDocument();
 
-		String[] names = xDoc.getSheets().getElementNames();
+		String[] names = xDoc.getSheetNames();
 		for (String name : names) {
 			if (name.startsWith("SYS_")) {
 				continue;
 			}
-			try {
-				xDoc.getSheets().removeByName(name);
-			} catch (NoSuchElementException e) {
-				throw RtException.toRtException(e);
-			} catch (WrappedTargetException e) {
-				throw RtException.toRtException(e);
-			} //
+			
+			xDoc.removeByName(name);
+			
 		}
 		return "done";
 	}

@@ -1,4 +1,4 @@
-package daydayup.openstock.util;
+package daydayup.openstock.ooa;
 
 import com.sun.star.beans.Property;
 import com.sun.star.beans.UnknownPropertyException;
