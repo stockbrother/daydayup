@@ -129,7 +129,7 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 
 	}
 
-	private XSpreadsheet getActiveSheet(String name) {
+	private String getActiveSheetName() {
 
 		Object desktop = OpenStock.getInstance().getDesktop(this.docService.xcc);
 		XDesktop xDesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);
@@ -146,34 +146,30 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 		XSpreadsheet xSheet = xView.getActiveSheet();
 
 		XNamed xName = UnoRuntime.queryInterface(XNamed.class, xSheet);
-		if (!name.equals(xName.getName())) {
-			throw new RuntimeException("sheet name:" + name + " expected,actually is:" + xName.getName());
-		}
-		return xSheet;
+
+		return xName.getName();
 
 	}
 
 	@Override
-	public void writeToSheet(ResultSet rs, String targetSheet, StatusIndicator si) throws SQLException {
+	public void writeToSheet(ResultSet rs, Spreadsheet sheet, int firstRow, StatusIndicator si) throws SQLException {
 		int maxRows = getSheetMaxRows();
-		Spreadsheet xSheet = this.getOrCreateSpreadsheetByName(targetSheet);
-		xSheet.active();
 		int cols = rs.getMetaData().getColumnCount();
 		// write header
+		int row = firstRow;
 		for (int i = 0; i < cols; i++) {
 			String colName = rs.getMetaData().getColumnLabel(i + 1);
-			xSheet.setText(i, 0, colName);
+			sheet.setText(i, row, colName);
 		}
 		// write rows
-		int row = 1;
-
+		row ++;
 		while (rs.next()) {
 			if (row > maxRows) {
 				break;
 			}
 			for (int i = 0; i < cols; i++) {
 				Object obj = rs.getObject(i + 1);
-				xSheet.setValue(i, row, obj);
+				sheet.setValue(i, row, obj);
 
 			}
 			row++;
@@ -181,6 +177,13 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 			si.setValue(row * 100 / maxRows);
 
 		}
+
+	}
+
+	@Override
+	public Spreadsheet getActiveSpreadsheet() {
+		String name = getActiveSheetName();
+		return this.getSpreadsheetByName(name, true);
 
 	}
 }

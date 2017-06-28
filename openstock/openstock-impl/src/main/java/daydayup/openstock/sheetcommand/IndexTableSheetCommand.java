@@ -6,42 +6,57 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.ws.Holder;
 
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.BaseSheetCommand;
-import daydayup.openstock.CommandContext;
-import daydayup.openstock.SheetCommand;
 import daydayup.openstock.SheetCommandContext;
 import daydayup.openstock.cup.IndexSqlSelectFieldsResolveContext;
 import daydayup.openstock.database.Tables;
 import daydayup.openstock.document.Spreadsheet;
-import daydayup.openstock.ooa.DocUtil;
 
 public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 	public static final DateFormat DF = new SimpleDateFormat("yyyy/MM/dd");
 
-	protected String getTableId(SheetCommandContext scc) {
-		List<String> argL = scc.getArgumentList();
-		String tableId = argL.get(0);
-		return tableId;
-	}
-
 	@Override
 	protected Object doExecute(SheetCommandContext scc) {
 
-		String tableId = this.getTableId(scc);
+		Spreadsheet sheet = scc.getSheet();
+		int dataRow = 0;
+		String title = null;
+		String scope = null;
+		//
+		List<DatedIndex> indexNameL = new ArrayList<>();
+		List<String> indexAliasL = new ArrayList<>();
+		for (int i = 0;; i++) {
 
-		Holder<String> tableName = new Holder<>();
-		List<DatedIndex> indexNameL = this.getIndexNameList(scc, tableId, tableName);
+			String key = sheet.getText(0, i);
+			if (key.equals("Data")) {
+				dataRow = i;
+				break;
+			}
+
+			if (key == null || key.trim().length() == 0) {
+				break;
+			}
+
+			if (key.equals("Column/Name")) {
+				String idxNameC = sheet.getText(1, i);
+				indexNameL.add(DatedIndex.parse(idxNameC));
+				indexAliasL.add(sheet.getText(2, i));
+			}
+			if (key.equals("Title")) {
+				title = sheet.getText(1, i);
+			}
+			if (key.equals("Scope")) {
+				scope = sheet.getText(1, i);
+			}
+		}
 		if (indexNameL.isEmpty()) {
 			return "empty index name list";
 		}
@@ -62,7 +77,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 			sql.append(",");
 			src.resolveSqlSelectFields();
 
-			sql.append(" as " + indexNameL.get(i).as());
+			sql.append(" as " + indexAliasL.get(i));
 			src.getReportTypeSet(typeSet, true);
 		}
 		// from
@@ -82,7 +97,11 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 		// where join on.
 		ts = 0;
 		sql.append(" where 1=1");
-		this.appendSqlWhere(scc, sql);
+
+		if (scope != null) {
+			sql.append(scope);
+		}
+
 		sql.append(" order by corpId");
 
 		/**
@@ -99,7 +118,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 			ts++;
 		}</code>
 		 */
-		String targetSheetF = getTargetSheet(scc, tableName.value);
+		int dataRowF = dataRow;
 		scc.getDataBaseService().execute(new JdbcOperation<String>() {
 
 			@Override
@@ -108,7 +127,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 					@Override
 					public String process(ResultSet rs) throws SQLException {
-						scc.getDocument().writeToSheet(rs, targetSheetF, scc.getStatusIndicator());
+						scc.getDocument().writeToSheet(rs, sheet, dataRowF + 1, scc.getStatusIndicator());
 						return null;
 					}
 				});
@@ -120,41 +139,6 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 	protected String getTargetSheet(SheetCommandContext scc, String tableName) {
 		return "" + tableName;
-	}
-
-	protected void appendSqlWhere(SheetCommandContext scc, StringBuffer sql) {
-
-	}
-
-	private List<DatedIndex> getIndexNameList(CommandContext cc, String tableId, Holder<String> tableName) {
-		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_INDEX_TABLE, false);
-		//
-		List<DatedIndex> indexNameL = new ArrayList<>();
-		for (int i = 0;; i++) {
-			String id = xSheet.getText(0, i);
-
-			if (id == null || id.trim().length() == 0) {
-				break;
-			}
-
-			if (tableId.equals(id)) {
-				tableName.value = xSheet.getText("TABLE", i);
-				Date rDate = null;
-
-				for (int idx = 1;; idx++) {
-
-					String idxNameC = xSheet.getText("INDEX" + idx, i);
-					if (idxNameC == null || idxNameC.trim().length() == 0) {
-						break;
-					}
-
-					indexNameL.add(DatedIndex.parse(idxNameC));
-
-				}
-				break;
-			}
-		}
-		return indexNameL;
 	}
 
 }

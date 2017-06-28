@@ -24,12 +24,8 @@ public class SqlQuerySheetCommand extends BaseSheetCommand<Object> {
 	
 	@Override
 	protected Object doExecute(SheetCommandContext cc) {
-		List<String> argL = cc.getArgumentList();
-		if (argL.isEmpty()) {
-			LOG.warn("illegel argument for sql query.");
-			return "illegel argument for sql query.";
-		}
-		String sqlId = argL.get(0);
+		
+		String sqlId = null;//TODO
 		String sql = null;
 		String targetSheet = null;
 		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_SQL_QUERY, false);
@@ -44,6 +40,7 @@ public class SqlQuerySheetCommand extends BaseSheetCommand<Object> {
 				break;
 			}
 		}
+		int dataRow = 10;
 		final String sqlF = sql;
 		final String targetSheetF = targetSheet;
 		return cc.getDataBaseService().execute(new JdbcOperation<Object>() {
@@ -55,7 +52,7 @@ public class SqlQuerySheetCommand extends BaseSheetCommand<Object> {
 
 					@Override
 					public Object process(ResultSet rs) throws SQLException {
-						cc.getDocument().writeToSheet(rs, targetSheetF,cc.getStatusIndicator());
+						cc.getDocument().writeToSheet(rs, cc.getSheet(),dataRow,cc.getStatusIndicator());
 						return "done.";
 					}
 

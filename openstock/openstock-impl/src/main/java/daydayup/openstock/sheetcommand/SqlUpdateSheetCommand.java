@@ -20,12 +20,8 @@ public class SqlUpdateSheetCommand extends BaseSheetCommand<Object> {
 	
 	@Override
 	protected Object doExecute(SheetCommandContext cc) {
-		List<String> argL = cc.getArgumentList();
-		if (argL.isEmpty()) {
-			LOG.warn("illegel argument for sql query.");
-			return "illegel argument for sql query.";
-		}
-		String sqlId = argL.get(0);
+		
+		String sqlId = null;//TODO
 		String sql = null;
 		
 		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_SQL_UPDATE, false);

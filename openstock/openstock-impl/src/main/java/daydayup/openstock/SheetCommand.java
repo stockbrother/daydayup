@@ -1,8 +1,5 @@
 package daydayup.openstock;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +9,6 @@ import daydayup.openstock.document.Spreadsheet;
 import daydayup.openstock.document.SpreadsheetDocument;
 import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
-import daydayup.openstock.sheetcommand.ScopedIndexTableSheetCommand;
 import daydayup.openstock.sheetcommand.SqlQuerySheetCommand;
 import daydayup.openstock.sheetcommand.SqlUpdateSheetCommand;
 import daydayup.openstock.sina.SinaQuotesDownloadAndWashSheetCommand;
@@ -37,7 +33,7 @@ public class SheetCommand extends CommandBase<Object> {
 
 	public static final String SN_SYS_SCOPED_INDEX_TABLE = "SYS_SCOPED_INDEX_TABLE";
 
-	public static final String SN_SYS_INDEX_TABLE = "SYS_INDEX_TABLE";
+	public static final String SN_SYS_INDEX_TABLE = "INDEX_TABLE";
 
 	public static final String SN_SYS_CFG = "SYS_CFG";
 
@@ -45,76 +41,29 @@ public class SheetCommand extends CommandBase<Object> {
 	public Object doExecute(CommandContext cc) {
 		
 		DataBaseService dbs = cc.getDataBaseService();
+		Spreadsheet xSheet = cc.getActiveSpreadsheet();
+		String command = xSheet.getText(0, 0);
+		if(!"Command".equals(command)){
+			LOG.warn("not a command sheet.");
+			return "not a command sheet";
+		}
+		command = xSheet.getText(1, 0);
 		
-		Spreadsheet xSheet = cc.getSpreadsheetByName(SN_SYS_CMDS, false);
-
-		if (xSheet == null) {
-			// "no sheet with name CMDS";
-			return "no sheet with name " + SN_SYS_CMDS;
-		}
-		String invokeId = null;
-		boolean body = false;
-		String command = null;
-		List<String> argL = new ArrayList<>();
-		for (int i = 0; i < 1024 * 1024; i++) {
-			String value0I = xSheet.getText(0, i);
-
-			if ("Invoke".equals(value0I)) {
-				invokeId = xSheet.getText(1, i);
-				continue;
-			}
-			if (invokeId == null) {
-				continue;
-			}
-			if ("ID".equals(value0I)) {
-				body = true;
-				continue;
-			}
-
-			if (!body) {
-				continue;
-			}
-			if (value0I == null || value0I.trim().length() == 0) {
-				break;
-			}
-
-			if (invokeId.equals(value0I)) {
-				// found the command to invoke.
-				command = xSheet.getText( 1, i);
-				for (int j = 2;; j++) {
-					String argJ = xSheet.getText( j, i);
-					if (argJ == null || argJ.trim().length() == 0) {
-						break;
-					}
-					argL.add(argJ);
-				}
-
-				break;
-			}
-
-		}
-
-		if (invokeId == null) {
-			LOG.warn("no invokeId found.");
-			return "no invokeId found.";
-		}
-
 		if (command == null) {
-			LOG.warn("no command found for invokeId:{}", invokeId);
-			return "no command found for invokeId";
+			LOG.warn("no command found.");
+			return "no command found.";
 		}
-		SheetCommandContext scc = new SheetCommandContext(cc, argL);
+
+		SheetCommandContext scc = new SheetCommandContext(cc,xSheet, command);
 
 		if (command.equals(SN_SYS_SQL_QUERY)) {
 			return new SqlQuerySheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_SQL_UPDATE)) {
 			return new SqlUpdateSheetCommand().execute(scc);
-		} else if (command.equals(SN_SYS_SCOPED_INDEX_TABLE)) {
-			return new ScopedIndexTableSheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
 			return new IndexTableSheetCommand().execute(scc);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {
-			return this.executeNeteaseWashed2Db(cc, argL);
+			return this.executeNeteaseWashed2Db(cc);
 		} else if (command.equals("RESET_SHEET")) {
 			return this.executeResetSheet(cc);
 		} else if (command.equals("CNINFO_CORPINFO_2_DB")) {
@@ -149,7 +98,7 @@ public class SheetCommand extends CommandBase<Object> {
 		return "done";
 	}
 
-	private Object executeNeteaseWashed2Db(CommandContext cc, List<String> argL) {
+	private Object executeNeteaseWashed2Db(CommandContext cc) {
 		DataBaseService dbs = cc.getDataBaseService();
 		WashedFileLoadContext flc = new WashedFileLoadContext(dbs);
 		new WashedFileLoader().load(NeteaseUtil.getDataWashedDir(), flc);

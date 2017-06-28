@@ -44,4 +44,8 @@ public class CommandContext {
 	public void setStatusIndicator(StatusIndicator si) {
 		this.si = si;
 	}
+
+	public Spreadsheet getActiveSpreadsheet() {
+		return this.getDocumentService().getDocument().getActiveSpreadsheet();
+	}
 }
