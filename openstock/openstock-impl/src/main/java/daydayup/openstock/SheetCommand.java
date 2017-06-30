@@ -8,6 +8,7 @@ import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.document.Spreadsheet;
 import daydayup.openstock.document.SpreadsheetDocument;
 import daydayup.openstock.netease.NeteaseUtil;
+import daydayup.openstock.sheetcommand.FillIndexSheetCommand;
 import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
 import daydayup.openstock.sheetcommand.SqlQuerySheetCommand;
 import daydayup.openstock.sheetcommand.SqlUpdateSheetCommand;
@@ -34,6 +35,8 @@ public class SheetCommand extends CommandBase<Object> {
 	public static final String SN_SYS_SCOPED_INDEX_TABLE = "SYS_SCOPED_INDEX_TABLE";
 
 	public static final String SN_SYS_INDEX_TABLE = "INDEX_TABLE";
+	
+	public static final String CMD_FILL_INDEX = "FILL_INDEX";
 
 	public static final String SN_SYS_CFG = "SYS_CFG";
 
@@ -60,6 +63,8 @@ public class SheetCommand extends CommandBase<Object> {
 			return new SqlQuerySheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_SQL_UPDATE)) {
 			return new SqlUpdateSheetCommand().execute(scc);
+		} else if (command.equals(CMD_FILL_INDEX)) {
+			return new FillIndexSheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
 			return new IndexTableSheetCommand().execute(scc);
 		} else if (command.equals("NETEASE_WASHED_2_DB")) {

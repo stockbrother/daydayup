@@ -33,7 +33,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 		//
 		List<DatedIndex> indexNameL = new ArrayList<>();
 		List<String> indexAliasL = new ArrayList<>();
-		for (int i = 0;; i++) {
+		for (int i = 0; i < 100; i++) {
 
 			String key = sheet.getText(0, i);
 			if (key.equals("Data")) {
