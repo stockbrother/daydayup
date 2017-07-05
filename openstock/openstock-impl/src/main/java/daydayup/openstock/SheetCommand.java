@@ -26,9 +26,9 @@ public class SheetCommand extends CommandBase<Object> {
 
 	public static final String SN_SYS_CMDS = "SYS_CMDS";
 
-	public static final String SN_SYS_SQL_QUERY = "SYS_SQL_QUERY";
+	public static final String SN_SQL_QUERY = "SQL_QUERY";
 
-	public static final String SN_SYS_SQL_UPDATE = "SYS_SQL_UPDATE";
+	public static final String SN_SQL_UPDATE = "SQL_UPDATE";
 
 	public static final String SN_SYS_INDEX_DEFINE = "SYS_INDEX_DEFINE";
 
@@ -59,9 +59,9 @@ public class SheetCommand extends CommandBase<Object> {
 
 		SheetCommandContext scc = new SheetCommandContext(cc,xSheet, command);
 
-		if (command.equals(SN_SYS_SQL_QUERY)) {
+		if (command.equals(SN_SQL_QUERY)) {
 			return new SqlQuerySheetCommand().execute(scc);
-		} else if (command.equals(SN_SYS_SQL_UPDATE)) {
+		} else if (command.equals(SN_SQL_UPDATE)) {
 			return new SqlUpdateSheetCommand().execute(scc);
 		} else if (command.equals(CMD_FILL_INDEX)) {
 			return new FillIndexSheetCommand().execute(scc);

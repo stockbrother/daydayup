@@ -104,22 +104,8 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 		sql.append(" order by corpId");
 
-		/**
-		 * 
-		 * <code>
-		Integer preType = null;
-		for (Integer type : typeSet) {
-			if (preType == null) {
-				preType = type;
-				continue;
-			}
-		
-			sql.append("and r" + type + " = r" + preType);
-			ts++;
-		}</code>
-		 */
 		int dataRowF = dataRow;
-		scc.getDataBaseService().execute(new JdbcOperation<String>() {
+		return scc.getDataBaseService().execute(new JdbcOperation<String>() {
 
 			@Override
 			public String execute(Connection con, JdbcAccessTemplate t) {
@@ -128,13 +114,12 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 					@Override
 					public String process(ResultSet rs) throws SQLException {
 						scc.getDocument().writeToSheet(rs, sheet, dataRowF + 1, scc.getStatusIndicator());
-						return null;
+						return "done";
 					}
 				});
 			}
 		}, false);
 
-		return "done";
 	}
 
 	protected String getTargetSheet(SheetCommandContext scc, String tableName) {

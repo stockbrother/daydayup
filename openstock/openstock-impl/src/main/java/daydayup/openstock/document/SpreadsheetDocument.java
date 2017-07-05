@@ -16,6 +16,7 @@ public interface SpreadsheetDocument {
 	public void writeToSheet(ResultSet rs, Spreadsheet sheet,int firstRow, StatusIndicator si) throws SQLException;
 
 	public Spreadsheet getActiveSpreadsheet();
-	
 
+	void writeRowToSheet(ResultSet rs, Spreadsheet sheet, int row, int cols, int colOffset) throws SQLException;
+	
 }

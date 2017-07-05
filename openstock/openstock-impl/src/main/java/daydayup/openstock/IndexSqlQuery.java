@@ -17,6 +17,12 @@ public class IndexSqlQuery {
 	List<DatedIndex> indexNameL = new ArrayList<>();
 	List<String> indexAliasL = new ArrayList<>();
 	String scope;
+	
+	private int dataOffset = 2;
+	
+	public int getDataOffset() {
+		return dataOffset;
+	}
 
 	public IndexSqlQuery() {
 
@@ -33,7 +39,7 @@ public class IndexSqlQuery {
 		return this;
 	}
 
-	public void execute(CommandContext scc, ResultSetProcessor<String> rsp) {
+	public <T> T execute(CommandContext scc, ResultSetProcessor<T> rsp) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("select corpId as CORP,corpName as NAME");
 
@@ -67,12 +73,13 @@ public class IndexSqlQuery {
 
 		sql.append(" order by corpId");
 
-		scc.getDataBaseService().execute(new JdbcOperation<String>() {
+		return scc.getDataBaseService().execute(new JdbcOperation<T>() {
 			@Override
-			public String execute(Connection con, JdbcAccessTemplate t) {
+			public T execute(Connection con, JdbcAccessTemplate t) {
 				return t.executeQuery(con, sql.toString(), sqlArgL, rsp);
 			}
 		}, false);
 
 	}
+
 }

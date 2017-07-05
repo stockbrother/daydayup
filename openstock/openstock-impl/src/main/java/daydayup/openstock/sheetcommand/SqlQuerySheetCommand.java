@@ -21,28 +21,37 @@ public class SqlQuerySheetCommand extends BaseSheetCommand<Object> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SqlQuerySheetCommand.class);
 
-	
 	@Override
 	protected Object doExecute(SheetCommandContext cc) {
-		
-		String sqlId = null;//TODO
+
+		Spreadsheet sheet = cc.getSheet();
+		int dataRow = -1;
 		String sql = null;
-		String targetSheet = null;
-		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_SQL_QUERY, false);
-		for (int i = 0;; i++) {
-			String id = xSheet.getText( "ID", i);
-			if (id == null || id.trim().length() == 0) {
+		for (int i = 0; i < 100; i++) {
+
+			String key = sheet.getText(0, i);
+			if (key.equals("Data")) {
+				dataRow = i;
 				break;
 			}
-			if (sqlId.equals(id)) {
-				sql = xSheet.getText( "SQL", i);
-				targetSheet = xSheet.getText( 2, i);
+
+			if (key == null || key.trim().length() == 0) {
 				break;
+			}
+
+			if (key.equals("SQL")) {
+				sql = sheet.getText(1, i);
+			}
+			if (dataRow == -1) {
+				dataRow = i;
 			}
 		}
-		int dataRow = 10;
+		if (sql == null) {
+			throw new RuntimeException("no SQL argument provided.");
+		}
+
 		final String sqlF = sql;
-		final String targetSheetF = targetSheet;
+		int dataRowF = dataRow + 1;
 		return cc.getDataBaseService().execute(new JdbcOperation<Object>() {
 
 			@Override
@@ -52,7 +61,7 @@ public class SqlQuerySheetCommand extends BaseSheetCommand<Object> {
 
 					@Override
 					public Object process(ResultSet rs) throws SQLException {
-						cc.getDocument().writeToSheet(rs, cc.getSheet(),dataRow,cc.getStatusIndicator());
+						cc.getDocument().writeToSheet(rs, cc.getSheet(), dataRowF, cc.getStatusIndicator());
 						return "done.";
 					}
 

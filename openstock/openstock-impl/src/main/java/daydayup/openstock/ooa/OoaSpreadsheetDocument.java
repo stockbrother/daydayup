@@ -152,32 +152,35 @@ public class OoaSpreadsheetDocument implements SpreadsheetDocument {
 	}
 
 	@Override
-	public void writeToSheet(ResultSet rs, Spreadsheet sheet, int firstRow, StatusIndicator si) throws SQLException {
+	public void writeToSheet(ResultSet rs, Spreadsheet sheet, int rowOffset, StatusIndicator si) throws SQLException {
 		int maxRows = getSheetMaxRows();
 		int cols = rs.getMetaData().getColumnCount();
 		// write header
-		int row = firstRow;
+		int row = rowOffset;
 		for (int i = 0; i < cols; i++) {
 			String colName = rs.getMetaData().getColumnLabel(i + 1);
 			sheet.setText(i, row, colName);
 		}
 		// write rows
-		row ++;
+		row++;
 		while (rs.next()) {
 			if (row > maxRows) {
 				break;
 			}
-			for (int i = 0; i < cols; i++) {
-				Object obj = rs.getObject(i + 1);
-				sheet.setValue(i, row, obj);
-
-			}
+			writeRowToSheet(rs, sheet, row, cols, 0);
 			row++;
 			si.setText("Row:" + row + ",Limit:" + maxRows);
 			si.setValue(row * 100 / maxRows);
 
 		}
 
+	}
+	@Override
+	public void writeRowToSheet(ResultSet rs, Spreadsheet sheet, int row, int cols, int colOffset) throws SQLException {
+		for (int i = 0; i < cols; i++) {
+			Object obj = rs.getObject(i + 1);
+			sheet.setValue(i + colOffset, row, obj);
+		}
 	}
 
 	@Override
