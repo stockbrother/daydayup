@@ -89,7 +89,7 @@ public class FillIndexSheetCommand extends BaseSheetCommand<Object> {
 				int row = i + headerRow + 1;
 				for (int j = 0; j < dateL.size(); j++) {
 					int col = j + 1;
-					int colIdx = i * indexL.size() + (j + 1) + resultSetOffset;
+					int colIdx = i * dateL.size() + (j + 1) + resultSetOffset;
 					Object value = rs.getObject(colIdx);
 					sheet.setValue(col, row, value);
 				}

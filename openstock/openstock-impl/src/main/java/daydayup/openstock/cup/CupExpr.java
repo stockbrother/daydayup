@@ -1,9 +1,16 @@
 package daydayup.openstock.cup;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import daydayup.openstock.database.Tables;
 
+/**
+ * Expression recognized by CUP parser.
+ * 
+ * @author wuzhen
+ *
+ */
 public abstract class CupExpr {
 	public static final int PLUS = 1;
 	public static final int MINUS = 2;
@@ -69,6 +76,12 @@ public abstract class CupExpr {
 
 	}
 
+	/**
+	 * Index Expression, for instance: RateA@date0
+	 * 
+	 * @author wuzhen
+	 *
+	 */
 	public static class CupExprIndex extends CupExpr {
 
 		String identifier;
@@ -79,9 +92,9 @@ public abstract class CupExpr {
 			this.identifier = identifier;
 			this.dateVar = dateS;
 		}
-		
-		private int getDateArgIndex(){
-			if(dateVar == null){
+
+		private int getDateArgIndex() {
+			if (dateVar == null) {
 				return 0;
 			}
 			String rtI = dateVar.substring("date".length());
@@ -93,7 +106,8 @@ public abstract class CupExpr {
 
 			StringBuffer buf = src.getBuf();
 
-			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.identifier);
+			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.identifier, true);
+
 			String field = " r." + Tables.getReportColumn(ci.columnNumber) + "";
 
 			buf.append("(");//
@@ -104,18 +118,25 @@ public abstract class CupExpr {
 			// buf.append(" and r.reportDate = PARSEDATETIME('"+ dateLiteral +
 			// "','yyyy/MM/dd')");
 			buf.append(" and r.reportDate = ?");
-			
+
 			int argI = getDateArgIndex();
-			
-			Date date = src.getDatedIndex().getReportDateList().get(argI);
-			
+
+			Date date = resolveDate(src.getDatedIndex().getReportDate(), argI);
+
 			src.addSqlArgument(date);
 
 			buf.append(")");
 		}
 
+		protected Date resolveDate(Date date0, int idx) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(date0);
+			c.add(Calendar.YEAR, -idx);
+			return c.getTime();
+		}
+
 		public StringBuffer xresolveSqlSelectFields4Index(IndexSqlSelectFieldsResolveContext src, StringBuffer buf) {
-			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.identifier);
+			ColumnIdentifier ci = src.getColumnIdentifierByAlias(this.identifier, false);
 			if (ci == null) {// is not a alias, it must be an index defined in
 								// sheet.
 				buf.append("(");

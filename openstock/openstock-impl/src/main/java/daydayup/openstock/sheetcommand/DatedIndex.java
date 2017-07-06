@@ -12,18 +12,17 @@ import daydayup.openstock.RtException;
 public class DatedIndex {
 	private static final DateFormat ASDF = new SimpleDateFormat("yyyy_MM_dd");
 
-	protected DatedIndex(List<Date> rDateL, String idxNameC) {
-		this.reportDate.addAll(rDateL);
+	public String indexName;
+	private Date reportDate;
+
+	protected DatedIndex(Date rDateL, String idxNameC) {
 		this.indexName = idxNameC;
+		this.reportDate = rDateL;
 	}
 
-	private List<Date> reportDate = new ArrayList<>();
-
-	public List<Date> getReportDateList() {
+	public Date getReportDate() {
 		return reportDate;
 	}
-
-	public String indexName;
 
 	public static DatedIndex parse(String datedIndexS) {
 
@@ -32,24 +31,19 @@ public class DatedIndex {
 			throw new RtException("cannot parse:" + datedIndexS);
 		}
 		String idxName = datedIndexS.substring(0, idx);
-		String dateListS = datedIndexS.substring(idx + 1, datedIndexS.length());
-		String[] dateSA = dateListS.split(",");
-		List<Date> dateL = new ArrayList<>();
-		for (String dateS : dateSA) {
 
-			Date date;
-			try {
-				date = IndexTableSheetCommand.DF.parse(dateS);
-			} catch (ParseException e) {
-				throw RtException.toRtException(e);
-			}
-			dateL.add(date);
+		String dateS = datedIndexS.substring(idx + 1, datedIndexS.length());
+		Date date = null;
+		try {
+			date = IndexTableSheetCommand.DF.parse(dateS);
+		} catch (ParseException e) {
+			throw RtException.toRtException(e);
 		}
 
-		return valueOf(dateL, idxName);
+		return valueOf(date, idxName);
 	}
 
-	public static DatedIndex valueOf(List<Date> date, String indexName) {
+	public static DatedIndex valueOf(Date date, String indexName) {
 		return new DatedIndex(date, indexName);
 	}
 
@@ -57,24 +51,19 @@ public class DatedIndex {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(this.indexName + "@");
-		for(Date date:this.reportDate){
-			sb.append(IndexTableSheetCommand.DF.format(date));
-			sb.append(",");
-		}
-		return  sb.toString();
-		
+		sb.append(IndexTableSheetCommand.DF.format(this.reportDate));
+
+		return sb.toString();
+
 	}
 
 	public String as() {
 		//
 		StringBuffer sb = new StringBuffer();
 		sb.append(this.indexName + "_");
-		for(Date date:this.reportDate){
-			sb.append(ASDF.format(date));
-			sb.append("_");
-		}
-		return  sb.toString();
-		
+		sb.append(ASDF.format(this.reportDate));
+
+		return sb.toString();
 
 	}
 

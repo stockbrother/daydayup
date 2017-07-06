@@ -19,17 +19,17 @@
 	<files>
 		<file>
 			<source>target/unpacked/META-INF/openoffice/openstock.rdb</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory/>
 		</file>
 		<file>
 			<source>target/openstock-impl-${project.version}.jar</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory/>
 		</file>
 	</files>
 	<dependencySets>
 
 		<dependencySet>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory/>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
 			<scope>runtime</scope>
