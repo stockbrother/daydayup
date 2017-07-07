@@ -48,6 +48,10 @@ public class TaskExecutor {
 				task.execute(cc);				
 			} catch (Exception e) {
 				LOG.error("", e);
+			} catch(Error e){
+				LOG.error("", e);
+			} catch(Throwable t){
+				LOG.error("", t);
 			}
 
 			return null;
