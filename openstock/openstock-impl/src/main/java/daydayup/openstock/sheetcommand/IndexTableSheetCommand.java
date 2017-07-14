@@ -33,6 +33,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 		//
 		List<DatedIndex> indexNameL = new ArrayList<>();
 		List<String> indexAliasL = new ArrayList<>();
+		String lastDateS = null;
 		for (int i = 0; i < 100; i++) {
 
 			String key = sheet.getText(0, i);
@@ -45,10 +46,20 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 				break;
 			}
 
-			if (key.equals("Column/Name")) {
-				String idxNameC = sheet.getText(1, i);
-				indexNameL.add(DatedIndex.parse(idxNameC));
-				indexAliasL.add(sheet.getText(2, i));
+			if (key.equals("Index/Date/Title")) {
+				String idxS = sheet.getText(1, i);
+				String dateS = sheet.getText(2, i);
+				String titleS = sheet.getText(3, i);
+				if(dateS == null){
+					dateS = lastDateS;
+				} else {
+					lastDateS = dateS;
+				}
+				if(titleS == null){
+					titleS = dateS;
+				}
+				indexNameL.add(DatedIndex.parse(idxS+"@"+dateS));
+				indexAliasL.add(titleS);
 			}
 			if (key.equals("Title")) {
 				title = sheet.getText(1, i);

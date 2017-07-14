@@ -9,6 +9,7 @@
 		<RollingFile name="FILE"
 			fileName="c:/openstock/log/openstock-oxt.log" filePattern="yyyyMMddHHmmssSSS" bufferedIO="false" bufferSize="0">
 			<PatternLayout
+				charset="UTF-8"
 				pattern="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] [%-5p] [%t] %C{10} (%F:%L) - %m%n" />
 			<CronTriggeringPolicy />
 			
