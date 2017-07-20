@@ -95,13 +95,21 @@ public class IndexSqlSelectFieldsResolveContext {
 	private String getFormulaByIndexName(CommandContext cc, DatedIndex indexName) {
 		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_INDEX_DEFINE, false);
 		//
-
+		int maxEmpty = 100;
 		String formula = null;
+		int empties = 0;
 		for (int i = 0;; i++) {
 			String name = xSheet.getText(1, i);
 			if (name == null || name.trim().length() == 0) {
-				break;
+				empties ++;
+				if(empties > maxEmpty){					
+					break;
+				}
+				
+			} else {
+				empties = 0;
 			}
+			
 			if (name.equals(indexName.indexName)) {
 				formula = xSheet.getText(2, i);
 				break;
