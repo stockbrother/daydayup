@@ -110,6 +110,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 		sql.append(" where 1=1");
 
 		if (scope != null) {
+			sql.append(" ");
 			sql.append(scope);
 		}
 

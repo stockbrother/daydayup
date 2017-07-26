@@ -138,6 +138,9 @@ public class OoaSpreadsheet implements Spreadsheet {
 
 	public static void setText(XCell xCell, String text) {
 		com.sun.star.text.XText xCellText = UnoRuntime.queryInterface(com.sun.star.text.XText.class, xCell);
+		if(text == null){
+			text = "";
+		}
 		xCellText.setString(text);
 	}
 
@@ -146,8 +149,8 @@ public class OoaSpreadsheet implements Spreadsheet {
 		try {
 
 			XCell xCell = xSheet.getCellByPosition(col, row);
-			if (value == null) {
-				// do nothing.
+			if (value == null) {				
+				setText(xCell, null);
 			} else if (value instanceof Date) {
 				String str = DocUtil.DF.format((Date) value);
 				setText(xCell, str);
