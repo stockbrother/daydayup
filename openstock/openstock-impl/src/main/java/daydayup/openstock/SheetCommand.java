@@ -7,18 +7,16 @@ import daydayup.openstock.cninfo.CninfoCorpInfo2DbSheetCommand;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.document.Spreadsheet;
 import daydayup.openstock.document.SpreadsheetDocument;
-import daydayup.openstock.netease.NeteaseUtil;
 import daydayup.openstock.sheetcommand.FillIndexSheetCommand;
 import daydayup.openstock.sheetcommand.IndexTableSheetCommand;
 import daydayup.openstock.sheetcommand.SqlQuerySheetCommand;
 import daydayup.openstock.sheetcommand.SqlUpdateSheetCommand;
+import daydayup.openstock.sheetcommand.Washed2DbSheetCommand;
 import daydayup.openstock.sina.SinaQuotesDownloadAndWashSheetCommand;
 import daydayup.openstock.sina.SinaQuotesWashed2DBSheetCommand;
 import daydayup.openstock.sse.SseCorpInfo2DbSheetCommand;
 import daydayup.openstock.sse.SseCorpInfoFullNameAndCategory2DbSheetCommand;
 import daydayup.openstock.szse.SzseCorpInfo2DbSheetCommand;
-import daydayup.openstock.wash.WashedFileLoader;
-import daydayup.openstock.wash.WashedFileLoader.WashedFileLoadContext;
 
 public class SheetCommand extends CommandBase<Object> {
 
@@ -37,6 +35,8 @@ public class SheetCommand extends CommandBase<Object> {
 	public static final String SN_SYS_INDEX_TABLE = "INDEX_TABLE";
 	
 	public static final String CMD_FILL_INDEX = "FILL_INDEX";
+	
+	public static final String CMD_WASHED_2_DB = "WASHED_2_DB";
 
 	public static final String SN_SYS_CFG = "SYS_CFG";
 
@@ -67,10 +67,8 @@ public class SheetCommand extends CommandBase<Object> {
 			return new FillIndexSheetCommand().execute(scc);
 		} else if (command.equals(SN_SYS_INDEX_TABLE)) {
 			return new IndexTableSheetCommand().execute(scc);
-		} else if (command.equals("NETEASE_WASHED_2_DB")) {
-			return this.executeNeteaseWashed2Db(cc);
-		} else if (command.equals("RESET_SHEET")) {
-			return this.executeResetSheet(cc);
+		} else if (command.equals(CMD_WASHED_2_DB)) {
+			return new Washed2DbSheetCommand().execute(scc);		
 		} else if (command.equals("CNINFO_CORPINFO_2_DB")) {
 			return new CninfoCorpInfo2DbSheetCommand().execute(scc);
 		} else if (command.equals("SINA_DOWNLOAD_AND_WASH")) {
@@ -100,13 +98,6 @@ public class SheetCommand extends CommandBase<Object> {
 			xDoc.removeByName(name);
 			
 		}
-		return "done";
-	}
-
-	private Object executeNeteaseWashed2Db(CommandContext cc) {
-		DataBaseService dbs = cc.getDataBaseService();
-		WashedFileLoadContext flc = new WashedFileLoadContext(dbs);
-		new WashedFileLoader().load(NeteaseUtil.getDataWashedDir(), flc);
 		return "done";
 	}
 

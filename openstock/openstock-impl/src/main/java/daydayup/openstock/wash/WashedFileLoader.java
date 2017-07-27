@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import daydayup.openstock.Attributes;
 import daydayup.openstock.database.DataBaseService;
-import daydayup.openstock.netease.NeteaseWashedFileProcessor;
 import daydayup.openstock.sina.AllQuotesFileProcessor;
 
 public class WashedFileLoader {
@@ -32,6 +31,7 @@ public class WashedFileLoader {
 			typeMap.put("LRB", 2);
 			typeMap.put("XJLLB", 3);
 			typeMap.put("quotes", 4);
+			typeMap.put("LIXI", 5);
 		}
 
 		DataBaseService dbs;
@@ -97,10 +97,11 @@ public class WashedFileLoader {
 
 	public WashedFileLoader() {
 
-		processMap.put("zcfzb", new NeteaseWashedFileProcessor("ZCFZB"));
-		processMap.put("lrb", new NeteaseWashedFileProcessor("LRB"));
-		processMap.put("xjllb", new NeteaseWashedFileProcessor("XJLLB"));
+		processMap.put("zcfzb", new DefaultWashedFileProcessor("ZCFZB"));
+		processMap.put("lrb", new DefaultWashedFileProcessor("LRB"));
+		processMap.put("xjllb", new DefaultWashedFileProcessor("XJLLB"));
 		processMap.put("quotes", new AllQuotesFileProcessor("quotes"));
+		processMap.put("lixi", new DefaultWashedFileProcessor("LIXI"));
 
 	}
 
