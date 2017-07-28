@@ -24,15 +24,7 @@ public class DatedIndex {
 		return reportDate;
 	}
 
-	public static DatedIndex parse(String datedIndexS) {
-
-		int idx = datedIndexS.indexOf('@');
-		if (idx < 0) {
-			throw new RtException("cannot parse:" + datedIndexS);
-		}
-		String idxName = datedIndexS.substring(0, idx);
-
-		String dateS = datedIndexS.substring(idx + 1, datedIndexS.length());
+	public static DatedIndex valueOf(String index, String dateS) {
 		Date date = null;
 		try {
 			date = IndexTableSheetCommand.DF.parse(dateS);
@@ -40,10 +32,10 @@ public class DatedIndex {
 			throw RtException.toRtException(e);
 		}
 
-		return valueOf(date, idxName);
+		return valueOf(index,date);
 	}
 
-	public static DatedIndex valueOf(Date date, String indexName) {
+	public static DatedIndex valueOf(String indexName,Date date) {
 		return new DatedIndex(date, indexName);
 	}
 

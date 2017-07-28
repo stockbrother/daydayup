@@ -92,7 +92,7 @@ public class IndexSqlSelectFieldsResolveContext {
 		return commandContext;
 	}
 
-	private String getFormulaByIndexName(CommandContext cc, DatedIndex indexName) {
+	private String getFormulaByIndexName(CommandContext cc, String indexName) {
 		Spreadsheet xSheet = cc.getSpreadsheetByName(SheetCommand.SN_SYS_INDEX_DEFINE, false);
 		//
 		int maxEmpty = 100;
@@ -110,7 +110,7 @@ public class IndexSqlSelectFieldsResolveContext {
 				empties = 0;
 			}
 			
-			if (name.equals(indexName.indexName)) {
+			if (name.equals(indexName)) {
 				formula = xSheet.getText(2, i);
 				break;
 			}
@@ -127,10 +127,13 @@ public class IndexSqlSelectFieldsResolveContext {
 	}
 
 	public void resolveSqlSelectFields() {
-
-		String formula = this.getFormulaByIndexName(this.commandContext, this.datedIndex);
-		if (formula == null) {
-			throw new RtException("no formula found for index:" + this.datedIndex);
+		String idxName = this.datedIndex.indexName;
+		
+		String formula = this.getFormulaByIndexName(this.commandContext, idxName);
+		
+		if (formula == null) {//not defined with a name.so define it as anonymous,if it is an raw index.
+			formula = idxName;			
+			//throw new RtException("no formula found for index:" + this.datedIndex);
 		}
 
 		Reader r = new StringReader(formula);

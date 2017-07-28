@@ -62,7 +62,7 @@ public class FillIndexSheetCommand extends BaseSheetCommand<Object> {
 			String name = indexL.get(i);
 			for (int j = 0; j < dateL.size(); j++) {
 				String date = dateL.get(j);
-				isq.addIndex(DatedIndex.parse(name + "@" + date), "C" + i + "_" + j);
+				isq.addIndex(DatedIndex.valueOf(name, date), "C" + i + "_" + j);
 			}
 		}
 		int corpIdRowF = corpIdRow;
@@ -73,18 +73,18 @@ public class FillIndexSheetCommand extends BaseSheetCommand<Object> {
 			public Object process(ResultSet rs) throws SQLException {
 
 				return FillIndexSheetCommand.this.process(isq.getDataOffset(), rs, indexL, dateL, headerRowF, sheet,
-						scc,corpIdRowF);
+						scc, corpIdRowF);
 			}
 		});
 
 	}
 
 	private Object process(int resultSetOffset, ResultSet rs, List<String> indexL, List<String> dateL, int headerRow,
-			Spreadsheet sheet, SheetCommandContext scc,int corpIdRow) throws SQLException {
+			Spreadsheet sheet, SheetCommandContext scc, int corpIdRow) throws SQLException {
 		if (rs.next()) {
 			Object corpName = rs.getObject("corpName");
 			sheet.setValue(2, corpIdRow, corpName);
-			
+
 			for (int i = 0; i < indexL.size(); i++) {
 				int row = i + headerRow + 1;
 				for (int j = 0; j < dateL.size(); j++) {
