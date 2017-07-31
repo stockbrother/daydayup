@@ -8,7 +8,6 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import au.com.bytecode.opencsv.CSVReader;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
 import daydayup.openstock.BaseSheetCommand;
-import daydayup.openstock.RtException;
 import daydayup.openstock.SheetCommandContext;
 import daydayup.openstock.database.Tables;
 import daydayup.openstock.sse.SseCorpInfo2DbSheetCommand;
@@ -44,7 +42,9 @@ public class SzseCorpInfo2DbSheetCommand extends BaseSheetCommand<Object> {
 		return "done";
 	}
 
-	public void loadCorpInfo2Db(File csvFile, Connection con, JdbcAccessTemplate t) {
+	
+
+	public static void loadCorpInfo2Db(File csvFile, Connection con, JdbcAccessTemplate t) {
 		String sql = "merge into " + Tables.TN_CORP_INFO
 				+ "(corpId,corpName,fullName,category,ipoDate,province,city,webSite,address)key(corpId)values(?,?,?,?,?,?,?,?,?)";
 
@@ -60,7 +60,7 @@ public class SzseCorpInfo2DbSheetCommand extends BaseSheetCommand<Object> {
 				String key = next[i];
 				colIndexMap.put(key, i);
 			}
-			
+
 			while (true) {
 				next = reader.readNext();
 				if (next == null) {
