@@ -39,13 +39,13 @@ public class IndexSqlQuery {
 		return this;
 	}
 
-	public <T> T execute(CommandContext scc, ResultSetProcessor<T> rsp) {
-		StringBuffer sql = new StringBuffer();
+	public <T> T execute(CommandContext scc,final  ResultSetProcessor<T> rsp) {
+		final StringBuffer sql = new StringBuffer();
 		sql.append("select corpId as CORP,corpName as NAME");
 
 		Set<Integer> typeSet = new HashSet<>();
 		String corpInfoTableAlias = "ci";
-		List<Object> sqlArgL = new ArrayList<>();
+		final List<Object> sqlArgL = new ArrayList<>();
 
 		for (int i = 0; i < indexNameL.size(); i++) {
 			DatedIndex indexName = indexNameL.get(i);

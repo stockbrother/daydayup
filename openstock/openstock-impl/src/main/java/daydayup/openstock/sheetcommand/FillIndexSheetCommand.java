@@ -14,15 +14,15 @@ import daydayup.openstock.document.Spreadsheet;
 public class FillIndexSheetCommand extends BaseSheetCommand<Object> {
 
 	@Override
-	protected Object doExecute(SheetCommandContext scc) {
+	protected Object doExecute(final SheetCommandContext scc) {
 
-		Spreadsheet sheet = scc.getSheet();
+		final Spreadsheet sheet = scc.getSheet();
 		String corpId = null;
 		int headerRow = -1;
-		List<String> indexL = new ArrayList<>();
-		List<String> dateL = new ArrayList<>();
+		final List<String> indexL = new ArrayList<>();
+		final List<String> dateL = new ArrayList<>();
 
-		IndexSqlQuery isq = new IndexSqlQuery();
+		final IndexSqlQuery isq = new IndexSqlQuery();
 		int corpIdRow = -1;
 		for (int i = 0; i < 100; i++) {
 
@@ -65,8 +65,8 @@ public class FillIndexSheetCommand extends BaseSheetCommand<Object> {
 				isq.addIndex(DatedIndex.valueOf(name, date), "C" + i + "_" + j);
 			}
 		}
-		int corpIdRowF = corpIdRow;
-		int headerRowF = headerRow;
+		final int corpIdRowF = corpIdRow;
+		final int headerRowF = headerRow;
 		return isq.execute(scc, new ResultSetProcessor<Object>() {
 
 			@Override

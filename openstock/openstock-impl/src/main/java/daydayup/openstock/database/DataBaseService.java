@@ -62,10 +62,10 @@ public class DataBaseService extends JdbcAccessTemplate {
 		return rt;
 	}
 
-	public void mergeReport(int reportType, String corpId, Date reportDate, List<String> aliasList,
-			List<BigDecimal> valueList) {
+	public void mergeReport(final int reportType, final String corpId, final Date reportDate, List<String> aliasList,
+			final List<BigDecimal> valueList) {
 
-		List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
+		final List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
 
 		this.execute(new JdbcOperation<Object>() {
 
@@ -104,9 +104,9 @@ public class DataBaseService extends JdbcAccessTemplate {
 
 	}
 
-	public <T> T queryReport(int reportType, String corpId, Date reportDate, List<String> aliasList,
-			ReportResultProcessor<T> rrp) {
-		List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
+	public <T> T queryReport(final int reportType, final String corpId, final Date reportDate, final List<String> aliasList,
+			final ReportResultProcessor<T> rrp) {
+		final List<Integer> columnIndexList = this.aliasInfos.getOrCreateColumnIndexByAliasList(this, reportType, aliasList);
 		return this.execute(new JdbcOperation<T>() {
 
 			@Override
@@ -152,7 +152,7 @@ public class DataBaseService extends JdbcAccessTemplate {
 
 	private void initialize() {
 
-		String schema = "test";
+		final String schema = "test";
 
 		this.execute(new JdbcOperation<Object>() {
 

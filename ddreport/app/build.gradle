@@ -17,6 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/INDEX.LIST'
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
@@ -27,5 +32,15 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:26.+'
     compile 'org.slf4j:slf4j-android:1.7.25'
+    compile ('daydayup.openstock:openstock-impl:0.0.2-SNAPSHOT'){
+        exclude group: 'daydayup.openstock', module: 'openstock-idl'
+        exclude group: 'org.apache.logging.log4j'
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        exclude group: 'com.github.vbmacher', module: 'java-cup'
+        exclude group: 'com.github.vbmacher', module: 'java-cup-runtime'
+        exclude group: 'org.openoffice'
+    }
     testCompile 'junit:junit:4.12'
 }
+
+

@@ -21,8 +21,8 @@ public class CsvUtil {
 
 	}
 
-	public static List<String> loadColumnFromCsvFile(Reader csvFile, String columnName) {
-		List<String> rt = new ArrayList<String>();
+	public static List<String> loadColumnFromCsvFile(Reader csvFile, final String columnName) {
+		final List<String> rt = new ArrayList<String>();
 		CsvRowHandler<String> crh = new CsvRowHandler<String>() {
 
 			@Override

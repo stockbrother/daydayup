@@ -28,7 +28,7 @@ public class SseCorpInfoFullNameAndCategory2DbSheetCommand extends BaseSheetComm
 
 	@Override
 	protected Object doExecute(SheetCommandContext scc) {
-		File csvFile = new File("C:\\openstock\\sse\\sse.corplist2.csv");
+		final File csvFile = new File("C:\\openstock\\sse\\sse.corplist2.csv");
 
 		scc.getDataBaseService().execute(new JdbcOperation<Object>() {
 

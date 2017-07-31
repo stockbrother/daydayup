@@ -22,7 +22,7 @@ public class SqlQuerySheetCommand extends BaseSheetCommand<Object> {
 	private static final Logger LOG = LoggerFactory.getLogger(SqlQuerySheetCommand.class);
 
 	@Override
-	protected Object doExecute(SheetCommandContext cc) {
+	protected Object doExecute(final SheetCommandContext cc) {
 
 		Spreadsheet sheet = cc.getSheet();
 		int dataRow = -1;
@@ -51,7 +51,7 @@ public class SqlQuerySheetCommand extends BaseSheetCommand<Object> {
 		}
 
 		final String sqlF = sql;
-		int dataRowF = dataRow + 1;
+		final int dataRowF = dataRow + 1;
 		return cc.getDataBaseService().execute(new JdbcOperation<Object>() {
 
 			@Override

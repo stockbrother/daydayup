@@ -28,7 +28,7 @@ public class CninfoCorpInfo2DbSheetCommand extends BaseSheetCommand<Object> {
 
 	@Override
 	protected Object doExecute(SheetCommandContext scc) {
-		File csvFile = new File("C:\\D\\data\\cninfo\\20170602111822.csv");
+		final File csvFile = new File("C:\\D\\data\\cninfo\\20170602111822.csv");
 
 		scc.getDataBaseService().execute(new JdbcOperation<Object>() {
 

@@ -24,9 +24,9 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 	public static final DateFormat DF = new SimpleDateFormat("yyyy/MM/dd");
 
 	@Override
-	protected Object doExecute(SheetCommandContext scc) {
+	protected Object doExecute(final SheetCommandContext scc) {
 
-		Spreadsheet sheet = scc.getSheet();
+		final Spreadsheet sheet = scc.getSheet();
 		int dataRow = 0;
 		String title = null;
 		String scope = null;
@@ -81,12 +81,12 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 			return "empty index name list";
 		}
 
-		StringBuffer sql = new StringBuffer();
+		final StringBuffer sql = new StringBuffer();
 		sql.append("select corpId as CORP,corpName as NAME");
 
 		Set<Integer> typeSet = new HashSet<>();
 		String corpInfoTableAlias = "ci";
-		List<Object> sqlArgL = new ArrayList<>();
+		final List<Object> sqlArgL = new ArrayList<>();
 
 		for (int i = 0; i < indexNameL.size(); i++) {
 			DatedIndex indexName = indexNameL.get(i);
@@ -125,7 +125,7 @@ public class IndexTableSheetCommand extends BaseSheetCommand<Object> {
 
 		sql.append(" order by corpId");
 
-		int dataRowF = dataRow;
+		final int dataRowF = dataRow;
 		return scc.getDataBaseService().execute(new JdbcOperation<String>() {
 
 			@Override

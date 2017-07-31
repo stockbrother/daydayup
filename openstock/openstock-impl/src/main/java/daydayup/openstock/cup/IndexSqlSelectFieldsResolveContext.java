@@ -152,9 +152,9 @@ public class IndexSqlSelectFieldsResolveContext {
 		this.columnIdentifierList.add(rt);
 	}
 
-	public ColumnIdentifier getColumnIdentifierByAlias(String alias, boolean force) {
+	public ColumnIdentifier getColumnIdentifierByAlias(final String alias, final boolean force) {
 		DataBaseService dbs = this.commandContext.getDataBaseService();
-		String sql = "select reportType,columnIndex from " + Tables.TN_ALIAS_INFO + " where aliasName = ?";
+		final String sql = "select reportType,columnIndex from " + Tables.TN_ALIAS_INFO + " where aliasName = ?";
 
 		return dbs.execute(new JdbcOperation<ColumnIdentifier>() {
 

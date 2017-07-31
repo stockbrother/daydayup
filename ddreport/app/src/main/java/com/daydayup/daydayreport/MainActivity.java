@@ -7,16 +7,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
+
+    private static final Logger LOG = LoggerFactory.getLogger(MainActivity.class);
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            LOG.info("onNavigationItemSelected.");
             switch (item.getItemId()) {
+
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
                     return true;

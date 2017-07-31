@@ -46,11 +46,11 @@ public class AliasInfos {
 
 	}
 
-	public List<Integer> getOrCreateColumnIndexByAliasList(DataBaseService dbs, int reportType,
+	public List<Integer> getOrCreateColumnIndexByAliasList(DataBaseService dbs, final int reportType,
 			List<String> aliasList) {
 		Map<String, Integer> aliasMap = reportAliasColumnMap.get(reportType);
 		List<Integer> rt = new ArrayList<>();
-		for (String alias : aliasList) {
+		for (final String alias : aliasList) {
 			Integer columnIndex = null;
 			if (aliasMap != null) {
 				columnIndex = aliasMap.get(alias);
