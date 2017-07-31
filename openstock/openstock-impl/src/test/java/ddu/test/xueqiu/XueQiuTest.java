@@ -22,7 +22,7 @@ public class XueQiuTest extends TestCase {
 		folder.mkdirs();
 		XueqiuDataCollector dc = new XueqiuDataCollector(folder);
 		dc.types("balsheet", "incstatement", "cfstatement");
-		dc.pauseInterval(5 * 1000);
+		dc.pauseInterval(1 * 1000);
 		List<String> corpCodeL = getCorpCodeList();
 		dc.corpCodes(corpCodeL);
 		dc.execute();
