@@ -29,18 +29,19 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile project(':ddreport-core')
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:26.+'
     compile 'com.androidplot:androidplot-core:1.5.0'
     compile 'org.slf4j:slf4j-android:1.7.25'
-    compile ('daydayup.openstock:openstock-impl:0.0.2-SNAPSHOT'){
-        exclude group: 'daydayup.openstock', module: 'openstock-idl'
-        exclude group: 'org.apache.logging.log4j'
-        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-        exclude group: 'com.github.vbmacher', module: 'java-cup'
-        exclude group: 'com.github.vbmacher', module: 'java-cup-runtime'
-        exclude group: 'org.openoffice'
-    }
+//    compile ('daydayup.openstock:openstock-impl:0.0.2-SNAPSHOT'){
+//        exclude group: 'daydayup.openstock', module: 'openstock-idl'
+//        exclude group: 'org.apache.logging.log4j'
+//        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+//        exclude group: 'com.github.vbmacher', module: 'java-cup'
+//        exclude group: 'com.github.vbmacher', module: 'java-cup-runtime'
+//        exclude group: 'org.openoffice'
+//    }
     testCompile 'junit:junit:4.12'
 }
 
