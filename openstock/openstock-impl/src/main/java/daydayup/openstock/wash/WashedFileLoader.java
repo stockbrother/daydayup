@@ -62,7 +62,7 @@ public class WashedFileLoader {
 		protected Map<String, WashedDataTypeContext> nextRowMap = new HashMap<>();
 
 		public DataBaseService dbs;
-		
+
 		public Attributes attributes = new Attributes();
 
 		public WashedFileLoadContext(DataBaseService dbs) {
@@ -100,6 +100,11 @@ public class WashedFileLoader {
 		processMap.put("zcfzb", new DefaultWashedFileProcessor("ZCFZB"));
 		processMap.put("lrb", new DefaultWashedFileProcessor("LRB"));
 		processMap.put("xjllb", new DefaultWashedFileProcessor("XJLLB"));
+
+		processMap.put("balsheet", new DefaultWashedFileProcessor("ZCFZB"));
+		processMap.put("incstatement", new DefaultWashedFileProcessor("LRB"));
+		processMap.put("cfstatement", new DefaultWashedFileProcessor("XJLLB"));
+
 		processMap.put("quotes", new AllQuotesFileProcessor("quotes"));
 		processMap.put("lixi", new DefaultWashedFileProcessor("LIXI"));
 
@@ -135,7 +140,7 @@ public class WashedFileLoader {
 					Charset cs = Charset.forName("UTF-8");
 					Reader reader = new InputStreamReader(is, cs);
 
-					fp.process(reader, xContext);//
+					fp.process(f, reader, xContext);//
 					if (this.maxSize >= 0 && this.processed++ > this.maxSize) {
 						this.interrupted = true;
 					}

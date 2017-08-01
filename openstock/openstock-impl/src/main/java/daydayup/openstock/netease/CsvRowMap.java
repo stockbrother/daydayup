@@ -23,8 +23,21 @@ public class CsvRowMap {
 
 	public CsvRow get(String key, boolean force) {
 		CsvRow rt = map.get(key);
+//		if("报表日期".equals(key)){
+//			for(String keyI:map.keySet()){
+//				boolean isE = "报表日期".equals(keyI);
+//				boolean isE2 = key.equals(keyI);
+//				boolean isE3 = true;
+//			}
+//			boolean c1 = map.keySet().contains(key);
+//			boolean c2 = map.keySet().contains("报表日期");
+//			boolean c3 = map.containsKey(key);
+//			boolean c4 = map.containsKey("报表日期");
+//			
+//		}
+		
 		if (rt == null && force) {
-			throw new RuntimeException("no value for key:" + key);
+			throw new RuntimeException("no value for key:" + key + ",all keys:" + map.keySet());
 		}
 		return rt;
 

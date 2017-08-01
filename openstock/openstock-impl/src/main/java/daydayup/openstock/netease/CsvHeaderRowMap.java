@@ -25,6 +25,7 @@ public class CsvHeaderRowMap extends CsvRowMap {
 
 	public Date[] getReportDateArray() {
 		CsvRow row = this.get("报告日期", true);
+		//CsvRow row = this.get("报表日期", true);
 		SimpleDateFormat df = this.getDateFormat();
 		Date[] rt = row.getAsDateArray(df);
 		return rt;

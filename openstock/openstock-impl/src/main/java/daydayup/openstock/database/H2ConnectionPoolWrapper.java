@@ -25,10 +25,10 @@ public class H2ConnectionPoolWrapper implements ConnectionProvider {
 		if (c.getAutoCommit()) {
 			c.setAutoCommit(false);//
 			if (LOG.isTraceEnabled()) {
-				LOG.trace("autocommit disabled for connection:" + c);
+				//LOG.trace("autocommit disabled for connection:" + c);
 			}
 		}
-		LOG.trace("connection opened,it may be closed later without notified.");
+		//LOG.trace("connection opened,it may be closed later without notified.");
 		return c;
 	}
 

@@ -1,5 +1,6 @@
 package daydayup.openstock.wash;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -22,13 +23,12 @@ public class DefaultWashedFileProcessor implements WashedFileProcessor {
 
 	String fileType;
 
-	public DefaultWashedFileProcessor(String sheetName) {
-		this.fileType = sheetName;
+	public DefaultWashedFileProcessor(String type) {
+		this.fileType = type;
 	}
 
-	
-
-	public void process(Reader fr, WashedFileLoadContext xContext) {
+	@Override
+	public void process(File file, Reader fr, WashedFileLoadContext xContext) {
 
 		CSVReader reader = new CSVReader(fr);
 		try {
@@ -36,6 +36,7 @@ public class DefaultWashedFileProcessor implements WashedFileProcessor {
 			CsvRowMap body = new CsvRowMap();
 			CsvRowMap currentMap = null;
 			int lineNumber = 0;
+
 			while (true) {
 				lineNumber++;
 				String[] next = reader.readNext();
@@ -58,6 +59,12 @@ public class DefaultWashedFileProcessor implements WashedFileProcessor {
 				}
 				currentMap.put(key, new CsvRow(lineNumber, next));
 			}
+
+			if (headers.keyList.isEmpty()) {
+				LOG.debug("ignore file(for reason of no header found):" + file.getAbsolutePath());
+				return;
+			}
+
 			//
 			Date[] reportDateArray = headers.getReportDateArray();
 			BigDecimal unit = headers.get("单位", true).getAsBigDecimal(1, true);

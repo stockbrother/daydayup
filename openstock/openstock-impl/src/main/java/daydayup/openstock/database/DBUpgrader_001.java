@@ -20,9 +20,9 @@ public class DBUpgrader_001 extends DBUpgrader {
 		}
 
 		// create report tables
-		for (int j = 0; j < 100; j++) {
+		for (int j = 0; j < Tables.REPORT_TABLES; j++) {
 			String sql = "create table corp_report_" + j + "(corpId varchar,corpName varchar,reportDate datetime,";
-			for (int i = 0; i < 200; i++) {
+			for (int i = 0; i < Tables.REPORT_TABLE_COLUMNS; i++) {
 				sql += "d_" + i + " double,";
 			}
 			sql += "primary key(corpId,reportDate))";

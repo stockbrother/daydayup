@@ -1,5 +1,6 @@
 package daydayup.openstock.sina;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -34,7 +35,7 @@ public class AllQuotesFileProcessor implements WashedFileProcessor {
 	}
 
 	@Override
-	public void process(Reader fr, WashedFileLoadContext xContext) {
+	public void process(File file, Reader fr, WashedFileLoadContext xContext) {
 
 		CSVReader reader = new CSVReader(fr);
 		Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
@@ -78,7 +79,7 @@ public class AllQuotesFileProcessor implements WashedFileProcessor {
 				if (line == null) {
 					break;
 				}
-				String corpId = getColumn(columnIndexMap, "code", line);				
+				String corpId = getColumn(columnIndexMap, "code", line);
 				String priceS = getColumn(columnIndexMap, "settlement", line);
 
 				xContext.getOrCreateTypeContext(type).writeRow(corpId, reportDate, "PRICE", new BigDecimal(priceS));
