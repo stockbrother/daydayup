@@ -38,11 +38,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
-    public void onTest(){
-        LOG.info("onTest");
-        File file = new File(this.getBaseContext().getFilesDir(),"h2");
-        DataBaseService dbs = DataBaseService.getInstance(file,"test");
 
+    public void onTest() {
+        LOG.info("onTest");
+        File file = new File(this.getBaseContext().getFilesDir(), "h2");
+        File f2 = file;
+        while (f2.exists()) {
+            long i = System.currentTimeMillis();
+            f2 = new File(this.getBaseContext().getFilesDir(), "h2_backup" + i);
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
+
+        }
+        if (f2 != file) {
+
+            file.renameTo(f2);
+            file = new File(this.getBaseContext().getFilesDir(), "h2");
+            LOG.info("back up db folder to:" + f2.getAbsolutePath());
+        }
+        File[] files = file.listFiles();
+        if (files != null) {
+
+            for (File f : files) {
+                LOG.info(f.getAbsolutePath());
+            }
+        }
+
+        DataBaseService dbs = DataBaseService.getInstance(file, "test");
         String rt = dbs.execute(new JdbcAccessTemplate.JdbcOperation<String>() {
 
             @Override
@@ -50,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
                 return "done";
             }
-        },false);
+        }, false);
         mTextMessage.setText(R.string.title_notifications);
     }
 

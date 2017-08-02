@@ -53,7 +53,7 @@ public class DataBaseService extends JdbcAccessTemplate {
 
 		DataBaseService rt = MAP.get(dbUrl);
 		if (rt == null) {
-			ConnectionProvider pool = H2ConnectionPoolWrapper.newInstance(dbUrl, "sa", "sa");
+			ConnectionProvider pool = H2ConnectionPool.newInstance(dbUrl, "sa", "sa");
 			rt = new DataBaseService(pool);
 			rt.initialize();
 			MAP.put(dbUrl, rt);
