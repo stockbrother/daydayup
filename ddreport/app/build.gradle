@@ -4,8 +4,8 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
     defaultConfig {
-        applicationId "com.daydayup.daydayreport"
-        minSdkVersion 22
+        applicationId "com.example.wu.ddreport"
+        minSdkVersion 15
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -17,11 +17,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/INDEX.LIST'
-        exclude 'META-INF/LICENSE'
-    }
 }
 
 dependencies {
@@ -29,20 +24,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile project(':ddreport-core')
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:26.+'
+    compile 'com.android.support:support-vector-drawable:26.+'
+    compile project(':ddreport-core')
     compile 'com.androidplot:androidplot-core:1.5.0'
-    compile 'org.slf4j:slf4j-android:1.7.25'
-//    compile ('daydayup.openstock:openstock-impl:0.0.2-SNAPSHOT'){
-//        exclude group: 'daydayup.openstock', module: 'openstock-idl'
-//        exclude group: 'org.apache.logging.log4j'
-//        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-//        exclude group: 'com.github.vbmacher', module: 'java-cup'
-//        exclude group: 'com.github.vbmacher', module: 'java-cup-runtime'
-//        exclude group: 'org.openoffice'
-//    }
     testCompile 'junit:junit:4.12'
 }
-
-

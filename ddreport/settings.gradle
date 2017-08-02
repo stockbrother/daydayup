@@ -1,1 +1,1 @@
-include ':app', ':ddreport-core', ':ddreport-cup'
+include ':app', ':ddreport-core'
