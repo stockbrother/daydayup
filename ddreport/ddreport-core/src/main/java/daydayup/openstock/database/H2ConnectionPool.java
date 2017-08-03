@@ -1,19 +1,19 @@
 package daydayup.openstock.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
+import daydayup.jdbc.ConnectionProvider;
 import daydayup.openstock.RtException;
+import org.h2.Driver;
 import org.h2.api.ErrorCode;
 import org.h2.jdbc.JdbcConnection;
 import org.h2.message.DbException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import daydayup.jdbc.ConnectionProvider;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class H2ConnectionPool implements ConnectionProvider {
     private static final Logger LOG = LoggerFactory.getLogger(H2ConnectionPool.class);
@@ -71,14 +71,18 @@ public class H2ConnectionPool implements ConnectionProvider {
     private int connections;
     private List<PooledJdbcConnection> cachedConnectionList = new ArrayList<>();
     private String url;
+    private String user;
+    private char[] pass;
 
-    public H2ConnectionPool(String url) {
+    public H2ConnectionPool(String url, String user, String pass) {
         this.url = url;
-        try {
-            Class.forName("org.h2.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RtException(e);
-        }
+        this.user = user;
+        this.pass = pass == null ? null : pass.toCharArray();
+//        try {
+//            Class.forName("org.h2.Driver");
+//        } catch (ClassNotFoundException e) {
+//            throw new RtException(e);
+//        }
     }
 
     @Override
@@ -88,7 +92,7 @@ public class H2ConnectionPool implements ConnectionProvider {
                 if (this.connections > this.maxConnections) {
                     throw new RtException("max connections exceed:" + this.maxConnections);
                 }
-                JdbcConnection con = (JdbcConnection) DriverManager.getConnection(url);
+                JdbcConnection con = getJdbcConnection();
                 con.setAutoCommit(false);
                 //LOG.trace("connection opened,it may be closed later without notified.");
                 PooledJdbcConnection rt = new PooledJdbcConnection(this, con);
@@ -102,10 +106,29 @@ public class H2ConnectionPool implements ConnectionProvider {
         }
     }
 
+    private JdbcConnection getJdbcConnection()
+            throws SQLException {
+
+        Properties info = new Properties();
+
+        info.setProperty("user", user);
+        info.put("password", pass);
+        Connection conn = Driver.load().connect(url, info);
+        if (conn == null) {
+            throw new SQLException("No suitable driver found for " + url,
+                    "08001", 8001);
+        } else if (!(conn instanceof JdbcConnection)) {
+            throw new SQLException(
+                    "Connecting with old version is not supported: " + url,
+                    "08001", 8001);
+        }
+        return (JdbcConnection) conn;
+    }
+
     public static ConnectionProvider newInstance(String dbUrl, String user, String pass) {
 
         LOG.info("connection pool created");
-        return new H2ConnectionPool(dbUrl);
+        return new H2ConnectionPool(dbUrl, user, pass);
     }
 
     @Override

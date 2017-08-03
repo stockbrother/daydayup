@@ -1,6 +1,7 @@
 package com.example.wu.ddreport;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +40,30 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
-    public void onTest() {
+    private void onTest() {
+        mTextMessage.setText(R.string.title_notifications + ",please wait....");
+        File storage = Environment.getExternalStorageDirectory();
+
+        File file = new File(new File(storage, ".ddreport"), "h2");
+        if (!file.exists()) {
+            LOG.warn("no folder found: " + file.getAbsolutePath());
+
+        } else {
+
+            DataBaseService dbs = DataBaseService.getInstance(file, "test");
+            String rt = dbs.execute(new JdbcAccessTemplate.JdbcOperation<String>() {
+
+                @Override
+                public String execute(Connection con, JdbcAccessTemplate t) {
+
+                    return "done";
+                }
+            }, false);
+            mTextMessage.setText(R.string.title_notifications + ",rt:" + rt);
+        }
+    }
+
+    public void onTestx() {
         LOG.info("onTest");
         File file = new File(this.getBaseContext().getFilesDir(), "h2");
         File f2 = file;
