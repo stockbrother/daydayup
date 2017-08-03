@@ -19,14 +19,6 @@ import java.io.StringReader;
 public class CupInstrumentedTest {
    @Test
    public void testUseCup(){
-      String formula = "A@2016/12/31";
-      Reader r = new StringReader(formula);
-      Symbol result;
-      try {
-         result = new parser(new scanner(r)).parse();
-      } catch (Exception e) {
-         throw new RtException("failed to parse formula:" + formula, e);
-      }
-      CupExpr expr = (CupExpr) result.value;
+      new parser(new scanner(null));
    }
 }

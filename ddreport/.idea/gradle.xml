@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/ddreport-app" />
             <option value="$PROJECT_DIR$/ddreport-core" />
+            <option value="$PROJECT_DIR$/ddreport-cup" />
           </set>
         </option>
       </GradleProjectSettings>

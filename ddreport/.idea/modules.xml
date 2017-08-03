@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/ddreport.iml" filepath="$PROJECT_DIR$/ddreport.iml" />
       <module fileurl="file://$PROJECT_DIR$/ddreport-app/ddreport-app.iml" filepath="$PROJECT_DIR$/ddreport-app/ddreport-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/ddreport-core/ddreport-core.iml" filepath="$PROJECT_DIR$/ddreport-core/ddreport-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ddreport-cup/ddreport-cup.iml" filepath="$PROJECT_DIR$/ddreport-cup/ddreport-cup.iml" />
     </modules>
   </component>
 </project>

@@ -2,10 +2,10 @@ apply plugin: 'java'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
     compile 'org.slf4j:slf4j-android:1.7.25'
     compile 'com.h2database:h2:1.4.192'
-    compile 'com.github.vbmacher:java-cup:11b-20160615'
-    compile 'com.github.vbmacher:java-cup-runtime:11b-20160615'
+    compile project(':ddreport-cup')
 }
 
 sourceCompatibility = "1.7"
