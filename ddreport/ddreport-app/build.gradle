@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
@@ -32,4 +31,5 @@ dependencies {
     compile 'com.android.support:support-vector-drawable:26.+'
     compile project(':ddreport-core')
     compile 'com.androidplot:androidplot-core:1.5.0'
+    //compile 'org.slf4j:slf4j-android:1.7.25'
 }

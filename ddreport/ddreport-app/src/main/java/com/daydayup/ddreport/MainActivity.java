@@ -39,6 +39,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+    SimpleXYPlotView plot;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        plot = new SimpleXYPlotView(this);
+
+        mTextMessage = (TextView) findViewById(R.id.message);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
 
     private void onTest() {
         mTextMessage.setText(R.string.title_notifications + ",please wait....");
@@ -49,17 +62,10 @@ public class MainActivity extends AppCompatActivity {
             LOG.warn("no folder found: " + file.getAbsolutePath());
 
         } else {
-            DataBaseService dbs = DataBaseService.getInstance(file, "test");
-            String rt = dbs.execute(new JdbcAccessTemplate.JdbcOperation<String>() {
 
-                @Override
-                public String execute(Connection con, JdbcAccessTemplate t) {
-
-                    return "done";
-                }
-            }, false);
-            mTextMessage.setText(R.string.title_notifications + ",rt:" + rt);
+            mTextMessage.setText(R.string.title_notifications + ",rt:" );
         }
+        this.plot.showView();
     }
 
     public void onTestx() {
@@ -100,16 +106,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, false);
         mTextMessage.setText(R.string.title_notifications);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
 }
