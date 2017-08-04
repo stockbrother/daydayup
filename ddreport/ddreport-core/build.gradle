@@ -1,9 +1,10 @@
 apply plugin: 'java'
-
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'org.slf4j:slf4j-android:1.7.25'
+    compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'com.h2database:h2:1.4.192'
     compile project(':ddreport-cup')
 }

@@ -20,7 +20,8 @@ import org.junit.Assert;
 public class CupExprParserTest {
    @Test
    public void testUseCup(){
-      String formula = "A@date0";
+      String formula = "A_@date0";
+      System.out.println(formula);
       Reader r = new StringReader(formula);
       Symbol result;
       try {

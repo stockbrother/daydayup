@@ -3,13 +3,13 @@ package daydayup.openstock;
 import daydayup.openstock.database.DataBaseService;
 
 public class CommandContext {
-
-	public CommandContext() {
-
+	DdrContext ddr;
+	public CommandContext(DdrContext dc) {
+		ddr = dc;
 	}
 
 	public DataBaseService getDataBaseService() {
-		return null;
+		return ddr.getDataBaseService();
 	}
 
 }
