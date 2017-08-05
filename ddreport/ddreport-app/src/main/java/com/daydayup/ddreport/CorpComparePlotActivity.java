@@ -109,7 +109,7 @@ public class CorpComparePlotActivity extends AppCompatActivity {
     }
     private List<Number[]> getData() {
         String scope = "and corpId in('000001','601166')";
-        DdrContext dc = new AndroidDdrContext();
+        DdrContext dc = AndroidDdrContext.getInstance();
         CommandContext scc = new CommandContext(dc);
 
         List<String> indexAliasL = new ArrayList<>();

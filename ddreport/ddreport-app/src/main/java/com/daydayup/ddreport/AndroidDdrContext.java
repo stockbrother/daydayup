@@ -7,9 +7,29 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-public class AndroidDdrContext extends DdrContext{
+public class AndroidDdrContext extends DdrContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidDdrContext.class);
+
+    private static AndroidDdrContext ME;
+
+    private static Object LOCK = new Object();
+
+    private AndroidDdrContext() {
+
+    }
+
+    public static AndroidDdrContext getInstance() {
+        if (ME == null) {
+            synchronized (LOCK) {
+                if (ME == null) {
+                    ME = new AndroidDdrContext();
+                }
+
+            }
+        }
+        return ME;
+    }
 
     @Override
     public File getDbFolder() {
