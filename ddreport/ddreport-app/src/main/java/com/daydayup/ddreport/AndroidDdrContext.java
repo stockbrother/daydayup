@@ -16,7 +16,7 @@ public class AndroidDdrContext extends DdrContext {
     private static Object LOCK = new Object();
 
     private AndroidDdrContext() {
-
+        super();
     }
 
     public static AndroidDdrContext getInstance() {

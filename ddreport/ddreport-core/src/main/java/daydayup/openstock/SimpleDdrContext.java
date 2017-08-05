@@ -4,6 +4,9 @@ import java.io.File;
 
 public class SimpleDdrContext extends DdrContext{
 
+    protected SimpleDdrContext() {
+    }
+
     @Override
     public File getDbFolder() {
         return new File("c:\\openstock");
