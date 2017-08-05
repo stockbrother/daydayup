@@ -36,6 +36,14 @@ public abstract class DdrContext {
         return this.background;
     }
 
+    public boolean isReady(){
+        return this.dataBase != null;
+    }
+
+    public void utilReady(){
+        this.getDataBaseService();
+    }
+
     public DataBaseService getDataBaseService() {
 
         if (dataBase == null) {

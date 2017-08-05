@@ -1,6 +1,10 @@
 package com.daydayup.ddreport;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -22,6 +26,15 @@ import java.sql.Connection;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static class MyDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Build the dialog and set up the button click handlers
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Please wait!");
+            return builder.create();
+        }
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(MainActivity.class);
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -49,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //init context
-        AndroidDdrContext.getInstance();
+
+
         //
         setContentView(R.layout.activity_main);
         //toolbar
@@ -60,9 +74,41 @@ public class MainActivity extends AppCompatActivity {
         //bottom bar
         BottomNavigationView navigation = (BottomNavigationView) this.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
     }
 
-    private void initContentView(){
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        final AndroidDdrContext ctx = AndroidDdrContext.getInstance();
+        if (!ctx.isReady()) {
+
+
+           // final Semaphore showAndCancel = new Semaphore(0);
+            AsyncTask task = new AsyncTask() {
+                @Override
+                protected Object doInBackground(Object[] objects) {
+                    DialogFragment dia = new MyDialogFragment();
+                    dia.show(MainActivity.this.getFragmentManager(), "missiles");
+
+                    try {
+                        ctx.utilReady();
+                    } finally {
+                        // showAndCancel.release();
+                    }
+                    dia.dismiss();
+
+                    return null;
+                }
+            };
+            task.execute();
+
+
+        }
+    }
+
+    private void initContentView() {
         {
 
             Button button = (Button) this.findViewById(R.id.corpCompareButtonView);
@@ -91,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.toolbar, menu);
         return true;
     }
-
 
 
     @Override
