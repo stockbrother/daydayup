@@ -5,6 +5,8 @@ package com.daydayup.ddreport;
  */
 
 import android.graphics.DashPathEffect;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import com.androidplot.util.PixelUtils;
 import com.androidplot.xy.*;
 import daydayup.jdbc.JdbcAccessTemplate;
@@ -28,16 +30,83 @@ import java.util.*;
 /**
  * A simple XYPlot
  */
-public class SimpleXYPlotView {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleXYPlotView.class);
+public class CorpComparePlotActivity extends AppCompatActivity {
+    private static final Logger LOG = LoggerFactory.getLogger(CorpComparePlotActivity.class);
 
     private XYPlot plot;
-    MainActivity activity;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.simple_xy_plot_example);
 
-    SimpleXYPlotView(MainActivity activity) {
-        this.activity = activity;
+
+        // initialize our XYPlot reference:
+        plot = (XYPlot) findViewById(R.id.plot);
+
+        // create a couple arrays of y-values t plot:
+        final String[] domainLabels = {"2016", "2015", "2014", "2013", "2012"};
+        Number[] series1Numbers = {10000000D, 400000D, 200000D, 800000D, 400000D, };
+        Number[] series2Numbers = {5000000D, 2000D, 10000D, 5000D, 20000D, };
+        List<Number[]> data = getData();
+        LOG.info("rows:"+data.size());
+        for(Number[] row:data){
+            String s = "";
+            for(Number n:row){
+                s+=n+",";
+            }
+            LOG.info("row:"+s);
+        }
+
+        series1Numbers = data.get(0);
+        series2Numbers = data.get(1);
+
+        // turn the above arrays into XYSeries':
+        // (Y_VALS_ONLY means use the element index as the x value)
+        XYSeries series1 = new SimpleXYSeries(
+                Arrays.asList(series1Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series1");
+        XYSeries series2 = new SimpleXYSeries(
+                Arrays.asList(series2Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series2");
+
+        // create formatters to use for drawing a series using LineAndPointRenderer
+        // and configure them from xml:
+        LineAndPointFormatter series1Format =
+                new LineAndPointFormatter(this, R.xml.line_point_formatter_with_labels);
+
+        LineAndPointFormatter series2Format =
+                new LineAndPointFormatter(this, R.xml.line_point_formatter_with_labels_2);
+
+        // add an "dash" effect to the series2 line:
+        series2Format.getLinePaint().setPathEffect(new DashPathEffect(new float[]{
+
+                // always use DP when specifying pixel sizes, to keep things consistent across devices:
+                PixelUtils.dpToPix(20),
+                PixelUtils.dpToPix(15)}, 0));
+
+        // just for fun, add some smoothing to the lines:
+        // see: http://androidplot.com/smooth-curves-and-androidplot/
+        series1Format.setInterpolationParams(
+                new CatmullRomInterpolator.Params(5, CatmullRomInterpolator.Type.Centripetal));
+
+        series2Format.setInterpolationParams(
+                new CatmullRomInterpolator.Params(5, CatmullRomInterpolator.Type.Centripetal));
+
+        // add a new series' to the xyplot:
+        plot.addSeries(series1, series1Format);
+        plot.addSeries(series2, series2Format);
+
+        plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
+            @Override
+            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+                int i = Math.round(((Number) obj).floatValue());
+                return toAppendTo.append(domainLabels[i]);
+            }
+
+            @Override
+            public Object parseObject(String source, ParsePosition pos) {
+                return null;
+            }
+        });
     }
-
     private List<Number[]> getData() {
         String scope = "and corpId in('000001','601166')";
         DdrContext dc = new AndroidDdrContext();
@@ -133,74 +202,6 @@ public class SimpleXYPlotView {
 
     public void showView() {
 
-        activity.setContentView(R.layout.simple_xy_plot_example);
 
-
-        // initialize our XYPlot reference:
-        plot = (XYPlot) activity.findViewById(R.id.plot);
-
-        // create a couple arrays of y-values t plot:
-        final String[] domainLabels = {"2016", "2015", "2014", "2013", "2012"};
-        Number[] series1Numbers = {10000000D, 400000D, 200000D, 800000D, 400000D, };
-        Number[] series2Numbers = {5000000D, 2000D, 10000D, 5000D, 20000D, };
-        List<Number[]> data = getData();
-        LOG.info("rows:"+data.size());
-        for(Number[] row:data){
-            String s = "";
-            for(Number n:row){
-                s+=n+",";
-            }
-            LOG.info("row:"+s);
-        }
-
-        series1Numbers = data.get(0);
-        series2Numbers = data.get(1);
-
-        // turn the above arrays into XYSeries':
-        // (Y_VALS_ONLY means use the element index as the x value)
-        XYSeries series1 = new SimpleXYSeries(
-                Arrays.asList(series1Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series1");
-        XYSeries series2 = new SimpleXYSeries(
-                Arrays.asList(series2Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series2");
-
-        // create formatters to use for drawing a series using LineAndPointRenderer
-        // and configure them from xml:
-        LineAndPointFormatter series1Format =
-                new LineAndPointFormatter(this.activity, R.xml.line_point_formatter_with_labels);
-
-        LineAndPointFormatter series2Format =
-                new LineAndPointFormatter(this.activity, R.xml.line_point_formatter_with_labels_2);
-
-        // add an "dash" effect to the series2 line:
-        series2Format.getLinePaint().setPathEffect(new DashPathEffect(new float[]{
-
-                // always use DP when specifying pixel sizes, to keep things consistent across devices:
-                PixelUtils.dpToPix(20),
-                PixelUtils.dpToPix(15)}, 0));
-
-        // just for fun, add some smoothing to the lines:
-        // see: http://androidplot.com/smooth-curves-and-androidplot/
-        series1Format.setInterpolationParams(
-                new CatmullRomInterpolator.Params(5, CatmullRomInterpolator.Type.Centripetal));
-
-        series2Format.setInterpolationParams(
-                new CatmullRomInterpolator.Params(5, CatmullRomInterpolator.Type.Centripetal));
-
-        // add a new series' to the xyplot:
-        plot.addSeries(series1, series1Format);
-        plot.addSeries(series2, series2Format);
-
-        plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
-            @Override
-            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
-                int i = Math.round(((Number) obj).floatValue());
-                return toAppendTo.append(domainLabels[i]);
-            }
-
-            @Override
-            public Object parseObject(String source, ParsePosition pos) {
-                return null;
-            }
-        });
     }
 }
