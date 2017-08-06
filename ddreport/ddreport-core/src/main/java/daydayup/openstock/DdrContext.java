@@ -1,5 +1,6 @@
 package daydayup.openstock;
 
+import daydayup.HandlerService;
 import daydayup.openstock.database.DataBaseService;
 
 import java.io.File;
@@ -7,6 +8,8 @@ import java.util.concurrent.Callable;
 
 public abstract class DdrContext {
     protected DataBaseService dataBase;
+
+    protected HandlerService handler;
 
     protected BackGroundTaskScheduler background;
 
@@ -18,6 +21,7 @@ public abstract class DdrContext {
 
 
     protected DdrContext() {
+        this.handler = new HandlerService(this);
         this.background = new BackGroundTaskScheduler();
         this.background.runTask(new Callable<Object>() {
             @Override
@@ -29,19 +33,25 @@ public abstract class DdrContext {
     }
 
     private void doInitInBackground() {
+
         getDataBaseService();//init DB for time saving.
+
     }
 
     public BackGroundTaskScheduler getBackGroundTaskScheduler() {
         return this.background;
     }
 
-    public boolean isReady(){
+    public boolean isReady() {
         return this.dataBase != null;
     }
 
-    public void utilReady(){
+    public void utilReady() {
         this.getDataBaseService();
+    }
+
+    public HandlerService getHandlerService() {
+        return this.handler;
     }
 
     public DataBaseService getDataBaseService() {

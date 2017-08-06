@@ -7,6 +7,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
+import daydayup.AddCorpIdToGroupHandler;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.ResultSetProcessor;
 import daydayup.openstock.CommandContext;
@@ -104,8 +105,10 @@ public class SearchActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 String corpId = SearchActivity.this.gridAdapter.getCorpIdIfClickPlus(position);
+                AndroidDdrContext dc = AndroidDdrContext.getInstance();
+                dc.getHandlerService().handle(AddCorpIdToGroupHandler.class,corpId);
 
-                Toast.makeText(SearchActivity.this, "" + position + ",corpId:" + corpId,
+                Toast.makeText(SearchActivity.this, "" + position + ",corpIdIfPlus:" + corpId,
                         Toast.LENGTH_SHORT).show();
 
             }

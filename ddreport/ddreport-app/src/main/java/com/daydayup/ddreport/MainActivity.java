@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     } finally {
                         // showAndCancel.release();
                     }
-                    dia.dismiss();
+                    dia.dismissAllowingStateLoss();
 
                     return null;
                 }
