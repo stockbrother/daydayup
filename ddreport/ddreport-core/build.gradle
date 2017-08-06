@@ -3,10 +3,16 @@ compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'com.h2database:h2:1.4.192'
     compile project(':ddreport-cup')
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.apache.logging.log4j:log4j-api:2.5'
+    testCompile 'org.apache.logging.log4j:log4j-core:2.5'
+    testCompile 'org.apache.logging.log4j:log4j-slf4j-impl:2.5'
+}
+test {
+    testLogging.showStandardStreams = true
 }
 
 sourceCompatibility = "1.7"

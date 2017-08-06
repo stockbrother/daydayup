@@ -4,7 +4,10 @@ public class Tables {
 	public static final String TN_PROPERTY = "property";
 	public static final String TN_ALIAS_INFO = "alias_info";
 	public static final String TN_CORP_INFO = "corp_info";
-	
+	public static final String TN_CHART_INFO = "chart_info";
+	public static final String TN_GROUP_INFO = "group_info";
+	public static final String TN_GROUP_ITEM = "group_item";
+
 	public static final int REPORT_TABLE_COLUMNS = 1000;
 	public static final int REPORT_TABLES = 100;
 	

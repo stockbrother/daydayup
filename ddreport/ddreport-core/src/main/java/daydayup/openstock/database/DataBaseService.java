@@ -1,23 +1,18 @@
 package daydayup.openstock.database;
 
+import daydayup.jdbc.ConnectionProvider;
+import daydayup.jdbc.JdbcAccessTemplate;
+import daydayup.jdbc.ResultSetProcessor;
+import daydayup.openstock.RtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import daydayup.jdbc.ConnectionProvider;
-import daydayup.jdbc.JdbcAccessTemplate;
-import daydayup.jdbc.ResultSetProcessor;
-import daydayup.openstock.RtException;
+import java.util.*;
 
 public class DataBaseService extends JdbcAccessTemplate {
 
@@ -33,9 +28,10 @@ public class DataBaseService extends JdbcAccessTemplate {
 		upgraderList.add(new DBUpgrader_001());
 		upgraderList.add(new DBUpgrader_002());
 		upgraderList.add(new DBUpgrader_003());
+		upgraderList.add(new DBUpgrader_004());
 	}
 	//the target data version to be upgraded to.
-	private DataVersion targetDataVersion = DataVersion.V_0_0_3;
+	private DataVersion targetDataVersion = DataVersion.V_0_0_4;
 
 	private DataVersion dataVersion;
 

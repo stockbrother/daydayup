@@ -4,8 +4,10 @@ import java.io.File;
 
 public class SimpleDdrContext extends DdrContext{
 
-    protected SimpleDdrContext() {
+    public SimpleDdrContext() {
+
     }
+
 
     @Override
     public File getDbFolder() {
