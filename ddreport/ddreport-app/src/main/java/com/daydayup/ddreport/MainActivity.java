@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     private void initContentView() {
         {
 
-            Button button = (Button) this.findViewById(R.id.corpCompareButtonView);
+            Button button = (Button) this.findViewById(R.id.corpCompareChartButton);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

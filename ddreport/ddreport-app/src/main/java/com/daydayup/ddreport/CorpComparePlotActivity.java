@@ -4,9 +4,10 @@ package com.daydayup.ddreport;
  * Created by wuzhen on 8/1/2017.
  */
 
-import android.graphics.DashPathEffect;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import com.androidplot.ui.*;
 import com.androidplot.util.PixelUtils;
 import com.androidplot.xy.*;
 import daydayup.jdbc.JdbcAccessTemplate;
@@ -33,7 +34,45 @@ import java.util.*;
 public class CorpComparePlotActivity extends AppCompatActivity {
     private static final Logger LOG = LoggerFactory.getLogger(CorpComparePlotActivity.class);
 
+    private static final Integer[] lineColors = new Integer[]{Color.BLUE, Color.GREEN, Color.RED, Color.YELLOW, Color.GRAY, Color.CYAN};
+
     private XYPlot plot;
+
+    private static class SeriesData {
+        private String corpId;
+        private String corpName;
+        private Number[] numbers;
+
+        private SeriesData() {
+
+        }
+
+        public static SeriesData readRow(ResultSet rs) throws SQLException {
+            SeriesData rt = new SeriesData();
+
+            rt.corpId = rs.getString(1);
+            rt.corpName = rs.getString(2);
+            rt.numbers = new Number[5];
+            for (int i = 0; i < rt.numbers.length; i++) {
+                rt.numbers[i] = rs.getDouble(3 + i);
+                if (rt.numbers[i] == null) {
+                    rt.numbers[i] = 0D;
+                }
+            }
+            return rt;
+
+        }
+    }
+
+    private static class MyFormatter extends LineAndPointFormatter {
+        private SeriesData row;
+
+        public MyFormatter(SeriesData corpId, Integer color) {
+            super(color, color, 0, null);
+            this.row = corpId;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,55 +84,60 @@ public class CorpComparePlotActivity extends AppCompatActivity {
 
         // create a couple arrays of y-values t plot:
         final String[] domainLabels = {"2016", "2015", "2014", "2013", "2012"};
-        Number[] series1Numbers = {10000000D, 400000D, 200000D, 800000D, 400000D, };
-        Number[] series2Numbers = {5000000D, 2000D, 10000D, 5000D, 20000D, };
-        List<Number[]> data = getData();
-        LOG.info("rows:"+data.size());
-        for(Number[] row:data){
-            String s = "";
-            for(Number n:row){
-                s+=n+",";
-            }
-            LOG.info("row:"+s);
-        }
 
-        series1Numbers = data.get(0);
-        series2Numbers = data.get(1);
+        List<SeriesData> data = getData();
+
 
         // turn the above arrays into XYSeries':
         // (Y_VALS_ONLY means use the element index as the x value)
-        XYSeries series1 = new SimpleXYSeries(
-                Arrays.asList(series1Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series1");
-        XYSeries series2 = new SimpleXYSeries(
-                Arrays.asList(series2Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series2");
+        for (int i = 0; i < data.size(); i++) {
+            SeriesData row = data.get(i);
 
-        // create formatters to use for drawing a series using LineAndPointRenderer
-        // and configure them from xml:
-        LineAndPointFormatter series1Format =
-                new LineAndPointFormatter(this, R.xml.line_point_formatter_with_labels);
+            XYSeries series1 = new SimpleXYSeries(
+                    Arrays.asList(row.numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "" + row.corpId + "/" + row.corpName);
 
-        LineAndPointFormatter series2Format =
-                new LineAndPointFormatter(this, R.xml.line_point_formatter_with_labels_2);
+            Integer color = lineColors[i % lineColors.length];
+            MyFormatter series1Format =
+                    new MyFormatter(row, color);
 
-        // add an "dash" effect to the series2 line:
-        series2Format.getLinePaint().setPathEffect(new DashPathEffect(new float[]{
+            // just for fun, add some smoothing to the lines:
+            // see: http://androidplot.com/smooth-curves-and-androidplot/
+            series1Format.setInterpolationParams(
+                    new CatmullRomInterpolator.Params(5, CatmullRomInterpolator.Type.Centripetal));
 
-                // always use DP when specifying pixel sizes, to keep things consistent across devices:
-                PixelUtils.dpToPix(20),
-                PixelUtils.dpToPix(15)}, 0));
 
-        // just for fun, add some smoothing to the lines:
-        // see: http://androidplot.com/smooth-curves-and-androidplot/
-        series1Format.setInterpolationParams(
-                new CatmullRomInterpolator.Params(5, CatmullRomInterpolator.Type.Centripetal));
+            // add a new series' to the xyplot:
+            plot.addSeries(series1, series1Format);
+        }
+        plot.setDomainStep(StepMode.INCREMENT_BY_VAL, 1);
+        plot.getLegend().setTableModel(new DynamicTableModel(1, data.size()));
+        plot.getLegend().setLegendItemComparator(new Comparator<XYLegendItem>() {
+            @Override
+            public int compare(XYLegendItem i1, XYLegendItem i2) {
+                LOG.info("i1.item:" + i1.item + ",i2.item:" + i2.item);
+                SeriesData s1 = ((MyFormatter) i1.item).row;
+                SeriesData s2 = ((MyFormatter) i2.item).row;
 
-        series2Format.setInterpolationParams(
-                new CatmullRomInterpolator.Params(5, CatmullRomInterpolator.Type.Centripetal));
+                return (int) (s2.numbers[s2.numbers.length - 1].doubleValue() - s1.numbers[s1.numbers.length - 1].doubleValue());
+            }
+        });
 
-        // add a new series' to the xyplot:
-        plot.addSeries(series1, series1Format);
-        plot.addSeries(series2, series2Format);
+        //plot.getLegend().setWidth(PixelUtils.dpToPix(100), SizeMode.FILL);
 
+        // reposition the grid so that it rests above the bottom-left
+        // edge of the graph widget:
+        plot.getLegend().setSize(new Size(
+                PixelUtils.dpToPix(20 * data.size()),
+                SizeMode.ABSOLUTE, 0.5f, SizeMode.RELATIVE));
+        plot.getLegend().position(
+                50,
+                HorizontalPositioning.ABSOLUTE_FROM_RIGHT,
+                150,
+                VerticalPositioning.ABSOLUTE_FROM_TOP,
+                Anchor.RIGHT_TOP);
+
+        //plot.setRangeBoundaries(0, BoundaryMode.FIXED, 500, BoundaryMode.FIXED);
+        //bottom line labels
         plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
             @Override
             public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
@@ -107,8 +151,11 @@ public class CorpComparePlotActivity extends AppCompatActivity {
             }
         });
     }
-    private List<Number[]> getData() {
-        String scope = "and corpId in('000001','601166')";
+
+    private List<SeriesData> getData() {
+        //String scope = "and corpId in('000001','601166')";
+        String scope = "and corpId in (select corpId from " + Tables.TN_GROUP_ITEM + " where 1=1)";
+
         DdrContext dc = AndroidDdrContext.getInstance();
         CommandContext scc = new CommandContext(dc);
 
@@ -119,11 +166,11 @@ public class CorpComparePlotActivity extends AppCompatActivity {
         indexAliasL.add("Y2014");
         indexAliasL.add("Y2013");
         indexAliasL.add("Y2012");
-        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0","2016/12/31"));
-        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0","2015/12/31"));
-        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0","2014/12/31"));
-        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0","2013/12/31"));
-        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0","2012/12/31"));
+        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0", "2016/12/31"));
+        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0", "2015/12/31"));
+        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0", "2014/12/31"));
+        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0", "2013/12/31"));
+        indexNameL.add(DatedIndex.valueOf("A_资产总计@date0", "2012/12/31"));
 
         final StringBuffer sql = new StringBuffer();
         sql.append("select corpId as CORP,corpName as NAME");
@@ -170,26 +217,20 @@ public class CorpComparePlotActivity extends AppCompatActivity {
         sql.append(" order by corpId");
 
 
-        return scc.getDataBaseService().execute(new JdbcAccessTemplate.JdbcOperation<List<Number[]>>() {
+        return scc.getDataBaseService().execute(new JdbcAccessTemplate.JdbcOperation<List<SeriesData>>() {
 
             @Override
-            public List<Number[]> execute(Connection con, JdbcAccessTemplate t) {
-                return t.executeQuery(con, sql.toString(), sqlArgL, new ResultSetProcessor<List<Number[]>>() {
+            public List<SeriesData> execute(Connection con, JdbcAccessTemplate t) {
+                return t.executeQuery(con, sql.toString(), sqlArgL, new ResultSetProcessor<List<SeriesData>>() {
 
                     @Override
-                    public List<Number[]> process(ResultSet rs) throws SQLException {
-                        List<Number[]> rt = new ArrayList<>();
-                        while(rs.next()){
-                            Number[] row= new Number[5];
-                            for(int i=0;i<row.length;i++){
-                                row[i] = rs.getDouble(3+i);
-                                if(row[i]==null){
-                                    row[i]=0D;
-                                }
-                            }
+                    public List<SeriesData> process(ResultSet rs) throws SQLException {
+                        List<SeriesData> rt = new ArrayList<>();
 
+                        while (rs.next()) {
 
-                            rt.add(row);
+                            SeriesData t3 = SeriesData.readRow(rs);
+                            rt.add(t3);
                         }
 
                         return rt;

@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content">
 
             <Button
-                    android:id="@+id/corpCompareButtonView"
+                    android:id="@+id/corpCompareChartButton"
                     style="@style/toc_button"
                     android:text="Corp Compare Plot View"/>
             <Button
