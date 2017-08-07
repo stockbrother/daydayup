@@ -20,4 +20,9 @@
           ap:showAsAction="never"
     />
 
+    <item android:id="@+id/action_loadcsv"
+          android:title="@string/action_loadcsv"
+          ap:showAsAction="never"
+    />
+
 </menu>

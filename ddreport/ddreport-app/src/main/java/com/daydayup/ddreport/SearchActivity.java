@@ -1,6 +1,7 @@
 package com.daydayup.ddreport;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -140,7 +141,7 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                doSearch(query);
+                search(query);
                 return true;
             }
 
@@ -149,10 +150,27 @@ public class SearchActivity extends AppCompatActivity {
                 if (newText.isEmpty()) {
 
                 }
+                search(newText);
                 return false;
             }
         });
         return true;
+    }
+    private void search(String query){
+        AsyncTask<String,Object,Object> tsk = new AsyncTask<String,Object,Object>() {
+
+            @Override
+            protected Object doInBackground(String... args) {
+                try{
+                    doSearch(args[0]);
+                }catch(Throwable t){
+                    LOG.error("",t);
+                }
+
+                return null;
+            }
+        } ;
+        tsk.execute(query);
     }
 
     private void doSearch(final String query) {
@@ -189,12 +207,17 @@ public class SearchActivity extends AppCompatActivity {
                     SearchActivity.this.gridAdapter.rowList.add(new Object[]{corpId, corpName, plus});
                     sb.append(corpId).append(corpName);
                 }
+                //Exception if add following code in a none-ui thread
+                //Toast.makeText(SearchActivity.this, "Corps Found:" + sb.toString(), Toast.LENGTH_SHORT)
+                 //       .show();
 
-                Toast.makeText(SearchActivity.this, "Corps Found:" + sb.toString(), Toast.LENGTH_SHORT)
-                        .show();
                 return null;
             }
         });
+
+        // 08-07 17:26:09.282 23757-24081/com.daydayup.ddreport E/c*.d*.d*.SearchActivity: android.view.ViewRootImpl$CalledFromWrongThreadException:
+        // Only the original thread that created a view hierarchy can touch its views.
+
         this.gridAdapter.notifyDataSetChanged();
 
     }

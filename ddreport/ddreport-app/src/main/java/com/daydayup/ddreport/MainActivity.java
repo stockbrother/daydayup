@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import daydayup.csvloader.SseCorpInfoLoadHandler;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.openstock.database.DataBaseService;
 import org.slf4j.Logger;
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         if (!ctx.isReady()) {
 
 
-           // final Semaphore showAndCancel = new Semaphore(0);
+            // final Semaphore showAndCancel = new Semaphore(0);
             AsyncTask task = new AsyncTask() {
                 @Override
                 protected Object doInBackground(Object[] objects) {
@@ -155,6 +157,17 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_favorite:
                 Toast.makeText(this, "Favorite selected", Toast.LENGTH_SHORT)
+                        .show();
+                return true;
+            case R.id.action_loadcsv:
+                Toast.makeText(this, "Favorite selected", Toast.LENGTH_SHORT)
+                        .show();
+                final AndroidDdrContext ctx = AndroidDdrContext.getInstance();
+                File storage = Environment.getExternalStorageDirectory();
+                String file = storage.getAbsolutePath() + File.separator + ".ddreport" + File.separator + "sse" + File.separator + "sse.corplist.csv";
+                ctx.getHandlerService().handle(SseCorpInfoLoadHandler.class, file);
+
+                Toast.makeText(this, "Load done.", Toast.LENGTH_SHORT)
                         .show();
                 return true;
 

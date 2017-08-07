@@ -5,6 +5,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'com.h2database:h2:1.4.192'
+    compile 'net.sf.opencsv:opencsv:2.3'
     compile project(':ddreport-cup')
     testCompile 'junit:junit:4.12'
     testCompile 'org.apache.logging.log4j:log4j-api:2.5'
@@ -13,6 +14,12 @@ dependencies {
 }
 test {
     testLogging.showStandardStreams = true
+}
+
+task tmp(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "com.daydayup.ddreport.core.Tmp"
+    args "arg1", "arg2"
 }
 
 sourceCompatibility = "1.7"
