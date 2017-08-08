@@ -90,7 +90,7 @@ public class SearchActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        LOG.info("onCreate,thread:"+Thread.currentThread().getName());
+        LOG.info("onCreate,thread:" + Thread.currentThread().getName());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
@@ -166,9 +166,11 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void search(final String query) {
+        LOG.info("search:" + query);
         ActivityContext.executeAsync(new UiTask<String, Object>() {
             @Override
             public Object execute(String arg) {
+                LOG.info("execute,arg:" + arg);
                 ActivityContext.get().getDdrContext().getDataBaseService().execute(new JdbcAccessTemplate.JdbcOperation<Object>() {
 
                     @Override
@@ -178,6 +180,7 @@ public class SearchActivity extends BaseActivity {
                         return null;
                     }
                 }, false);
+
                 return null;
             }
 
@@ -190,6 +193,7 @@ public class SearchActivity extends BaseActivity {
 
 
     private void doSearch(String text, Connection con, JdbcAccessTemplate t) {
+        LOG.info("doSearch,text:" + text);
         this.gridAdapter.rowList.clear();
 
         String sql = "select corpId,corpName,'+' from corp_info t where t.corpId like ? or t.corpName like ? limit 15";

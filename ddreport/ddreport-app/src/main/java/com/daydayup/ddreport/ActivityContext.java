@@ -13,19 +13,24 @@ import java.util.concurrent.*;
 
 public class ActivityContext implements ThreadFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ActivityContext.class);
+
     public static class ActivityThread extends DdrThread {
         ActivityContext activityContext;
 
-        public ActivityThread(ActivityContext ctx) {
-            super(ctx.ddr);
+        public ActivityThread(Runnable r, ActivityContext ctx) {
+            super(r, ctx.ddr);
             this.activityContext = ctx;
         }
 
         @Override
         public void run() {
             ActivityContext.set(this.activityContext);
-
-            super.run();
+            try {
+                LOG.info("call super.run();");
+                super.run();
+            } catch (Throwable t) {
+                LOG.error("super.run() error", t);
+            }
         }
     }
 
@@ -36,16 +41,18 @@ public class ActivityContext implements ThreadFactory {
 
     private DdrContext ddr;
 
-    private ExecutorService executor = Executors.newCachedThreadPool(this);
+    private ExecutorService executor ;
 
     public ActivityContext(Activity activity, DdrContext ddr) {
         this.activity = activity;
         this.ddr = ddr;
+        this.executor = Executors.newCachedThreadPool(this);
+
     }
 
     @Override
     public Thread newThread(Runnable r) {
-        return new ActivityThread(this);
+        return new ActivityThread(r, this);
     }
 
     public static ActivityContext get() {
@@ -66,8 +73,8 @@ public class ActivityContext implements ThreadFactory {
 
     public static void set(ActivityContext act) {
         THREAD_LOCAL.set(act);
-        if(LOG.isInfoEnabled()){
-            LOG.info("set ActivityContext for thread:"+Thread.currentThread().getName());
+        if (LOG.isInfoEnabled()) {
+            LOG.info("set ActivityContext for thread:" + Thread.currentThread().getName());
         }
     }
 
@@ -75,16 +82,19 @@ public class ActivityContext implements ThreadFactory {
         return this.activity;
     }
 
-    public DdrContext getDdrContext(){
+    public DdrContext getDdrContext() {
         return this.ddr;
     }
 
     public static <T> Future<T> executeAsync(Callable<T> callable) {
+        LOG.info("executeAync,callable:" + callable);
         ActivityContext act = ActivityContext.get(true);
+        LOG.info("using activityContext:" + act);
         return act.executor.submit(callable);
     }
 
     public static <T, R> R executeSync(Handler<T, R> handler, T arg) {
+        LOG.info("executeSync,handler:" + handler);
         return handler.execute(arg);
     }
 
@@ -93,7 +103,7 @@ public class ActivityContext implements ThreadFactory {
     }
 
     public static <T, R> void executeAsync(final Handler<T, R> handler, final T arg, final Callback<R> callback, final boolean callbackRunOnUiThread) {
-
+        LOG.info("executeAsync,handler:" + handler);
         executeAsync(new Callable<Void>() {
             @Override
             public Void call() throws Exception {

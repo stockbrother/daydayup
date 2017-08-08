@@ -1,9 +1,7 @@
 package com.daydayup.ddreport;
 
 import android.support.test.rule.ActivityTestRule;
-import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,8 +11,6 @@ import org.slf4j.LoggerFactory;
 public class EmptyActivityTest extends ActivityTestRule<SearchActivity> {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmptyActivityTest.class);
-    @Rule
-    public UiThreadTestRule uiThreadTestRule = new UiThreadTestRule();
 
     public EmptyActivityTest() {
         super(SearchActivity.class);

@@ -10,7 +10,8 @@ public abstract class DdrContext implements ThreadFactory {
     public static class DdrThread extends Thread {
         DdrContext ddr;
 
-        public DdrThread(DdrContext ddr) {
+        public DdrThread(Runnable r, DdrContext ddr) {
+            super(r);
             this.ddr = ddr;
         }
 
@@ -67,14 +68,14 @@ public abstract class DdrContext implements ThreadFactory {
     public DataBaseService getDataBaseService() {
 
         if (dataBase == null) {
-//            synchronized (lock) {
-//                if (dataBase == null) {
-//
-//                    File dbHome = getDbFolder();
-//                    String dbName = getDbName();
-//                    dataBase = DataBaseService.getInstance(dbHome, dbName);
-//                }
-//            }
+            synchronized (lock) {
+                if (dataBase == null) {
+
+                    File dbHome = getDbFolder();
+                    String dbName = getDbName();
+                    dataBase = DataBaseService.getInstance(dbHome, dbName);
+                }
+            }
 
         }
         return dataBase;
@@ -82,7 +83,7 @@ public abstract class DdrContext implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        DdrThread rt = new DdrThread(this);
+        DdrThread rt = new DdrThread(r, this);
         return rt;
     }
 

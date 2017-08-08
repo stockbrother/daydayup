@@ -1,10 +1,7 @@
 package com.daydayup.ddreport;
 
 import android.support.test.rule.ActivityTestRule;
-import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -14,28 +11,11 @@ import org.slf4j.LoggerFactory;
 public class ContextActivityTest extends ActivityTestRule<TmpActivity> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextActivityTest.class);
-    @Rule
-    public UiThreadTestRule uiThreadTestRule = new UiThreadTestRule();
 
     public ContextActivityTest() {
         super(TmpActivity.class);
     }
 
-    @BeforeClass
-    public static void setUp() {
-        /*
-        ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(new ActivityLifecycleCallback() {
-            @Override
-            public void onActivityLifecycleChanged(Activity activity, Stage stage) {
-                LOG.warn("state:" + stage);
-                if (stage == Stage.PRE_ON_CREATE) {
-                    LOG.warn("set flag for screen on.");
-                    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                }
-            }
-        });
-        */
-    }
 
     @Override
     protected void beforeActivityLaunched() {
