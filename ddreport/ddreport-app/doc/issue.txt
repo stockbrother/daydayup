@@ -1,0 +1,2 @@
+AndroiInstrumentTest may fail if device is locked.
+https://gist.github.com/caipivara/9371a79a7222a156ddad

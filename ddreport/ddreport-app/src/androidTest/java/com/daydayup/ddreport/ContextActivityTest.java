@@ -1,26 +1,48 @@
 package com.daydayup.ddreport;
 
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(AndroidJUnit4.class)
-public class ActivityContextTest extends ActivityTestRule<TmpActivity> {
+public class ContextActivityTest extends ActivityTestRule<TmpActivity> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ActivityContextTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ContextActivityTest.class);
+    @Rule
+    public UiThreadTestRule uiThreadTestRule = new UiThreadTestRule();
 
-    public ActivityContextTest() {
+    public ContextActivityTest() {
         super(TmpActivity.class);
+    }
+
+    @BeforeClass
+    public static void setUp() {
+        /*
+        ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(new ActivityLifecycleCallback() {
+            @Override
+            public void onActivityLifecycleChanged(Activity activity, Stage stage) {
+                LOG.warn("state:" + stage);
+                if (stage == Stage.PRE_ON_CREATE) {
+                    LOG.warn("set flag for screen on.");
+                    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+            }
+        });
+        */
     }
 
     @Override
     protected void beforeActivityLaunched() {
+
+
         super.beforeActivityLaunched();
+
         LOG.info("beforeActivityLaunched,thread:" + Thread.currentThread().getName());
 
     }
@@ -42,19 +64,8 @@ public class ActivityContextTest extends ActivityTestRule<TmpActivity> {
     public void testExecuteAsync() throws Throwable {
 
         LOG.info("testExecuteAsync,thread:" + Thread.currentThread().getName());
-        this.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
+        this.launchActivity(null);
 
-                doTestExecuteAsync();
-
-            }
-        }, Description.createTestDescription(ActivityContext.class, "testExecuteAsync")).evaluate();
-
-    }
-
-    private void doTestExecuteAsync() throws Exception {
-        LOG.info("doTestExecuteAsync");
         //ActivityContext ac = ActivityContext.get();
         //Assert.assertNotNull(ac);
 //        Future<Object> f = ActivityContext.executeAsync(new Callable<Object>

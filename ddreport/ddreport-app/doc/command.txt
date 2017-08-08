@@ -3,5 +3,5 @@ Run single test:
 
 gradlew :ddreport-app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.daydayup.ddreport.ExampleInstrumentedTest
 
-gradlew :ddreport-app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.daydayup.ddreport.ActivityContextTest
+gradlew :ddreport-app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.daydayup.ddreport.EmptyActivityTest
 
