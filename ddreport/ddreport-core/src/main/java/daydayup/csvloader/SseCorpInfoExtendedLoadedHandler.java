@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import daydayup.Handler;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.JdbcAccessTemplate.JdbcOperation;
+import daydayup.openstock.DdrContext;
 import daydayup.openstock.database.Tables;
 
 import java.io.*;
@@ -22,7 +23,7 @@ public class SseCorpInfoExtendedLoadedHandler extends Handler<String,Object> {
 	public Object execute(String file) {
 		final File csvFile = new File("C:\\openstock\\sse\\sse.corplist2.csv");
 
-		this.getDdrContext().getDataBaseService().execute(new JdbcOperation<Object>() {
+		DdrContext.get().getDataBaseService().execute(new JdbcOperation<Object>() {
 
 			@Override
 			public Object execute(Connection con, JdbcAccessTemplate t) {

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,15 +17,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import daydayup.csvloader.SseCorpInfoLoadHandler;
-import daydayup.jdbc.JdbcAccessTemplate;
-import daydayup.openstock.database.DataBaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.sql.Connection;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     public static class MyDialogFragment extends DialogFragment {
         @Override
@@ -52,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
                     return true;
                 case R.id.navigation_notifications:
-                    onTest();
+
                     return true;
             }
             return false;
@@ -162,10 +158,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_loadcsv:
                 Toast.makeText(this, "Favorite selected", Toast.LENGTH_SHORT)
                         .show();
-                final AndroidDdrContext ctx = AndroidDdrContext.getInstance();
+
                 File storage = Environment.getExternalStorageDirectory();
                 String file = storage.getAbsolutePath() + File.separator + ".ddreport" + File.separator + "sse" + File.separator + "sse.corplist.csv";
-                ctx.getHandlerService().handle(SseCorpInfoLoadHandler.class, file);
+
+                ActivityContext.executeAsync(SseCorpInfoLoadHandler.class, file);
 
                 Toast.makeText(this, "Load done.", Toast.LENGTH_SHORT)
                         .show();
@@ -177,51 +174,6 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
 
         }
-    }
-
-    private void onTest() {
-
-
-    }
-
-    public void onTestx() {
-        LOG.info("onTest");
-        File file = new File(this.getBaseContext().getFilesDir(), "h2");
-        File f2 = file;
-        while (f2.exists()) {
-            long i = System.currentTimeMillis();
-            f2 = new File(this.getBaseContext().getFilesDir(), "h2_backup" + i);
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-
-            }
-
-        }
-        if (f2 != file) {
-
-            file.renameTo(f2);
-            file = new File(this.getBaseContext().getFilesDir(), "h2");
-            LOG.info("back up db folder to:" + f2.getAbsolutePath());
-        }
-        File[] files = file.listFiles();
-        if (files != null) {
-
-            for (File f : files) {
-                LOG.info(f.getAbsolutePath());
-            }
-        }
-
-        DataBaseService dbs = DataBaseService.getInstance(file, "test");
-        String rt = dbs.execute(new JdbcAccessTemplate.JdbcOperation<String>() {
-
-            @Override
-            public String execute(Connection con, JdbcAccessTemplate t) {
-
-                return "done";
-            }
-        }, false);
-        //        mTextMessage.setText(R.string.title_notifications);
     }
 
 }

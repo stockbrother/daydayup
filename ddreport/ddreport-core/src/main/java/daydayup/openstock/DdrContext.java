@@ -1,15 +1,30 @@
 package daydayup.openstock;
 
-import daydayup.HandlerService;
 import daydayup.openstock.database.DataBaseService;
 
 import java.io.File;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadFactory;
 
-public abstract class DdrContext {
+public abstract class DdrContext implements ThreadFactory {
+
+    public static class DdrThread extends Thread {
+        DdrContext ddr;
+
+        public DdrThread(DdrContext ddr) {
+            this.ddr = ddr;
+        }
+
+        @Override
+        public void run() {
+            DdrContext.set(this.ddr);
+            super.run();
+        }
+    }
+
+    private static ThreadLocal<DdrContext> THREAD_LOCAL = new ThreadLocal<>();
+
     protected DataBaseService dataBase;
-
-    protected HandlerService handler;
 
     protected BackGroundTaskScheduler background;
 
@@ -21,7 +36,6 @@ public abstract class DdrContext {
 
 
     protected DdrContext() {
-        this.handler = new HandlerService(this);
         this.background = new BackGroundTaskScheduler();
         this.background.runTask(new Callable<Object>() {
             @Override
@@ -31,6 +45,7 @@ public abstract class DdrContext {
             }
         });
     }
+
 
     private void doInitInBackground() {
 
@@ -50,10 +65,6 @@ public abstract class DdrContext {
         this.getDataBaseService();
     }
 
-    public HandlerService getHandlerService() {
-        return this.handler;
-    }
-
     public DataBaseService getDataBaseService() {
 
         if (dataBase == null) {
@@ -68,5 +79,20 @@ public abstract class DdrContext {
 
         }
         return dataBase;
+    }
+
+    @Override
+    public Thread newThread(Runnable r) {
+        DdrThread rt = new DdrThread(this);
+        return rt;
+    }
+
+
+    public static DdrContext get() {
+        return THREAD_LOCAL.get();
+    }
+
+    public static void set(DdrContext ddr) {
+        THREAD_LOCAL.set(ddr);
     }
 }

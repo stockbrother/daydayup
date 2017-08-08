@@ -1,6 +1,7 @@
 package daydayup;
 
 import daydayup.jdbc.JdbcAccessTemplate;
+import daydayup.openstock.DdrContext;
 import daydayup.openstock.database.DataBaseService;
 import daydayup.openstock.database.Tables;
 
@@ -12,7 +13,7 @@ public class AddCorpIdToGroupHandler extends Handler<String, Void> {
     @Override
     public Void execute(final String corpId) {
 
-        DataBaseService db = this.getDdrContext().getDataBaseService();
+        DataBaseService db = DdrContext.get().getDataBaseService();
         db.execute(new JdbcAccessTemplate.JdbcOperation<Object>() {
 
             @Override

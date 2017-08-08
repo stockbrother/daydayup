@@ -1,17 +1,15 @@
 package com.daydayup.ddreport;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
 import daydayup.AddCorpIdToGroupHandler;
+import daydayup.Callback;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.ResultSetProcessor;
-import daydayup.openstock.CommandContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
     private static final Logger LOG = LoggerFactory.getLogger(SearchActivity.class);
     private static final int COLS = 3;
 
@@ -91,6 +89,9 @@ public class SearchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        LOG.info("onCreate,thread:"+Thread.currentThread().getName());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         //toolbar
@@ -104,13 +105,20 @@ public class SearchActivity extends AppCompatActivity {
 
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                String corpId = SearchActivity.this.gridAdapter.getCorpIdIfClickPlus(position);
-                AndroidDdrContext dc = AndroidDdrContext.getInstance();
-                dc.getHandlerService().handle(AddCorpIdToGroupHandler.class,corpId);
-
+                                    final int position, long id) {
+                final String corpId = SearchActivity.this.gridAdapter.getCorpIdIfClickPlus(position);
                 Toast.makeText(SearchActivity.this, "" + position + ",corpIdIfPlus:" + corpId,
                         Toast.LENGTH_SHORT).show();
+
+                ActivityContext.executeAsync(new AddCorpIdToGroupHandler(), corpId, new Callback<Void>() {
+                    @Override
+                    public void onResult(Void rst) {
+                        Toast.makeText(SearchActivity.this, "Done of adding corp:" + corpId,
+                                Toast.LENGTH_SHORT).show();
+
+
+                    }
+                });
 
             }
         });
@@ -156,38 +164,30 @@ public class SearchActivity extends AppCompatActivity {
         });
         return true;
     }
-    private void search(String query){
-        AsyncTask<String,Object,Object> tsk = new AsyncTask<String,Object,Object>() {
 
+    private void search(final String query) {
+        ActivityContext.executeAsync(new UiTask<String, Object>() {
             @Override
-            protected Object doInBackground(String... args) {
-                try{
-                    doSearch(args[0]);
-                }catch(Throwable t){
-                    LOG.error("",t);
-                }
+            public Object execute(String arg) {
+                ActivityContext.get().getDdrContext().getDataBaseService().execute(new JdbcAccessTemplate.JdbcOperation<Object>() {
 
+                    @Override
+                    public Object execute(Connection con, JdbcAccessTemplate t) {
+
+                        doSearch(query, con, t);
+                        return null;
+                    }
+                }, false);
                 return null;
             }
-        } ;
-        tsk.execute(query);
-    }
-
-    private void doSearch(final String query) {
-        AndroidDdrContext dc = AndroidDdrContext.getInstance();
-        CommandContext scc = new CommandContext(dc);
-
-        scc.getDataBaseService().execute(new JdbcAccessTemplate.JdbcOperation<Object>() {
 
             @Override
-            public Object execute(Connection con, JdbcAccessTemplate t) {
-
-                doSearch(query, con, t);
-                return null;
+            public void onResult(Object rst) {
+                SearchActivity.this.gridAdapter.notifyDataSetChanged();
             }
-        }, false);
-
+        }, query);
     }
+
 
     private void doSearch(String text, Connection con, JdbcAccessTemplate t) {
         this.gridAdapter.rowList.clear();
@@ -209,16 +209,12 @@ public class SearchActivity extends AppCompatActivity {
                 }
                 //Exception if add following code in a none-ui thread
                 //Toast.makeText(SearchActivity.this, "Corps Found:" + sb.toString(), Toast.LENGTH_SHORT)
-                 //       .show();
+                //       .show();
 
                 return null;
             }
         });
 
-        // 08-07 17:26:09.282 23757-24081/com.daydayup.ddreport E/c*.d*.d*.SearchActivity: android.view.ViewRootImpl$CalledFromWrongThreadException:
-        // Only the original thread that created a view hierarchy can touch its views.
-
-        this.gridAdapter.notifyDataSetChanged();
 
     }
 }
