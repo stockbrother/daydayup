@@ -10,6 +10,7 @@ import daydayup.AddCorpIdToGroupHandler;
 import daydayup.Callback;
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.ResultSetProcessor;
+import org.ddu.ddr.app.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,6 +17,7 @@ import daydayup.openstock.DdrContext;
 import daydayup.openstock.cup.IndexSqlSelectFieldsResolveContext;
 import daydayup.openstock.database.Tables;
 import daydayup.openstock.sheetcommand.DatedIndex;
+import org.ddu.ddr.app.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -5,3 +5,8 @@ gradlew :ddreport-app:connectedAndroidTest -Pandroid.testInstrumentationRunnerAr
 
 gradlew :ddreport-app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.daydayup.ddreport.EmptyActivityTest
 
+gradlew :ddreport-app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.daydayup.ddreport.HelloWorldEspressoTest
+
+Run single test in android project:
+
+gradlew :ddreport-app:test -Dtest.single=com.daydayup.ddreport.FistRobolectricTest

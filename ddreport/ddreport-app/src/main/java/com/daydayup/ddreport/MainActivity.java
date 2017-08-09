@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import daydayup.csvloader.SseCorpInfoLoadHandler;
+import org.ddu.ddr.app.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

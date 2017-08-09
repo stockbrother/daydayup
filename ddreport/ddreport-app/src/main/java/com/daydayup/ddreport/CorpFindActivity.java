@@ -6,6 +6,7 @@ package com.daydayup.ddreport;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import org.ddu.ddr.app.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.daydayup.ddreport">
+          package="org.ddu.ddr.app">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 <!--
@@ -16,7 +16,7 @@
             android:theme="@style/AppTheme">
 
         <activity
-                android:name=".MainActivity"
+                android:name="com.daydayup.ddreport.MainActivity"
                 android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -24,27 +24,27 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SearchActivity"
+        <activity android:name="com.daydayup.ddreport.SearchActivity"
                   android:label="@string/search">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".CorpComparePlotActivity"
+        <activity android:name="com.daydayup.ddreport.CorpComparePlotActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".CorpFindActivity"
+        <activity android:name="com.daydayup.ddreport.CorpFindActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".TmpActivity"
+        <activity android:name="com.daydayup.ddreport.TmpActivity"
                   android:label="@string/app_name">
             <intent-filter>
 

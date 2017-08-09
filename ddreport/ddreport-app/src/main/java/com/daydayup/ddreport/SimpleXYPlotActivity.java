@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import com.androidplot.util.PixelUtils;
 import com.androidplot.xy.*;
+import org.ddu.ddr.app.R;
 
 import java.text.FieldPosition;
 import java.text.Format;
