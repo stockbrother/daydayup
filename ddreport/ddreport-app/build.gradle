@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.3'
     defaultConfig {
-        applicationId "org.ddu.ddr.app1"
+        applicationId "org.ddu.ddr.app"
         minSdkVersion 22
         targetSdkVersion 25
         versionCode 2
@@ -22,7 +22,8 @@ android {
     testOptions {
         unitTests {
             //https://github.com/robolectric/robolectric/issues/3295
-            //includeAndroidResources = true
+            includeAndroidResources = true
+            //showStandardStreams = true
         }
     }
 }
