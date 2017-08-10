@@ -4,8 +4,8 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.3'
     defaultConfig {
-        //applicationId "org.ddu.ddr.app"
-        applicationId "com.daydayup.ddreport"
+        applicationId "org.ddu.ddr.app"
+        //applicationId "com.daydayup.ddreport"
         minSdkVersion 22
         targetSdkVersion 25
         versionCode 2
