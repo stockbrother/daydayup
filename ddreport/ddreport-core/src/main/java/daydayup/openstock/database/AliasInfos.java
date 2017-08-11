@@ -1,5 +1,8 @@
 package daydayup.openstock.database;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +17,8 @@ import daydayup.jdbc.ResultSetProcessor;
 
 public class AliasInfos {
 
+	private static final Logger LOG = LoggerFactory.getLogger(AliasInfos.class);
+
 	private Map<Integer, Map<String, Integer>> reportAliasColumnMap = new HashMap<>();
 
 	public void initialize(Connection con, JdbcAccessTemplate t) {
@@ -21,6 +26,7 @@ public class AliasInfos {
 	}
 
 	private void updateCache(Connection con, JdbcAccessTemplate t) {
+		LOG.info("load/reload alias information from db.");
 		this.reportAliasColumnMap.clear();
 		String sql = "select reportType,aliasName,columnIndex from " + Tables.TN_ALIAS_INFO + "";
 		t.executeQuery(con, sql, new ResultSetProcessor<Object>() {
@@ -43,6 +49,7 @@ public class AliasInfos {
 				return null;
 			}
 		});
+		LOG.info("alias information loaded.");
 
 	}
 

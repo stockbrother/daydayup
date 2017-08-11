@@ -18,6 +18,10 @@ public class ScreenSlidePageFragment  extends Fragment {
 
     public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
 
+    public ScreenSlidePageFragment(){
+
+    }
+
     public static final ScreenSlidePageFragment newInstance(String message)
     {
 
@@ -35,6 +39,7 @@ public class ScreenSlidePageFragment  extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         String message = getArguments().getString(EXTRA_MESSAGE);
         ViewGroup v = (ViewGroup) inflater.inflate(
                 R.layout.fragment_screen_slide_page, container, false);

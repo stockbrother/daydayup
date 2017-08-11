@@ -1,56 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="org.ddu.ddr.app">
-    <uses-sdk android:minSdkVersion="22"
-        android:targetSdkVersion="25"
-        android:maxSdkVersion="25" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-<!--
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
--->
+    package="org.ddu.ddr.app">
+
+    <uses-sdk
+        android:maxSdkVersion="25"
+        android:minSdkVersion="22"
+        android:targetSdkVersion="25" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--
+        <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+        <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    -->
     <application
-            android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
 
         <activity
-                android:name="com.daydayup.ddreport.MainActivity"
-                android:label="@string/app_name">
+            android:name="com.daydayup.ddreport.MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.daydayup.ddreport.SearchActivity"
-                  android:label="@string/search">
+        <activity
+            android:name="com.daydayup.ddreport.SearchActivity"
+            android:label="@string/search">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.daydayup.ddreport.CorpComparePlotActivity"
-                  android:label="@string/app_name">
+        <activity
+            android:name="com.daydayup.ddreport.CorpComparePlotActivity"
+            android:label="@string/app_name">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.daydayup.ddreport.CorpFindActivity"
-                  android:label="@string/app_name">
+        <activity
+            android:name="com.daydayup.ddreport.CorpFindActivity"
+            android:label="@string/app_name">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.daydayup.ddreport.TmpActivity"
-                  android:label="@string/app_name">
+        <activity
+            android:name="com.daydayup.ddreport.TmpActivity"
+            android:label="@string/app_name">
             <intent-filter>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.daydayup.ddreport.ScreenSlidePagerActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

@@ -1,7 +1,5 @@
 package daydayup.openstock.database;
 
-import daydayup.jdbc.ConnectionProvider;
-import daydayup.openstock.RtException;
 import org.h2.Driver;
 import org.h2.api.ErrorCode;
 import org.h2.jdbc.JdbcConnection;
@@ -14,6 +12,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import daydayup.jdbc.ConnectionProvider;
+import daydayup.openstock.RtException;
 
 public class H2ConnectionPool implements ConnectionProvider {
     private static final Logger LOG = LoggerFactory.getLogger(H2ConnectionPool.class);
@@ -108,12 +109,14 @@ public class H2ConnectionPool implements ConnectionProvider {
 
     private JdbcConnection getJdbcConnection()
             throws SQLException {
-
         Properties info = new Properties();
 
         info.setProperty("user", user);
         info.put("password", pass);
+
+        LOG.info("make jdbc connection to url:" + url);
         Connection conn = Driver.load().connect(url, info);
+        LOG.info("jdbc connection is ready!");
         if (conn == null) {
             throw new SQLException("No suitable driver found for " + url,
                     "08001", 8001);
@@ -127,7 +130,7 @@ public class H2ConnectionPool implements ConnectionProvider {
 
     public static ConnectionProvider newInstance(String dbUrl, String user, String pass) {
 
-        LOG.info("connection pool created");
+        LOG.info("connection pool created!");
         return new H2ConnectionPool(dbUrl, user, pass);
     }
 
