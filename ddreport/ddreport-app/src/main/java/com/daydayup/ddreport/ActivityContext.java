@@ -1,18 +1,29 @@
 package com.daydayup.ddreport;
 
 import android.app.Activity;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+
 import daydayup.Callback;
 import daydayup.Handler;
 import daydayup.openstock.DdrContext;
 import daydayup.openstock.DdrContext.DdrThread;
 import daydayup.openstock.RtException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
-
-public class ActivityContext implements ThreadFactory {
+public class ActivityContext implements ThreadFactory, Thread.UncaughtExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ActivityContext.class);
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable throwable) {
+        LOG.error("uncaughtException in thread:" + thread.getName(), throwable);
+    }
 
     public static class ActivityThread extends DdrThread {
         ActivityContext activityContext;
@@ -20,6 +31,7 @@ public class ActivityContext implements ThreadFactory {
         public ActivityThread(Runnable r, ActivityContext ctx) {
             super(r, ctx.ddr);
             this.activityContext = ctx;
+            this.setUncaughtExceptionHandler(ctx);
         }
 
         @Override
@@ -41,7 +53,7 @@ public class ActivityContext implements ThreadFactory {
 
     private DdrContext ddr;
 
-    private ExecutorService executor ;
+    private ExecutorService executor;
 
     public ActivityContext(Activity activity, DdrContext ddr) {
         this.activity = activity;

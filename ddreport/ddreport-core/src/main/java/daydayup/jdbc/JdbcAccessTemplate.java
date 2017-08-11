@@ -1,15 +1,13 @@
 package daydayup.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import daydayup.openstock.RtException;
 
 public class JdbcAccessTemplate {
 	private static final Logger LOG = LoggerFactory.getLogger(JdbcAccessTemplate.class);
@@ -58,7 +56,9 @@ public class JdbcAccessTemplate {
 	public long executeUpdate(Connection con, String sql, Object[] pp) {
 		return (Long) execute(con, sql, new ArrayParameterProvider(pp), UPDATE);
 	}
-
+	public <T> T execute(Connection con, SqlProvider sql, ParameterProvider pp, PreparedStatementExecutor<T> pse) {
+		return execute(con, sql.getSql(), pp, pse);
+	}
 	public <T> T execute(Connection con, String sql, ParameterProvider pp, PreparedStatementExecutor<T> pse) {
 		Object[] args = pp.getAsArray();
 		if (LOG.isTraceEnabled()) {

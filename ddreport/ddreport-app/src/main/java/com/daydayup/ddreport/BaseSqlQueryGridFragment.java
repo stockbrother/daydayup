@@ -10,9 +10,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.ddu.ddr.app.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +22,13 @@ import java.util.List;
 
 import daydayup.jdbc.JdbcAccessTemplate;
 import daydayup.jdbc.ResultSetProcessor;
-import daydayup.openstock.database.Tables;
 
 /**
  * Created by wu on 8/11/2017.
  */
 
-public class GroupsFragment extends Fragment{
-    private static final Logger LOG = LoggerFactory.getLogger(SearchActivity.class);
+public abstract class BaseSqlQueryGridFragment extends Fragment{
+    private static final Logger LOG = LoggerFactory.getLogger(BaseSqlQueryGridFragment.class);
     public static class GroupsGridAdapter extends BaseAdapter {
         private Context context;
         private List<Object[]> rowList = new ArrayList<>();
@@ -80,7 +77,7 @@ public class GroupsFragment extends Fragment{
             return position % cols;
         }
 
-        public String getGroupIdIfClickPlus(int position) {
+        public String getCorpIdIfClickPlus(int position) {
             int colNum = getColNum(position);
             if (colNum != 2) {//not plus
                 return null;
@@ -95,16 +92,22 @@ public class GroupsFragment extends Fragment{
     private static final int COLS = 3;
     GridView grid;
     GroupsGridAdapter gridAdapter;
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
 
+    public BaseSqlQueryGridFragment(){
 
-        ViewGroup vg = (ViewGroup) inflater.inflate(
-                R.layout.groups_fragment, container, false);
+    }
+    protected abstract int getLayoutViewId();
+    protected abstract int getGridViewId();
+    protected abstract int getCols();
+    protected abstract String getSql();
+    protected abstract Object[] getSqlArguments();
 
-        grid = (GridView) vg.findViewById(R.id.groupGridView);
-        grid.setNumColumns(COLS);
+    protected void onCellClick(int rowNum,int colNum, Object[] row){
+
+    }
+
+    protected void onGridCreate(final GridView grid){
+        grid.setNumColumns(getCols());
         final Context ctx = this.getActivity();
         this.gridAdapter = new GroupsGridAdapter(ctx);
         grid.setAdapter(this.gridAdapter);
@@ -112,19 +115,31 @@ public class GroupsFragment extends Fragment{
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     final int position, long id) {
-                final String corpId = gridAdapter.getGroupIdIfClickPlus(position);
-                Toast.makeText(ctx, "" + position + ",corpIdIfPlus:" + corpId,
-                        Toast.LENGTH_SHORT).show();
-                 ((ScreenSlidePagerActivity)getActivity()).openCorpInGroupView(corpId);
-
+                int rowNum = gridAdapter.getRowNum(position);
+                int colNum = gridAdapter.getColNum(position);
+                Object[] row = gridAdapter.rowList.get(rowNum);
+                onCellClick(rowNum,colNum,row);
             }
         });
-        this.search("001");
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+
+        ViewGroup vg = (ViewGroup) inflater.inflate(
+                getLayoutViewId(), container, false);
+
+        grid = (GridView) vg.findViewById(getGridViewId());
+        this.onGridCreate(grid);
+        this.refresh();
         return vg;
     }
 
-    private void search(final String query) {
-        LOG.info("search:" + query);
+    public void refresh(){
+       String sql = this.getSql();
+        LOG.info("search:" + sql);
         ActivityContext.executeAsync(new UiTask<String, Object>() {
             @Override
             public Object execute(String arg) {
@@ -134,7 +149,7 @@ public class GroupsFragment extends Fragment{
                     @Override
                     public Object execute(Connection con, JdbcAccessTemplate t) {
 
-                        doSearch(query, con, t);
+                        doSearch(con, t);
                         return null;
                     }
                 }, false);
@@ -146,17 +161,18 @@ public class GroupsFragment extends Fragment{
             public void onResult(Object rst) {
                 gridAdapter.notifyDataSetChanged();
             }
-        }, query);
+        }, sql);
     }
 
 
-    private void doSearch(String text, Connection con, JdbcAccessTemplate t) {
-        LOG.info("doSearch,text:" + text);
+    private void doSearch(Connection con, JdbcAccessTemplate t) {
+        String sql = this.getSql();
+        Object[] arg = this.getSqlArguments();
+        LOG.info("doSearch,sql:" + sql);
         this.gridAdapter.rowList.clear();
 
-        String sql = "select groupId,groupName,groupType from "+ Tables.TN_GROUP_INFO +" t where 1=1 limit 15";
         //String like = "%" + text + "%";
-        t.executeQuery(con, sql, new Object[]{}, new ResultSetProcessor<Object>() {
+        t.executeQuery(con, sql, arg, new ResultSetProcessor<Object>() {
 
             @Override
             public Object process(ResultSet rs) throws SQLException {

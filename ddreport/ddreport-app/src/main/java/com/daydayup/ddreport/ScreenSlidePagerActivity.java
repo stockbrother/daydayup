@@ -24,6 +24,10 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
      */
     private PagerAdapter mPagerAdapter;
 
+    private String groupId;
+
+    CorpsInGroupFragment fragment1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,18 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         }
     }
 
+    public ViewPager getViewPager() {
+        return this.mPager;
+    }
+
+    public void openCorpInGroupView(String groupId) {
+        this.groupId = groupId;
+        fragment1.setGroupId(groupId);
+        fragment1.refresh();
+        this.mPager.setCurrentItem(1);
+    }
+
+
     /**
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
      * sequence.
@@ -58,13 +74,15 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if(position ==0){
-    return new GroupsFragment();
+            if (position == 0) {
+                return new GroupsFragment();
 
-            }else{
+            } else if (position == 1) {
+                fragment1 = CorpsInGroupFragment.newInstance(groupId);
+                return fragment1;
+            } else {
 
-            return
-                    ScreenSlidePageFragment.newInstance("Item:"+position);
+                return ScreenSlidePageFragment.newInstance("Item:" + position);
             }
         }
 
