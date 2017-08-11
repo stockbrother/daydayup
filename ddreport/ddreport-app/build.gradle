@@ -12,6 +12,7 @@ android {
         versionName "V1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false

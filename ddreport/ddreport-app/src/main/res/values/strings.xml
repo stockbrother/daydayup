@@ -3,6 +3,8 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <string name="action_pages">Pages</string>
     <string name="action_favorite">Favorite</string>
     <string name="action_loadcsv">LoadCsv</string>
     <string name="action_settings">Settings</string>

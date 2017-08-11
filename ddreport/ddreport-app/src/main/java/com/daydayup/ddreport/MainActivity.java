@@ -16,12 +16,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import daydayup.csvloader.SseCorpInfoLoadHandler;
+
 import org.ddu.ddr.app.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+
+import daydayup.csvloader.SseCorpInfoLoadHandler;
 
 public class MainActivity extends BaseActivity {
 
@@ -156,6 +158,7 @@ public class MainActivity extends BaseActivity {
                 Toast.makeText(this, "Favorite selected", Toast.LENGTH_SHORT)
                         .show();
                 return true;
+
             case R.id.action_loadcsv:
                 Toast.makeText(this, "Favorite selected", Toast.LENGTH_SHORT)
                         .show();
@@ -167,6 +170,9 @@ public class MainActivity extends BaseActivity {
 
                 Toast.makeText(this, "Load done.", Toast.LENGTH_SHORT)
                         .show();
+                return true;
+            case R.id.action_pages:
+                startActivity(new Intent(MainActivity.this, ScreenSlidePagerActivity.class));
                 return true;
 
             default:
