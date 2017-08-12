@@ -1,8 +1,8 @@
 package com.daydayup.ddreport;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import daydayup.jdbc.JdbcAccessTemplate;
@@ -27,8 +28,9 @@ import daydayup.jdbc.ResultSetProcessor;
  * Created by wu on 8/11/2017.
  */
 
-public abstract class BaseSqlQueryGridFragment extends Fragment{
+public abstract class BaseSqlQueryGridFragment extends Fragment {
     private static final Logger LOG = LoggerFactory.getLogger(BaseSqlQueryGridFragment.class);
+
     public static class GroupsGridAdapter extends BaseAdapter {
         private Context context;
         private List<Object[]> rowList = new ArrayList<>();
@@ -89,24 +91,30 @@ public abstract class BaseSqlQueryGridFragment extends Fragment{
             return corpId;
         }
     }
+
     private static final int COLS = 3;
     GridView grid;
     GroupsGridAdapter gridAdapter;
 
-    public BaseSqlQueryGridFragment(){
+    public BaseSqlQueryGridFragment() {
 
     }
+
     protected abstract int getLayoutViewId();
+
     protected abstract int getGridViewId();
+
     protected abstract int getCols();
+
     protected abstract String getSql();
+
     protected abstract Object[] getSqlArguments();
 
-    protected void onCellClick(int rowNum,int colNum, Object[] row){
+    protected void onCellClick(int rowNum, int colNum, Object[] row) {
 
     }
 
-    protected void onGridCreate(final GridView grid){
+    protected void onGridCreate(final GridView grid) {
         grid.setNumColumns(getCols());
         final Context ctx = this.getActivity();
         this.gridAdapter = new GroupsGridAdapter(ctx);
@@ -118,7 +126,7 @@ public abstract class BaseSqlQueryGridFragment extends Fragment{
                 int rowNum = gridAdapter.getRowNum(position);
                 int colNum = gridAdapter.getColNum(position);
                 Object[] row = gridAdapter.rowList.get(rowNum);
-                onCellClick(rowNum,colNum,row);
+                onCellClick(rowNum, colNum, row);
             }
         });
     }
@@ -137,8 +145,8 @@ public abstract class BaseSqlQueryGridFragment extends Fragment{
         return vg;
     }
 
-    public void refresh(){
-       String sql = this.getSql();
+    public void refresh() {
+        String sql = this.getSql();
         LOG.info("search:" + sql);
         ActivityContext.executeAsync(new UiTask<String, Object>() {
             @Override
@@ -168,7 +176,7 @@ public abstract class BaseSqlQueryGridFragment extends Fragment{
     private void doSearch(Connection con, JdbcAccessTemplate t) {
         String sql = this.getSql();
         Object[] arg = this.getSqlArguments();
-        LOG.info("doSearch,sql:" + sql);
+        LOG.info("doSearch,sql:" + sql + ",arg:" + Arrays.asList(arg));
         this.gridAdapter.rowList.clear();
 
         //String like = "%" + text + "%";

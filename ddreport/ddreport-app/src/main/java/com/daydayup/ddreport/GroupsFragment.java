@@ -1,8 +1,9 @@
 package com.daydayup.ddreport;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ import daydayup.openstock.database.Tables;
  * Created by wu on 8/11/2017.
  */
 
-public class GroupsFragment extends Fragment{
+public class GroupsFragment extends Fragment {
     private static final Logger LOG = LoggerFactory.getLogger(SearchActivity.class);
     public static class GroupsGridAdapter extends BaseAdapter {
         private Context context;
@@ -112,17 +113,33 @@ public class GroupsFragment extends Fragment{
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     final int position, long id) {
-                final String corpId = gridAdapter.getGroupIdIfClickPlus(position);
-                Toast.makeText(ctx, "" + position + ",corpIdIfPlus:" + corpId,
+                final String groupId = gridAdapter.getGroupIdIfClickPlus(position);
+                Toast.makeText(ctx, "" + position + ",corpIdIfPlus:" + groupId,
                         Toast.LENGTH_SHORT).show();
-                 ((ScreenSlidePagerActivity)getActivity()).openCorpInGroupView(corpId);
+                openCorpsInGroupFragment(groupId);
 
             }
         });
         this.search("001");
         return vg;
     }
+    private void openCorpsInGroupFragment(String groupId){
+        // Create fragment and give it an argument specifying the article it should show
+        CorpsInGroupFragment newFragment = CorpsInGroupFragment.newInstance(groupId);
+//        Bundle args = new Bundle();
+//        //args.putInt(GroupsFragment., position);
+//        newFragment.setArguments(args);
 
+        FragmentTransaction transaction = this.getFragmentManager().beginTransaction();
+
+// Replace whatever is in the fragment_container view with this fragment,
+// and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragments, newFragment);
+        transaction.addToBackStack(null);
+
+// Commit the transaction
+        transaction.commit();
+    }
     private void search(final String query) {
         LOG.info("search:" + query);
         ActivityContext.executeAsync(new UiTask<String, Object>() {

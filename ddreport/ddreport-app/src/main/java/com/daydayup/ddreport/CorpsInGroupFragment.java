@@ -19,11 +19,12 @@ public class CorpsInGroupFragment extends BaseSqlQueryGridFragment {
 
     private static final Logger LOG = LoggerFactory.getLogger(CorpsInGroupFragment.class);
     private static String GROUP_ID = "groupId";
-    public static final CorpsInGroupFragment newInstance(String groupId)
-    {
+
+    public static final CorpsInGroupFragment newInstance(String groupId) {
 
         CorpsInGroupFragment f = new CorpsInGroupFragment();
-
+        f.groupId = groupId;
+        LOG.info("groupId:" + groupId);
         Bundle bdl = new Bundle(1);
 
         bdl.putString(GROUP_ID, groupId);
@@ -37,13 +38,13 @@ public class CorpsInGroupFragment extends BaseSqlQueryGridFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(savedInstanceState != null){
-            groupId = (String)savedInstanceState.get(GROUP_ID);
+        if (savedInstanceState != null) {
+            groupId = (String) savedInstanceState.get(GROUP_ID);
         }
-        return super.onCreateView(inflater,container,savedInstanceState);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    private String groupId ;
+    private String groupId;
 
     @Override
     protected int getLayoutViewId() {
@@ -68,7 +69,7 @@ public class CorpsInGroupFragment extends BaseSqlQueryGridFragment {
     }
 
     @Override
-    protected Object[] getSqlArguments(){
+    protected Object[] getSqlArguments() {
         return new Object[]{this.groupId};
     }
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/my_corp_groups_button"
+            style="@style/toc_button"
+            android:text="My Corp Groups" />
+
+        <Button
+            android:id="@+id/find_corp_button"
+            style="@style/toc_button"
+            android:text="Find Corp" />
+
+    </LinearLayout>
+
+</ScrollView>

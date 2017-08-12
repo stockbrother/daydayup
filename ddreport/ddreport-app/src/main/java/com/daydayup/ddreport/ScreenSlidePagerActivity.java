@@ -2,11 +2,11 @@ package com.daydayup.ddreport;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
 import org.ddu.ddr.app.R;
 
@@ -14,7 +14,7 @@ import org.ddu.ddr.app.R;
  * Created by wuzhen on 8/11/2017.
  */
 
-public class ScreenSlidePagerActivity extends FragmentActivity {
+public class ScreenSlidePagerActivity extends AppCompatActivity {
     private static final int NUM_PAGES = 5;
     private ViewPager mPager;
 
@@ -75,11 +75,14 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return new GroupsFragment();
 
+                //return new GroupsFragment();
+                return ScreenSlidePageFragment.newInstance("Item:" + position);
             } else if (position == 1) {
-                fragment1 = CorpsInGroupFragment.newInstance(groupId);
-                return fragment1;
+                //fragment1 = CorpsInGroupFragment.newInstance(groupId);
+                //return fragment1;
+                return ScreenSlidePageFragment.newInstance("Item:" + position);
+
             } else {
 
                 return ScreenSlidePageFragment.newInstance("Item:" + position);
