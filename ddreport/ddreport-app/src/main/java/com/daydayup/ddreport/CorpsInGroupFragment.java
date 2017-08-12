@@ -1,9 +1,12 @@
 package com.daydayup.ddreport;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.GridView;
 
 import org.ddu.ddr.app.R;
 import org.slf4j.Logger;
@@ -36,12 +39,59 @@ public class CorpsInGroupFragment extends BaseSqlQueryGridFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    protected void onCreate(LayoutInflater inflater, ViewGroup container,
+                            Bundle savedInstanceState, ViewGroup vg, GridView grid) {
+        super.onCreate(inflater, container, savedInstanceState, vg, grid);
         if (savedInstanceState != null) {
             groupId = (String) savedInstanceState.get(GROUP_ID);
         }
-        return super.onCreateView(inflater, container, savedInstanceState);
+        Button button ;
+        button = (Button) vg.findViewById(R.id.open_plot_button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openPlot();
+            }
+        });
+
+        button = (Button) vg.findViewById(R.id.add_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openAddCorp();
+            }
+        });
+
+    }
+    private void openAddCorp(){
+        AddCorps2GroupFragment newFragment = AddCorps2GroupFragment.newInstance(this.groupId);
+        FragmentTransaction transaction = this.getFragmentManager().beginTransaction();
+
+// Replace whatever is in the fragment_container view with this fragment,
+// and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragments, newFragment);
+        transaction.addToBackStack(null);
+
+// Commit the transaction
+        transaction.commit();
+    }
+    private void openPlot(){
+        CorpsInGroupPlotFragment newFragment = CorpsInGroupPlotFragment.newInstance(this.groupId);
+        FragmentTransaction transaction = this.getFragmentManager().beginTransaction();
+
+// Replace whatever is in the fragment_container view with this fragment,
+// and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragments, newFragment);
+        transaction.addToBackStack(null);
+
+// Commit the transaction
+        transaction.commit();
+    }
+
+    @Override
+    protected void onCellClick(int rowNum, int colNum, Object[] row) {
+
     }
 
     private String groupId;

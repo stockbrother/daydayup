@@ -114,7 +114,24 @@ public abstract class BaseSqlQueryGridFragment extends Fragment {
 
     }
 
-    protected void onGridCreate(final GridView grid) {
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+
+        ViewGroup vg = (ViewGroup) inflater.inflate(
+                getLayoutViewId(), container, false);
+
+        grid = (GridView) vg.findViewById(getGridViewId());
+        this.onCreate(inflater,container,savedInstanceState,vg, grid);
+
+        this.refresh();
+        return vg;
+    }
+    protected void onCreate(LayoutInflater inflater, ViewGroup container,
+                            Bundle savedInstanceState, ViewGroup vg, final GridView grid) {
         grid.setNumColumns(getCols());
         final Context ctx = this.getActivity();
         this.gridAdapter = new GroupsGridAdapter(ctx);
@@ -129,22 +146,8 @@ public abstract class BaseSqlQueryGridFragment extends Fragment {
                 onCellClick(rowNum, colNum, row);
             }
         });
+
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
-        ViewGroup vg = (ViewGroup) inflater.inflate(
-                getLayoutViewId(), container, false);
-
-        grid = (GridView) vg.findViewById(getGridViewId());
-        this.onGridCreate(grid);
-        this.refresh();
-        return vg;
-    }
-
     public void refresh() {
         String sql = this.getSql();
         LOG.info("search:" + sql);
